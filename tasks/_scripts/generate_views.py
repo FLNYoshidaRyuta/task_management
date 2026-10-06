@@ -39,156 +39,189 @@ def mermaid_text(value):
     )
 
 
-def dependency_title(value):
-    value = str(value)
+def task_link_path(task, vault_root: Path):
+    rel = task["_path"].resolve().relative_to(vault_root.resolve()).as_posix()
 
-    # [[tasks/items/project/task|表示名]]
-    match = re.match(r"\[\[(.*?)(?:\|(.*?))?\]\]", value)
+    if rel.endswith(".md"):
+        rel = rel[:-3]
 
-    if match:
-        path = match.group(1)
-        alias = match.group(2)
-
-        if alias:
-            return alias
-
-        return Path(path).name
-
-    return value
+    return rel
 
 
-tasks = []
+def parse_dependency_ref(value):
+    value = str(value).strip()
+    match = re.match(r"\[\[(.*?)(?:\|(.*?))?\]\]$", value)
 
-for path in ITEMS_DIR.rglob("*.md"):
-    task = load_task(path)
+    if not match:
+        return None, value
 
-    if task:
-        tasks.append(task)
+    path = match.group(1).replace("\\", "/")
 
-tasks.sort(
-    key=lambda x: (
-        as_text(x.get("project")),
-        as_text(x.get("title")),
-    )
-)
+    if path.endswith(".md"):
+        path = path[:-3]
 
-# --------------------
-# Gantt
-# --------------------
+    alias = match.group(2)
 
-# to_release は mermaid 標準の done / active に色がないため、id 接頭辞 rel で塗る。
-GANTT_TO_RELEASE_CSS = (
-    "rect[id*=rel] { fill: #c2410c !important; stroke: #9a3412 !important; }"
-)
+    if alias:
+        return path, alias
 
-gantt = [
-    "# ガントチャート",
-    "",
-    "```mermaid",
-    f"%%{{init: {{'themeCSS': '{GANTT_TO_RELEASE_CSS}'}}}}%%",
-    "gantt",
-    "    title ガントチャート",
-    "    dateFormat YYYY-MM-DD",
-    "    axisFormat %m/%d",
-]
+    return path, Path(path).name
 
-projects = sorted(
-    set(as_text(t.get("project")) for t in tasks)
-)
 
-counter = 0
+def resolve_dependency_id(value, path_to_id, title_to_ids):
+    path, label = parse_dependency_ref(value)
 
-for project in projects:
-    project_tasks = [
-        t for t in tasks
-        if as_text(t.get("project")) == project
+    if path and path in path_to_id:
+        return path_to_id[path]
+
+    ids = title_to_ids.get(label, [])
+
+    if len(ids) == 1:
+        return ids[0]
+
+    return None
+
+
+def render_dependency(tasks, vault_root: Path):
+    dependency = [
+        "# 依存関係図",
+        "",
+        "```mermaid",
+        "flowchart LR",
     ]
 
-    visible = [
-        t for t in project_tasks
-        if t.get("start") and t.get("end")
-    ]
+    path_to_id = {}
+    title_to_ids = {}
 
-    if not visible:
-        continue
+    for index, task in enumerate(tasks):
+        node_id = f"T{index}"
+        title = as_text(task.get("title"))
+        path = task_link_path(task, vault_root)
 
-    gantt.append(f"    section {mermaid_text(project)}")
-
-    for task in visible:
-        counter += 1
-
-        title = mermaid_text(task.get("title"))
-        start = as_text(task.get("start"))
-        end = as_text(task.get("end"))
-        status = as_text(task.get("status"))
-
-        prefix = ""
-        task_id = f"t{counter}"
-
-        if status == "done":
-            prefix = "done, "
-        elif status == "in_progress":
-            prefix = "active, "
-        elif status == "to_release":
-            task_id = f"rel{counter}"
-
-        gantt.append(
-            f"    {title} :{prefix}{task_id}, {start}, {end}"
+        path_to_id[path] = node_id
+        title_to_ids.setdefault(title, []).append(node_id)
+        dependency.append(
+            f'    {node_id}["{mermaid_text(title)}"]'
         )
 
-gantt += [
-    "```",
-    "",
-]
+    for task in tasks:
+        target_id = path_to_id.get(task_link_path(task, vault_root))
 
-(TASKS_DIR / "ガントチャート.md").write_text(
-    "\n".join(gantt),
-    encoding="utf-8",
-)
+        for dep in task.get("depends_on", []) or []:
+            dep_id = resolve_dependency_id(dep, path_to_id, title_to_ids)
 
-# --------------------
-# Dependency graph
-# --------------------
+            if dep_id and target_id and dep_id != target_id:
+                dependency.append(
+                    f"    {dep_id} --> {target_id}"
+                )
 
-dependency = [
-    "# 依存関係図",
-    "",
-    "```mermaid",
-    "flowchart LR",
-]
+    dependency += [
+        "```",
+        "",
+    ]
 
-title_to_id = {}
+    return "\n".join(dependency)
 
-for index, task in enumerate(tasks):
-    node_id = f"T{index}"
-    title = as_text(task.get("title"))
 
-    title_to_id[title] = node_id
-    dependency.append(
-        f'    {node_id}["{mermaid_text(title)}"]'
+def main():
+    tasks = []
+
+    for path in ITEMS_DIR.rglob("*.md"):
+        task = load_task(path)
+
+        if task:
+            tasks.append(task)
+
+    tasks.sort(
+        key=lambda x: (
+            as_text(x.get("project")),
+            as_text(x.get("title")),
+        )
     )
 
-for task in tasks:
-    target_title = as_text(task.get("title"))
-    target_id = title_to_id.get(target_title)
+    # to_release は mermaid 標準の done / active に色がないため、id 接頭辞 rel で塗る。
+    gantt_to_release_css = (
+        "rect[id*=rel] { fill: #c2410c !important; stroke: #9a3412 !important; }"
+    )
 
-    for dep in task.get("depends_on", []) or []:
-        dep_title = dependency_title(dep)
-        dep_id = title_to_id.get(dep_title)
+    gantt = [
+        "# ガントチャート",
+        "",
+        "```mermaid",
+        f"%%{{init: {{'themeCSS': '{gantt_to_release_css}'}}}}%%",
+        "gantt",
+        "    title ガントチャート",
+        "    dateFormat YYYY-MM-DD",
+        "    axisFormat %m/%d",
+    ]
 
-        if dep_id and target_id:
-            dependency.append(
-                f"    {dep_id} --> {target_id}"
+    projects = sorted(
+        set(as_text(t.get("project")) for t in tasks)
+    )
+
+    counter = 0
+
+    for project in projects:
+        project_tasks = [
+            t for t in tasks
+            if as_text(t.get("project")) == project
+        ]
+
+        visible = [
+            t for t in project_tasks
+            if t.get("start") and t.get("end")
+        ]
+
+        if not visible:
+            continue
+
+        gantt.append(f"    section {mermaid_text(project)}")
+
+        for task in visible:
+            counter += 1
+
+            title = mermaid_text(task.get("title"))
+            start = as_text(task.get("start"))
+            end = as_text(task.get("end"))
+            status = as_text(task.get("status"))
+
+            prefix = ""
+            task_id = f"t{counter}"
+
+            if status == "done":
+                prefix = "done, "
+            elif status == "in_progress":
+                prefix = "active, "
+            elif status == "to_release":
+                task_id = f"rel{counter}"
+
+            # 同日は幅が 0 になるため、その日の 1 日タスクとして描く。
+            span = "1d" if start == end else end
+            gantt.append(
+                f"    {title} :{prefix}{task_id}, {start}, {span}"
             )
 
-dependency += [
-    "```",
-    "",
-]
+    gantt += [
+        "```",
+        "",
+    ]
 
-(TASKS_DIR / "依存関係図.md").write_text(
-    "\n".join(dependency),
-    encoding="utf-8",
-)
+    (TASKS_DIR / "ガントチャート.md").write_text(
+        "\n".join(gantt),
+        encoding="utf-8",
+        newline="\n",
+    )
 
-print(f"Generated views from {len(tasks)} task(s).")
+    dependency = render_dependency(tasks, TASKS_DIR.parent)
+
+    (TASKS_DIR / "依存関係図.md").write_text(
+        dependency,
+        encoding="utf-8",
+        newline="\n",
+    )
+
+    print(f"Generated views from {len(tasks)} task(s).")
+
+
+if __name__ == "__main__":
+    main()

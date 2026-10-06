@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "tasks/items/画質向上/PR4 の Imagick 移行を再適用するために必要な対応.md",
+                "file": "tasks/_タスク.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "PR4 の Imagick 移行を再適用するために必要な対応"
+              "title": "_タスク"
             }
           }
         ]
@@ -99,7 +99,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "tasks/items/画質向上/PR4 の Imagick 移行を再適用するために必要な対応.md",
+                "file": "tasks/_タスク.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -118,7 +118,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "tasks/items/画質向上/PR4 の Imagick 移行を再適用するために必要な対応.md",
+                "file": "tasks/_タスク.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
@@ -161,7 +161,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "tasks/items/画質向上/PR4 の Imagick 移行を再適用するために必要な対応.md",
+                "file": "tasks/_タスク.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
@@ -190,28 +190,33 @@
   },
   "active": "79a8ae23be6d5840",
   "lastOpenFiles": [
-    "README.md",
-    "tasks/items/画質向上/画像キャッシュ検証により正常な画像が表示できなくなる.md",
-    "tasks/_タスク.md",
-    "tasks/items/サンプル/Github Issue対応.md",
+    "tasks/_scripts/__pycache__/test_generate_routines.cpython-312.pyc.2176889571056",
     "tasks/ガントチャート.md",
+    "tasks/_タスク.md",
+    "TASK_MANAGEMENT_PRINCIPLES.md",
+    "tasks/routines/weekly-review.md",
+    "tasks/routines/monthly-report.md",
+    "tasks/items/routine/2026-10-09_週次レビュー.md",
+    "tasks/items/routine",
+    "tasks/_scripts/__pycache__/generate_views.cpython-312.pyc",
+    "tasks/_scripts/__pycache__/generate_routines.cpython-312.pyc",
+    "tasks/_scripts/__pycache__/test_generate_routines.cpython-312.pyc",
+    "tasks/_scripts/__pycache__",
+    "tasks/_scripts/test_generate_routines.py",
+    "tasks/routines",
+    "tasks/_scripts/generate_routines.py",
+    "tasks/items/画質向上/PR4 の Imagick 移行を再適用するために必要な対応.md",
     "tasks/タスクビュー.base",
     "tasks/依存関係図.md",
-    "tasks/items/画質向上/PR4 の Imagick 移行を再適用するために必要な対応.md",
+    "README.md",
+    "tasks/items/画質向上/再適用時に新キャッシュを優先し、無ければ旧キャッシュを参照する.md",
+    "tasks/items/画質向上/画像キャッシュ検証により正常な画像が表示できなくなる.md",
+    "tasks/items/サンプル/Github Issue対応.md",
     "tasks/items/改善要望/ニュース投稿画面の「この画像をGoogleマップの投稿に使用する」という文言を修正.md",
     "tasks/items/改善要望/ニックネーム周りの調査.md",
     "tasks/items/改善要望",
-    "sources/backlog/assigned-issues.json",
-    "tasks/_scripts/fetch-backlog.ps1",
-    "sources/backlog",
     "tasks/items/画質向上.md",
-    "tasks/items/画質向上/再適用時に新キャッシュを優先し、無ければ旧キャッシュを参照する.md",
     "tasks/items/画質向上/#4 の Imagick 移行を再適用するために必要な対応.md",
-    "items/画質向上.md",
-    "items",
-    "tasks/items/画質向上",
-    "sources/github/review-requests.json",
-    "sources/github/my-prs.json",
-    "sources/github/assigned-issues.json"
+    "items/画質向上.md"
   ]
 }

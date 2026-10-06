@@ -2,3 +2,4 @@
 sources/
 sources/github/
 sources/backlog/
+__pycache__/

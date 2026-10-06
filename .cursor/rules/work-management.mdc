@@ -26,6 +26,12 @@ alwaysApply: true
 `tasks/items/**` または `tasks/_タスク.md` を変更する場合は、
 必ず `task-manager` subagent を使用すること。
 
+`tasks/routines/**` を変更する場合は、
+必ず `routine-manager` subagent を使用すること。
+
+ルーティーン定義を変更した後は、続けて `task-manager` subagent を使用し、
+期日タスクと派生ビューを更新すること。
+
 以下は直接編集しない。
 
 - `sources/**`
@@ -123,3 +129,13 @@ Backlog上の以下の値を、
 - `source_updated_at`
 
 外部サービスに書かれていない事実を推測して追加しない。
+
+# ルーティーン
+
+ルーティーン定義は `tasks/routines/**/*.md` にある。
+定義はタスクの正本ではない。期日ごとに実行する仕事の型である。
+
+`task-manager` は `tasks/_scripts/generate_routines.py` を実行して、
+期日ごとの実タスクを生成する。
+生成先は `tasks/items/routine/`。
+生成済みタスクは通常の個人タスクとして扱う。

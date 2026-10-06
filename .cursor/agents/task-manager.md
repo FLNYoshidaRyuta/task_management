@@ -30,6 +30,18 @@ tasks/items/<project>/<title>.md
 
 ファイル名とtitleは一致させる。
 
+ルーティーンから生成されたタスクは例外で、次の場所にある。
+
+tasks/items/routine/{routine_date}_{title}.md
+
+このファイルは `tasks/_scripts/generate_routines.py` が作る。
+ファイル名と title は一致しなくてよい。
+同じ期日のタスクを手で増やさない。
+
+生成済みタスクも通常の個人タスクとして扱う。
+ユーザーが指定した status、start、end、priority、estimate、本文は更新してよい。
+source_type、source_id、routine_date は変えない。
+
 frontmatterは基本的に以下を使用する。
 
 ---
@@ -66,6 +78,7 @@ source_typeは以下のみ。
 
 - backlog_issue
 - github_issue
+- routine
 
 ## 判断してはいけないこと
 
@@ -137,12 +150,17 @@ Obsidianは `#` を見出しリンク、`^` をブロック参照として解釈
 
 GitHubの番号は `PR4` や `Issue12` のように書く。
 
+## ルーティーン
+
+ルーティーン定義の変更後や期日タスクの生成を依頼されたときは、
+`tasks/_scripts/generate_routines.py` を実行する。
+
 ## 操作後
 
-タスクを変更した後は必ず
+タスクを変更した後は、必ず次の順で実行する。
+
+py .\tasks\_scripts\generate_routines.py
 
 py .\tasks\_scripts\generate_views.py
-
-を実行する。
 
 変更したファイルと変更内容を報告する。
