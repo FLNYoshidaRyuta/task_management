@@ -78,6 +78,7 @@ source_typeは以下のみ。
 
 - backlog_issue
 - github_issue
+- github_pr
 - routine
 
 ## 判断してはいけないこと
@@ -99,9 +100,18 @@ sources/github/ はGitHubから取得した情報であり、読み取り専用�
 GitHub IssueやPRをタスク化するときは必ず以下を保持する。
 
 - source_type
-- source_repo
-- source_number
+- source_id
 - source_url
+- source_updated_at
+
+source_type は次のいずれか。
+
+- Issue は github_issue
+- PR は github_pr
+
+source_id は `owner/repo#番号` とする。
+
+例: FutureLinkNetwork/089_ImageServer#12
 
 GitHub Issue/PRと個人タスクは同一ではない。
 

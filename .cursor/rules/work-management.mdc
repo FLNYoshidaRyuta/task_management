@@ -74,6 +74,18 @@ GitHub Issue / PR と個人タスクは同一ではない。
 GitHubの情報を個人タスクとして管理する場合は、
 `task-manager` subagent を使用して `tasks/items/**` にタスクを作成する。
 
+取得結果の各要素は、次を持つ。
+
+- `sourceType` は `github_issue` または `github_pr`
+- `sourceId` は `owner/repo#番号`
+- `sourceUrl`
+- `sourceUpdatedAt`
+- `title`
+- `state`
+
+`assigned-issues` は `github_issue`。
+`my-prs` と `review-requests` は `github_pr`。
+
 # Backlog
 
 Backlogの取得情報は `sources/backlog/` にある。
@@ -88,6 +100,13 @@ Backlog課題と個人タスクは同一ではない。
 
 Backlogの情報を個人タスクとして管理する場合は、
 `task-manager` subagent を使用して `tasks/items/**` にタスクを作成する。
+
+取得結果の各要素は、次を持つ。
+
+- `sourceType` は `backlog_issue`
+- `sourceId` は課題キー
+- `sourceUrl`
+- `sourceUpdatedAt`
 
 Backlog上の以下の値を、
 個人タスクの属性へ自動的にコピーしてはいけない。
@@ -127,6 +146,16 @@ Backlog上の以下の値を、
 - `source_id`
 - `source_url`
 - `source_updated_at`
+
+`source_id` の形は次のとおり。
+
+| source_type | source_id |
+|---|---|
+| `backlog_issue` | 課題キー。例: `MYPL-4221` |
+| `github_issue` | `owner/repo#番号`。例: `FutureLinkNetwork/089_ImageServer#12` |
+| `github_pr` | `owner/repo#番号`。例: `FutureLinkNetwork/089_ImageServer#4` |
+
+同じ `source_type` と `source_id` は、同一の外部情報を指す。
 
 外部サービスに書かれていない事実を推測して追加しない。
 
