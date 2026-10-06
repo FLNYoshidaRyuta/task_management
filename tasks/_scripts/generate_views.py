@@ -76,10 +76,16 @@ tasks.sort(
 # Gantt
 # --------------------
 
+# to_release は mermaid 標準の done / active に色がないため、id 接頭辞 rel で塗る。
+GANTT_TO_RELEASE_CSS = (
+    "rect[id*=rel] { fill: #c2410c !important; stroke: #9a3412 !important; }"
+)
+
 gantt = [
     "# ガントチャート",
     "",
     "```mermaid",
+    f"%%{{init: {{'themeCSS': '{GANTT_TO_RELEASE_CSS}'}}}}%%",
     "gantt",
     "    title ガントチャート",
     "    dateFormat YYYY-MM-DD",
@@ -117,14 +123,17 @@ for project in projects:
         status = as_text(task.get("status"))
 
         prefix = ""
+        task_id = f"t{counter}"
 
         if status == "done":
             prefix = "done, "
         elif status == "in_progress":
             prefix = "active, "
+        elif status == "to_release":
+            task_id = f"rel{counter}"
 
         gantt.append(
-            f"    {title} :{prefix}t{counter}, {start}, {end}"
+            f"    {title} :{prefix}{task_id}, {start}, {end}"
         )
 
 gantt += [

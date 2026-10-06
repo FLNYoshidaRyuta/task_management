@@ -52,6 +52,7 @@ statusは以下のみ。
 
 - todo
 - in_progress
+- to_release
 - done
 
 priorityは以下のみ。
