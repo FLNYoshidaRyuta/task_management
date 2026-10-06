@@ -1,0 +1,70 @@
+filters:
+  and:
+    - file.inFolder("tasks/items")
+    - file.ext == "md"
+properties:
+  file.name:
+    displayName: タスク
+  status:
+    displayName: status
+  start:
+    displayName: start
+  end:
+    displayName: end
+  priority:
+    displayName: priority
+  estimate:
+    displayName: estimate
+  source_url:
+    displayName: source
+views:
+  - type: table
+    name: 現役
+    filters:
+      and:
+        - status != "done"
+    groupBy:
+      property: project
+      direction: ASC
+    order:
+      - file.name
+      - status
+      - start
+      - end
+      - priority
+      - estimate
+      - source_url
+    columnSize:
+      file.name: 386
+      note.source_url: 530
+  - type: table
+    name: 今日
+    filters:
+      and:
+        - status != "done"
+        - or:
+            - status == "in_progress"
+            - end == today()
+    groupBy:
+      property: project
+      direction: ASC
+    order:
+      - file.name
+      - status
+      - end
+      - priority
+  - type: table
+    name: 1週間以内
+    filters:
+      and:
+        - status != "done"
+        - end >= today()
+        - end <= today() + "7d"
+    groupBy:
+      property: project
+      direction: ASC
+    order:
+      - file.name
+      - status
+      - end
+      - priority

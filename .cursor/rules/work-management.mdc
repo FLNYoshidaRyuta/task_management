@@ -1,0 +1,125 @@
+---
+description: 個人タスク管理システムのルール
+alwaysApply: true
+---
+
+このプロジェクトは、ObsidianとCursorを使った個人タスク管理システム。
+
+# 基本方針
+
+外部サービスの情報は `sources/` に取得する。
+
+現在の取得元は以下。
+
+- GitHub: `sources/github/`
+- Backlog: `sources/backlog/`
+
+`sources/**` は外部サービスから取得したキャッシュであり、
+タスク管理上の正本ではない。
+
+個人タスクの正本は `tasks/items/**/*.md`。
+
+タスクの階層と作業順序は `tasks/_タスク.md` にある。
+
+# 編集ルール
+
+`tasks/items/**` または `tasks/_タスク.md` を変更する場合は、
+必ず `task-manager` subagent を使用すること。
+
+以下は直接編集しない。
+
+- `sources/**`
+- `tasks/ガントチャート.md`
+- `tasks/依存関係図.md`
+- `tasks/タスクビュー.base`
+- `.env`
+
+`.env` は秘密情報を含むため、
+内容を表示・要約・編集してはいけない。
+
+# 派生ビュー
+
+以下はタスクの正本ではなく、派生ビュー。
+
+- `tasks/ガントチャート.md`
+- `tasks/依存関係図.md`
+- `tasks/タスクビュー.base`
+
+ガントチャートと依存関係図は、
+
+`tasks/_scripts/generate_views.py`
+
+によって生成する。
+
+手動で内容を編集しないこと。
+
+# GitHub
+
+GitHubの取得情報は `sources/github/` にある。
+
+GitHubの最新情報を取得するときは、
+
+`tasks/_scripts/fetch-github.ps1`
+
+を実行する。
+
+GitHub Issue / PR と個人タスクは同一ではない。
+
+GitHubの情報を個人タスクとして管理する場合は、
+`task-manager` subagent を使用して `tasks/items/**` にタスクを作成する。
+
+# Backlog
+
+Backlogの取得情報は `sources/backlog/` にある。
+
+Backlogの最新情報を取得するときは、
+
+`tasks/_scripts/fetch-backlog.ps1`
+
+を実行する。
+
+Backlog課題と個人タスクは同一ではない。
+
+Backlogの情報を個人タスクとして管理する場合は、
+`task-manager` subagent を使用して `tasks/items/**` にタスクを作成する。
+
+Backlog上の以下の値を、
+個人タスクの属性へ自動的にコピーしてはいけない。
+
+- status
+- priority
+- dueDate
+- estimatedHours
+
+これらは外部サービス上の情報として参照する。
+
+個人タスク側の以下の属性は、
+ユーザーの明示的な指定または `task-manager` のルールに従う。
+
+- status
+- priority
+- start
+- end
+- estimate
+
+# 外部情報と個人タスクの関係
+
+外部サービスのIssue、PR、課題は「情報源」。
+
+`tasks/items/**/*.md` は「自分が実際に行う作業」。
+
+1つの外部Issueや課題から、
+複数の個人タスクを作成してよい。
+
+逆に、外部Issueや課題が存在しても、
+必ず個人タスク化する必要はない。
+
+外部情報を個人タスク化するときは、
+元情報を追跡できるように以下を保持する。
+
+- `source_type`
+- `source_id`
+- `source_url`
+- `source_updated_at`
+
+外部サービスに書かれていない事実を推測して追加しない。
