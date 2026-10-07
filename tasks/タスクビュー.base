@@ -25,6 +25,7 @@ views:
     filters:
       and:
         - status != "done"
+        - status != "canceled"
     groupBy:
       property: project
       direction: ASC
@@ -51,6 +52,7 @@ views:
     filters:
       and:
         - status != "done"
+        - status != "canceled"
         - or:
             - status == "in_progress"
             - end == today()
@@ -68,6 +70,7 @@ views:
     filters:
       and:
         - status != "done"
+        - status != "canceled"
         - end >= today()
         - end <= today() + "7d"
     groupBy:

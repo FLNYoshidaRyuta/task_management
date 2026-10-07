@@ -74,6 +74,7 @@ statusは以下のみ。
 - in_progress
 - to_release
 - done
+- canceled
 
 priorityは以下のみ。
 
@@ -96,7 +97,7 @@ source_typeは以下のみ。
 - 優先度
 - 期限
 - 見積もり
-- タスクをdoneにするか
+- タスクをdoneまたはcanceledにするか
 - GitHub上のIssueが完了したか
 
 不明な属性は空欄にする。

@@ -43,7 +43,10 @@ Inbox の通常取得では `-RefreshStatuses` を付けない。Backlog の課�
 
 ### 2. Compare
 
-成功したソースだけを指定して実行する。標準出力を分類結果とする。
+成功したソースだけを指定して実行する。標準出力は JSON で、次の2つを含む。
+
+- `candidates`: キャッシュ側の一覧（従来の照合結果）
+- `missing_from_cache`: 個人タスクに `source_type` / `source_id` があるが、今回のキャッシュに無い未完了タスク
 
 ```powershell
 py .\tasks\_scripts\compare_inbox.py --sources github,backlog
@@ -55,7 +58,9 @@ py .\tasks\_scripts\compare_inbox.py --sources github,backlog
 
 ### 3. Present
 
-`linked_tasks` が空の候補だけに番号を付ける。
+#### 3a. 新規候補
+
+`candidates` のうち `linked_tasks` が空のものだけに番号を付ける。
 
 各新規候補には次を出す。
 
@@ -73,13 +78,36 @@ py .\tasks\_scripts\compare_inbox.py --sources github,backlog
 
 優先度や、タスク化すべきだという推奨は書かない。
 
+#### 3b. キャッシュに無いタスク
+
+`missing_from_cache` が空でなければ、新規候補とは別の番号 `M1`, `M2`, … を付けて示す。
+
+各要素には次を出す。
+
+- 番号（`M` 接頭辞）
+- source_type
+- source_id
+- 紐づくタスクごとの path、title、status、source_url、source_updated_at
+
+キャッシュに無い理由は推測しない。完了・却下・担当外れなどの可能性だけを短く述べてよい。
+
+次の3択をユーザーに聞く。Inbox 実行時点では status を変えない。
+
+- 完了した → 反映するなら `done`
+- 却下された → 反映するなら `canceled`
+- 知らない → 変更不要。次回の照合でも再掲する
+
 ### 4. Wait
 
-ユーザーが番号と project を明示するまで、task-manager を呼ばない。番号だけで project が無いときは、project を聞いて止まる。
+新規候補について、ユーザーが番号と project を明示するまで、task-manager を呼ばない。番号だけで project が無いときは、project を聞いて止まる。
+
+`missing_from_cache` について、ユーザーが `M` 番号と `done` または `canceled` を明示するまで、task-manager で status を変えない。「却下で」だけでは変えない。`M1 を canceled にして` のように番号と status をセットで指示されたときだけ task-manager に渡す。
 
 タイトルを変える指定が無いときは、キャッシュの title を使う。priority、start、end、estimate の指定が無いときは空欄として渡す。
 
 ### 5. Materialize
+
+#### 5a. 新規タスク化
 
 選ばれた候補だけを task-manager に渡す。
 
@@ -94,3 +122,7 @@ py .\tasks\_scripts\compare_inbox.py --sources github,backlog
 - ユーザーが明示した status、priority、start、end、estimate、本文
 
 `source_type` は `backlog_issue`、`github_issue`、`github_pr` のいずれかだけを渡す。渡したあと、task-manager の結果をそのまま報告する。
+
+#### 5b. キャッシュ欠落タスクの status 更新
+
+ユーザーが `M` 番号と `done` または `canceled` を明示したタスクだけを task-manager に渡す。渡す内容はタスク path と新しい status のみでよい。外部 Issue / 課題の close は行わない。
