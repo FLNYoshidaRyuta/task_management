@@ -2,7 +2,7 @@
 task_id: 6
 title: CMYK画像のアップロード前変換・422エラー文言改善・容量上限の整合性確認
 project: 画質向上
-status: todo
+status: done
 start:
 end:
 priority:
