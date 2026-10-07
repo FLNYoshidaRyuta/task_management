@@ -29,13 +29,18 @@ views:
     order:
       - file.name
       - status
+      - source_type
       - start
       - end
       - priority
       - estimate
       - source_url
+      - related
+      - depends_on
+      - parent
     columnSize:
-      file.name: 386
+      file.name: 241
+      note.source_type: 71
       note.source_url: 530
   - type: table
     name: 今日
