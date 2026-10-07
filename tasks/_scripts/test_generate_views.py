@@ -121,5 +121,105 @@ class RelatedViewTest(unittest.TestCase):
         self.assertEqual(text.strip(), "# 関連図\n\n関連タスクはありません。")
 
 
+class DependencyViewTest(unittest.TestCase):
+    def setUp(self):
+        self.vault = Path(tempfile.gettempdir()) / "dependency-view-test"
+        self.vault.mkdir(parents=True, exist_ok=True)
+
+    def task(self, rel_path: str, title: str, **extra):
+        path = self.vault / rel_path
+        path.parent.mkdir(parents=True, exist_ok=True)
+        lines = [
+            "---",
+            f"title: {title}",
+            "project: サンプル",
+            "status: todo",
+        ]
+        for key, value in extra.items():
+            if key in ("depends_on", "related") and isinstance(value, list):
+                if value:
+                    lines.append(f"{key}:")
+                    lines.extend(f"  - {item}" for item in value)
+                else:
+                    lines.append(f"{key}: []")
+            else:
+                lines.append(f"{key}: {value}")
+        lines.extend(["---", ""])
+        path.write_text("\n".join(lines), encoding="utf-8")
+        return {
+            "title": title,
+            "_path": path,
+            **extra,
+        }
+
+    def test_tasks_without_depends_on_are_not_nodes(self):
+        tasks = [
+            self.task("tasks/items/サンプル/A.md", "A"),
+            self.task("tasks/items/サンプル/B.md", "B"),
+        ]
+
+        text = generate_views.render_dependency(tasks, self.vault)
+
+        self.assertEqual(text.strip(), "# 依存関係図\n\n依存関係はありません。")
+
+    def test_depends_on_draws_both_tasks_and_arrow(self):
+        link = "[[tasks/items/サンプル/B|B]]"
+        tasks = [
+            self.task(
+                "tasks/items/サンプル/A.md",
+                "A",
+                depends_on=[link],
+            ),
+            self.task("tasks/items/サンプル/B.md", "B"),
+        ]
+
+        text = generate_views.render_dependency(tasks, self.vault)
+
+        self.assertIn('T0["A"]', text)
+        self.assertIn('T1["B"]', text)
+        self.assertIn("T1 --> T0", text)
+
+    def test_uninvolved_task_is_not_a_node(self):
+        link = "[[tasks/items/サンプル/B|B]]"
+        tasks = [
+            self.task(
+                "tasks/items/サンプル/A.md",
+                "A",
+                depends_on=[link],
+            ),
+            self.task("tasks/items/サンプル/B.md", "B"),
+            self.task("tasks/items/サンプル/C.md", "C"),
+        ]
+
+        text = generate_views.render_dependency(tasks, self.vault)
+
+        self.assertIn("T1 --> T0", text)
+        self.assertNotIn('["C"]', text)
+
+    def test_unresolvable_depends_on_yields_empty_view(self):
+        tasks = [
+            self.task(
+                "tasks/items/サンプル/A.md",
+                "A",
+                depends_on=["[[tasks/items/サンプル/Missing|Missing]]"],
+            ),
+        ]
+
+        text = generate_views.render_dependency(tasks, self.vault)
+
+        self.assertEqual(text.strip(), "# 依存関係図\n\n依存関係はありません。")
+
+    def test_related_only_does_not_appear_in_dependency_view(self):
+        link = "[[tasks/items/サンプル/B|B]]"
+        tasks = [
+            self.task("tasks/items/サンプル/A.md", "A", related=[link]),
+            self.task("tasks/items/サンプル/B.md", "B"),
+        ]
+
+        text = generate_views.render_dependency(tasks, self.vault)
+
+        self.assertEqual(text.strip(), "# 依存関係図\n\n依存関係はありません。")
+
+
 if __name__ == "__main__":
     unittest.main()

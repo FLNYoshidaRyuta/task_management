@@ -83,44 +83,59 @@ def resolve_dependency_id(value, path_to_id, title_to_ids):
 
 
 def render_dependency(tasks, vault_root: Path):
-    dependency = [
+    path_to_id = {}
+    title_to_ids = {}
+    path_to_title = {}
+
+    for index, task in enumerate(tasks):
+        node_id = f"T{index}"
+        path = task_link_path(task, vault_root)
+        title = as_text(task.get("title"))
+
+        path_to_id[path] = node_id
+        path_to_title[path] = title
+        title_to_ids.setdefault(title, []).append(node_id)
+
+    edges = []
+
+    for task in tasks:
+        target_path = task_link_path(task, vault_root)
+
+        for dep in task.get("depends_on", []) or []:
+            dep_path = resolve_task_path(dep, path_to_id, title_to_ids)
+
+            if dep_path and target_path and dep_path != target_path:
+                edges.append((dep_path, target_path))
+
+    participating = sorted({path for edge in edges for path in edge})
+
+    if not participating:
+        return "# 依存関係図\n\n依存関係はありません。\n"
+
+    lines = [
         "# 依存関係図",
         "",
         "```mermaid",
         "flowchart LR",
     ]
 
-    path_to_id = {}
-    title_to_ids = {}
+    local_ids = {path: f"T{index}" for index, path in enumerate(participating)}
 
-    for index, task in enumerate(tasks):
-        node_id = f"T{index}"
-        title = as_text(task.get("title"))
-        path = task_link_path(task, vault_root)
+    for path in participating:
+        local_id = local_ids[path]
+        lines.append(f'    {local_id}["{mermaid_text(path_to_title[path])}"]')
 
-        path_to_id[path] = node_id
-        title_to_ids.setdefault(title, []).append(node_id)
-        dependency.append(
-            f'    {node_id}["{mermaid_text(title)}"]'
-        )
+    for dep_path, target_path in sorted(edges):
+        lines.append(f"    {local_ids[dep_path]} --> {local_ids[target_path]}")
 
-    for task in tasks:
-        target_id = path_to_id.get(task_link_path(task, vault_root))
+    lines.extend(
+        [
+            "```",
+            "",
+        ]
+    )
 
-        for dep in task.get("depends_on", []) or []:
-            dep_id = resolve_dependency_id(dep, path_to_id, title_to_ids)
-
-            if dep_id and target_id and dep_id != target_id:
-                dependency.append(
-                    f"    {dep_id} --> {target_id}"
-                )
-
-    dependency += [
-        "```",
-        "",
-    ]
-
-    return "\n".join(dependency)
+    return "\n".join(lines)
 
 
 def resolve_task_path(value, path_to_id, title_to_ids):
