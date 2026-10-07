@@ -13,6 +13,11 @@ from pathlib import Path
 
 import yaml
 
+try:
+    import jpholiday
+except ImportError:
+    jpholiday = None  # type: ignore[assignment]
+
 
 WEEKDAYS = {
     "monday": 0,
@@ -24,10 +29,13 @@ WEEKDAYS = {
     "sunday": 6,
 }
 
-RECURRENCES = ("daily", "weekly", "monthly", "weekdays")
+RECURRENCES = ("weekly", "monthly_day", "monthly_nth_weekday")
+BUSINESS_DAY_ADJUSTMENTS = ("none", "previous", "next")
+DEPRECATED_RECURRENCES = ("daily", "monthly", "weekdays")
 PRIORITIES = ("Critical", "High", "Mid", "Low")
 ID_PATTERN = re.compile(r"^[A-Za-z0-9_-]+$")
 FORBIDDEN_TITLE_CHARS = set('<>:"/\\|?*#^')
+MAX_BUSINESS_DAY_SHIFT = 366
 
 
 @dataclass
@@ -49,9 +57,10 @@ class Routine:
     recurrence: str
     weekday: int | None
     day: int | None
+    ordinal: int | None
+    business_day_adjustment: str
     priority: str
     estimate: str
-    generate_before_days: int
     enabled: bool
     children: list[ChildTemplate]
     body: str
@@ -95,6 +104,18 @@ def as_date_str(value):
         return value.isoformat()[:10]
 
     return str(value).strip()[:10]
+
+
+def parse_date(value) -> date | None:
+    text = as_date_str(value)
+
+    if not text:
+        return None
+
+    try:
+        return date.fromisoformat(text)
+    except ValueError:
+        return None
 
 
 def yaml_scalar(value: str) -> str:
@@ -302,6 +323,9 @@ def parse_routine(path: Path):
     project = require_text(data, "project", errors)
     recurrence = require_text(data, "recurrence", errors).lower()
 
+    if "generate_before_days" in data:
+        errors.append("generate_before_days は使用できません。完了連動生成に移行してください")
+
     if routine_id and not ID_PATTERN.fullmatch(routine_id):
         errors.append("id は英数字、ハイフン、アンダースコアだけ使えます")
 
@@ -314,11 +338,16 @@ def parse_routine(path: Path):
     if project and ("#" in project or "^" in project or any(ord(char) < 32 for char in project)):
         errors.append("project に #、^、改行は使えません")
 
-    if recurrence and recurrence not in RECURRENCES:
-        errors.append("recurrence は daily / weekly / monthly / weekdays のいずれかです")
+    if recurrence in DEPRECATED_RECURRENCES:
+        errors.append(
+            "recurrence は weekly / monthly_day / monthly_nth_weekday のいずれかです"
+        )
+    elif recurrence and recurrence not in RECURRENCES:
+        errors.append("recurrence は weekly / monthly_day / monthly_nth_weekday のいずれかです")
 
     weekday = None
     day = None
+    ordinal = None
 
     if recurrence == "weekly":
         if "weekday" not in data or data["weekday"] is None:
@@ -329,23 +358,38 @@ def parse_routine(path: Path):
             if weekday is None:
                 errors.append("weekday は monday から sunday で指定してください")
 
-    if recurrence == "monthly":
+    if recurrence == "monthly_day":
         raw_day = data.get("day")
 
         if isinstance(raw_day, bool) or not isinstance(raw_day, int):
-            errors.append("monthly の day は 1 から 31 の整数で指定してください")
+            errors.append("monthly_day の day は 1 から 31 の整数で指定してください")
         elif not 1 <= raw_day <= 31:
-            errors.append("monthly の day は 1 から 31 の整数で指定してください")
+            errors.append("monthly_day の day は 1 から 31 の整数で指定してください")
         else:
             day = raw_day
 
-    raw_horizon = data.get("generate_before_days")
+    if recurrence == "monthly_nth_weekday":
+        raw_ordinal = data.get("ordinal")
 
-    if isinstance(raw_horizon, bool) or not isinstance(raw_horizon, int) or raw_horizon < 0:
-        errors.append("generate_before_days は 0 以上の整数で指定してください")
-        horizon = 0
-    else:
-        horizon = raw_horizon
+        if isinstance(raw_ordinal, bool) or not isinstance(raw_ordinal, int):
+            errors.append("monthly_nth_weekday の ordinal は 1 から 5 の整数で指定してください")
+        elif not 1 <= raw_ordinal <= 5:
+            errors.append("monthly_nth_weekday の ordinal は 1 から 5 の整数で指定してください")
+        else:
+            ordinal = raw_ordinal
+
+        if "weekday" not in data or data["weekday"] is None:
+            errors.append("monthly_nth_weekday には weekday が必要です")
+        else:
+            weekday = WEEKDAYS.get(str(data["weekday"]).strip().lower())
+
+            if weekday is None:
+                errors.append("weekday は monday から sunday で指定してください")
+
+    adjustment = require_text(data, "business_day_adjustment", errors).lower()
+
+    if adjustment and adjustment not in BUSINESS_DAY_ADJUSTMENTS:
+        errors.append("business_day_adjustment は none / previous / next のいずれかです")
 
     if "enabled" not in data or data["enabled"] is None:
         enabled = True
@@ -370,9 +414,10 @@ def parse_routine(path: Path):
         recurrence=recurrence,
         weekday=weekday,
         day=day,
+        ordinal=ordinal,
+        business_day_adjustment=adjustment,
         priority=priority,
         estimate=estimate,
-        generate_before_days=horizon,
         enabled=enabled,
         children=children,
         body=body,
@@ -411,37 +456,152 @@ def load_routines(routines_dir: Path):
     return routines, errors
 
 
-def occurs_on(routine: Routine, day: date) -> bool:
-    if routine.recurrence == "daily":
+def month_last_day(year: int, month: int) -> int:
+    return calendar.monthrange(year, month)[1]
+
+
+def next_month(year: int, month: int) -> tuple[int, int]:
+    if month == 12:
+        return year + 1, 1
+
+    return year, month + 1
+
+
+def nth_weekday_in_month(year: int, month: int, ordinal: int, weekday: int) -> date:
+    last = month_last_day(year, month)
+    matches = [date(year, month, day) for day in range(1, last + 1) if date(year, month, day).weekday() == weekday]
+
+    if not matches:
+        raise ValueError(f"{year}-{month} に weekday={weekday} がありません")
+
+    if ordinal <= len(matches):
+        return matches[ordinal - 1]
+
+    return matches[-1]
+
+
+def nominal_date_in_month(routine: Routine, year: int, month: int) -> date:
+    if routine.recurrence == "monthly_day":
+        return date(year, month, min(routine.day, month_last_day(year, month)))
+
+    if routine.recurrence == "monthly_nth_weekday":
+        return nth_weekday_in_month(year, month, routine.ordinal, routine.weekday)
+
+    raise ValueError("nominal_date_in_month は monthly 系のみ対応します")
+
+
+def is_non_business_day(day: date) -> bool:
+    if day.weekday() >= 5:
         return True
 
-    if routine.recurrence == "weekdays":
-        return day.weekday() < 5
+    if jpholiday is None:
+        raise RuntimeError("jpholiday がインストールされていません。requirements.txt をインストールしてください")
 
+    return jpholiday.is_holiday(day)
+
+
+def adjust_business_day(nominal: date, adjustment: str) -> date:
+    if adjustment == "none":
+        return nominal
+
+    step = -1 if adjustment == "previous" else 1
+    adjusted = nominal
+
+    for _ in range(MAX_BUSINESS_DAY_SHIFT):
+        if not is_non_business_day(adjusted):
+            return adjusted
+
+        adjusted += timedelta(days=step)
+
+    raise ValueError(f"営業日補正が {MAX_BUSINESS_DAY_SHIFT} 日以内に収まりません: {nominal.isoformat()}")
+
+
+def next_weekly_nominal(previous: date, weekday: int) -> date:
+    delta = (weekday - previous.weekday()) % 7
+
+    if delta == 0:
+        delta = 7
+
+    return previous + timedelta(days=delta)
+
+
+def next_nominal_date(routine: Routine, previous: date) -> date:
     if routine.recurrence == "weekly":
-        return day.weekday() == routine.weekday
+        return next_weekly_nominal(previous, routine.weekday)
 
-    last_day = calendar.monthrange(day.year, day.month)[1]
-    return day.day == min(routine.day, last_day)
+    year, month = next_month(previous.year, previous.month)
+    return nominal_date_in_month(routine, year, month)
 
 
-def iter_occurrences(routine: Routine, today: date):
-    last = today + timedelta(days=routine.generate_before_days)
-    current = today
+def initial_nominal_date(routine: Routine, today: date) -> date | None:
+    if routine.recurrence == "weekly":
+        delta = (routine.weekday - today.weekday()) % 7
+        candidate = today + timedelta(days=delta)
 
-    while current <= last:
-        if occurs_on(routine, current):
-            yield current
+        while True:
+            actual = adjust_business_day(candidate, routine.business_day_adjustment)
 
-        current += timedelta(days=1)
+            if actual >= today:
+                return candidate
+
+            candidate += timedelta(days=7)
+
+    year, month = today.year, today.month
+
+    for _ in range(240):
+        nominal = nominal_date_in_month(routine, year, month)
+        actual = adjust_business_day(nominal, routine.business_day_adjustment)
+
+        if actual >= today:
+            return nominal
+
+        year, month = next_month(year, month)
+
+    return None
+
+
+def select_occurrence(
+    routine: Routine,
+    existing: dict,
+    parents: dict[str, list[tuple[date, str, Path]]],
+    today: date,
+) -> date | None:
+    entries = parents.get(routine.id, [])
+
+    if not entries:
+        nominal = initial_nominal_date(routine, today)
+
+        if nominal is None:
+            return None
+
+        key = (routine.id, nominal.isoformat())
+
+        if key in existing:
+            return None
+
+        return nominal
+
+    if any(status != "done" for _d, status, _p in entries):
+        return None
+
+    latest_date, _latest_status, _path = max(entries, key=lambda item: item[0])
+
+    nominal = next_nominal_date(routine, latest_date)
+    key = (routine.id, nominal.isoformat())
+
+    if key in existing:
+        return None
+
+    return nominal
 
 
 def index_existing(items_dir: Path):
     found = {}
+    parents: dict[str, list[tuple[date, str, Path]]] = {}
     errors = []
 
     if not items_dir.exists():
-        return found, errors
+        return found, parents, errors
 
     for path in sorted(items_dir.rglob("*.md")):
         try:
@@ -470,7 +630,19 @@ def index_existing(items_dir: Path):
 
         found[key] = path
 
-    return found, errors
+        if "/" in source_id:
+            continue
+
+        parsed_date = parse_date(routine_date)
+
+        if parsed_date is None:
+            errors.append(f"{path.name}: routine_date が不正です")
+            continue
+
+        status = str(data.get("status") or "todo").strip()
+        parents.setdefault(source_id, []).append((parsed_date, status, path))
+
+    return found, parents, errors
 
 
 def occurrence_path(routine_dir: Path, routine_date: date, titles: list[str]) -> Path:
@@ -491,7 +663,8 @@ def task_link(tasks_dir: Path, file_path: Path, title: str) -> str:
 def render_task(
     title: str,
     project: str,
-    routine_date: date,
+    nominal_date: date,
+    actual_date: date,
     priority: str,
     estimate: str,
     parent_link: str,
@@ -504,8 +677,8 @@ def render_task(
         f"title: {yaml_scalar(title)}",
         f"project: {yaml_scalar(project)}",
         "status: todo",
-        f"start: {routine_date.isoformat()}",
-        f"end: {routine_date.isoformat()}",
+        f"start: {actual_date.isoformat()}",
+        f"end: {actual_date.isoformat()}",
         optional_field("priority", priority),
         optional_field("estimate", estimate),
     ]
@@ -526,7 +699,7 @@ def render_task(
             "",
             "source_type: routine",
             f"source_id: {yaml_scalar(source_id)}",
-            f"routine_date: {routine_date.isoformat()}",
+            f"routine_date: {nominal_date.isoformat()}",
             "---",
         ]
     )
@@ -702,6 +875,13 @@ def _reserve_path(path: Path, key, existing_paths: dict, errors: list[str], labe
     return True
 
 
+def _ensure_jpholiday(routines: list[Routine], errors: list[str]):
+    needs_jp = any(r.business_day_adjustment != "none" for r in routines)
+
+    if needs_jp and jpholiday is None:
+        errors.append("jpholiday がインストールされていません。py -m pip install -r requirements.txt を実行してください")
+
+
 def generate(tasks_dir: Path, today: date, dry_run: bool = False) -> GenerateResult:
     routines_dir = tasks_dir / "routines"
     items_dir = tasks_dir / "items"
@@ -711,7 +891,8 @@ def generate(tasks_dir: Path, today: date, dry_run: bool = False) -> GenerateRes
 
     routines, routine_errors = load_routines(routines_dir)
     result.errors.extend(routine_errors)
-    existing, index_errors = index_existing(items_dir)
+    _ensure_jpholiday(routines, result.errors)
+    existing, parents, index_errors = index_existing(items_dir)
     result.errors.extend(index_errors)
 
     if result.errors:
@@ -726,13 +907,30 @@ def generate(tasks_dir: Path, today: date, dry_run: bool = False) -> GenerateRes
             result.disabled.append(routine.id)
             continue
 
-        for routine_date in iter_occurrences(routine, today):
-            date_text = routine_date.isoformat()
+        occurrences: list[date] = []
+        nominal_date = select_occurrence(routine, existing, parents, today)
+
+        if nominal_date is not None:
+            occurrences.append(nominal_date)
+        else:
+            open_dates = sorted(
+                {entry_date for entry_date, status, _path in parents.get(routine.id, []) if status != "done"}
+            )
+            occurrences.extend(open_dates)
+
+        for nominal_date in occurrences:
+            try:
+                actual_date = adjust_business_day(nominal_date, routine.business_day_adjustment)
+            except (RuntimeError, ValueError) as exc:
+                result.errors.append(f"{routine.id}: {exc}")
+                continue
+
+            date_text = nominal_date.isoformat()
             parent_key = (routine.id, date_text)
             parent_existed = parent_key in existing
             parent_path = existing.get(parent_key) or occurrence_path(
                 routine_dir,
-                routine_date,
+                nominal_date,
                 [routine.title],
             )
 
@@ -753,7 +951,7 @@ def generate(tasks_dir: Path, today: date, dry_run: bool = False) -> GenerateRes
                 child_existed = child_key in existing
                 child_path = existing.get(child_key) or occurrence_path(
                     routine_dir,
-                    routine_date,
+                    nominal_date,
                     [routine.title, child.title],
                 )
 
@@ -798,7 +996,8 @@ def generate(tasks_dir: Path, today: date, dry_run: bool = False) -> GenerateRes
                         render_task(
                             title=routine.title,
                             project=routine.project,
-                            routine_date=routine_date,
+                            nominal_date=nominal_date,
+                            actual_date=actual_date,
                             priority=routine.priority,
                             estimate=routine.estimate,
                             parent_link="",
@@ -825,7 +1024,8 @@ def generate(tasks_dir: Path, today: date, dry_run: bool = False) -> GenerateRes
                         render_task(
                             title=child.title,
                             project=routine.project,
-                            routine_date=routine_date,
+                            nominal_date=nominal_date,
+                            actual_date=actual_date,
                             priority=child.priority,
                             estimate=child.estimate,
                             parent_link=parent_link,

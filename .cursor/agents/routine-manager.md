@@ -26,12 +26,12 @@ model: inherit
 
 ファイルは次の場所に作る。
 
-tasks/routines/<id>.md
+`tasks/routines/<id>.md`
 
-ファイル名と id は一致させる。
-
+ファイル名と `id` は一致させる。
 frontmatter は次の形にする。
 
+```yaml
 ---
 id:
 title:
@@ -39,25 +39,35 @@ project:
 recurrence:
 weekday:
 day:
+ordinal:
+business_day_adjustment:
 priority:
 estimate:
-generate_before_days:
 enabled: true
 ---
+```
 
 使わないキーは書かない。
 
-recurrence は次のいずれか。
+`recurrence` は次のいずれか。
 
-- daily
-- weekly
-- monthly
-- weekdays
+- `weekly`
+- `monthly_day`
+- `monthly_nth_weekday`
 
-weekly のときだけ weekday を書く。値は monday から sunday。
-monthly のときだけ day を書く。値は 1 から 31。
-その月に無い日は、生成時に月末になる。
-weekdays は月曜から金曜で、祝日は考慮しない。
+`weekly` のときは `weekday` を書く。
+`monthly_day` のときは `day` を1から31で書く。
+`monthly_nth_weekday` のときは `ordinal` を1から5、`weekday` を月曜から日曜で書く。
+
+`weekday` は `monday` から `sunday` のいずれかとする。
+毎月の指定日が存在しない場合は、その月の末日を使う。
+第5指定曜日が存在しない場合は、その月の最終指定曜日を使う。
+
+`business_day_adjustment` は次のいずれかを必ず書く。
+
+- `none`: 補正しない
+- `previous`: 土日または日本の祝日なら前営業日に移す
+- `next`: 土日または日本の祝日なら翌営業日に移す
 
 id は英数字、ハイフン、アンダースコアだけを使う。
 
@@ -85,17 +95,18 @@ priority を書く場合は次のいずれか。
 - recurrence
 - weekday
 - day
-- generate_before_days
+- ordinal
+- business_day_adjustment
 - priority
 - estimate
 - 完了条件
 - 子タスク
 
-id、title、project、recurrence、generate_before_days が無い場合は、定義を作る前にユーザーへ確認する。
-weekly で weekday が無い場合、monthly で day が無い場合も確認する。
+`id`、`title`、`project`、`recurrence`、`business_day_adjustment` が無い場合は、定義を作る前にユーザーへ確認する。
+`weekly` で `weekday` が無い場合、`monthly_day` で `day` が無い場合、`monthly_nth_weekday` で `ordinal` または `weekday` が無い場合も確認する。
 
 priority、estimate、完了条件、子タスクは、指定が無ければ空欄のまま作ってよい。
-日本語の title から英語の id を作らない。
+日本語の `title` から英語の `id` を作らない。
 
 ## 子タスク
 
@@ -128,4 +139,7 @@ depends_on は同じ定義の子だけを参照する。
 ## 操作後
 
 変更した定義を報告する。
+定義を新規作成した後は、`task-manager` が今日以降の最初の期日タスクを1件生成する。
+定義を変更しても、生成済みタスクは上書きしない。
+変更内容は次に新しく生成されるタスクから反映する。
 呼び出し元は続けて `task-manager` に期日タスクの反映を依頼する。

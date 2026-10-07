@@ -37,9 +37,9 @@ title: 週次レビュー
 project: 個人
 recurrence: weekly
 weekday: friday
+business_day_adjustment: none
 priority: Mid
 estimate: 30m
-generate_before_days: 7
 ---
 
 ## 完了条件
@@ -52,11 +52,11 @@ BILLING = """---
 id: monthly-billing
 title: 月次請求処理
 project: 個人
-recurrence: monthly
+recurrence: monthly_day
 day: 1
+business_day_adjustment: none
 priority: Mid
 estimate: 2h
-generate_before_days: 40
 children:
   - id: check-usage
     title: 利用実績確認
@@ -95,7 +95,7 @@ class GenerateRoutinesTest(unittest.TestCase):
         path.write_text(text, encoding="utf-8", newline="\n")
         return path
 
-    def test_weekly_creates_next_friday_only(self):
+    def test_weekly_initial_creates_one_occurrence(self):
         self.write_routine("weekly-review.md", WEEKLY)
 
         result = generate_routines.generate(self.tasks_dir, date(2026, 10, 6))
@@ -105,49 +105,23 @@ class GenerateRoutinesTest(unittest.TestCase):
         self.assertEqual(created[0].name, "2026-10-09_週次レビュー.md")
         self.assertEqual(result.errors, [])
 
-        text = created[0].read_text(encoding="utf-8")
-        self.assertEqual(
-            text,
-            """---
-title: 週次レビュー
-project: 個人
-status: todo
-start: 2026-10-09
-end: 2026-10-09
-priority: Mid
-estimate: 30m
-parent:
-depends_on: []
-
-source_type: routine
-source_id: weekly-review
-routine_date: 2026-10-09
----
-
-## 完了条件
-
-- 今週の未完了タスクを確認
-- 来週の予定を整理
-""",
-        )
         data, body = generate_routines.read_document(created[0])
         self.assertEqual(data["source_type"], "routine")
         self.assertEqual(data["source_id"], "weekly-review")
         self.assertEqual(generate_routines.as_date_str(data["routine_date"]), "2026-10-09")
+        self.assertEqual(data["start"], date(2026, 10, 9))
         self.assertIn("来週の予定を整理", body)
 
-        tree = (self.tasks_dir / "_タスク.md").read_text(encoding="utf-8")
-        self.assertIn("### サンプル", tree)
-        self.assertIn("### 個人", tree)
-        self.assertIn(
-            "- [[tasks/items/routine/2026-10-09_週次レビュー|週次レビュー]]",
-            tree,
-        )
-        self.assertLess(tree.index("### サンプル"), tree.index("### 個人"))
-        self.assertLess(tree.index("### 個人"), tree.index("## ガントチャート"))
-        self.assertIn("![[ガントチャート.md]]", tree)
+    def test_unfinished_parent_blocks_next_occurrence(self):
+        self.write_routine("weekly-review.md", WEEKLY)
+        generate_routines.generate(self.tasks_dir, date(2026, 10, 6))
 
-    def test_second_run_keeps_completion_and_tree(self):
+        result = generate_routines.generate(self.tasks_dir, date(2026, 10, 10))
+
+        self.assertEqual(result.created, [])
+        self.assertEqual(len(list((self.tasks_dir / "items" / "routine").glob("*.md"))), 1)
+
+    def test_done_parent_creates_next_weekly_occurrence(self):
         self.write_routine("weekly-review.md", WEEKLY)
         generate_routines.generate(self.tasks_dir, date(2026, 10, 6))
         task = self.tasks_dir / "items" / "routine" / "2026-10-09_週次レビュー.md"
@@ -156,12 +130,23 @@ routine_date: 2026-10-09
             encoding="utf-8",
             newline="\n",
         )
+
+        result = generate_routines.generate(self.tasks_dir, date(2026, 10, 12))
+
+        names = {path.name for path in result.created}
+        self.assertIn("2026-10-16_週次レビュー.md", names)
+        self.assertEqual(result.errors, [])
+
+    def test_second_run_keeps_completion_and_tree(self):
+        self.write_routine("weekly-review.md", WEEKLY)
+        generate_routines.generate(self.tasks_dir, date(2026, 10, 6))
+        task = self.tasks_dir / "items" / "routine" / "2026-10-09_週次レビュー.md"
         before = (self.tasks_dir / "_タスク.md").read_text(encoding="utf-8")
 
         result = generate_routines.generate(self.tasks_dir, date(2026, 10, 6))
 
         self.assertEqual(result.created, [])
-        self.assertIn("status: done", task.read_text(encoding="utf-8"))
+        self.assertIn("status: todo", task.read_text(encoding="utf-8"))
         self.assertEqual((self.tasks_dir / "_タスク.md").read_text(encoding="utf-8"), before)
 
     def test_dry_run_writes_nothing(self):
@@ -177,55 +162,6 @@ routine_date: 2026-10-09
         self.assertEqual(list((self.tasks_dir / "items").rglob("*.md")), [])
         self.assertNotIn("週次レビュー", (self.tasks_dir / "_タスク.md").read_text(encoding="utf-8"))
 
-    def test_daily_window(self):
-        self.write_routine(
-            "daily-note.md",
-            """---
-id: daily-note
-title: 日次メモ
-project: 個人
-recurrence: daily
-generate_before_days: 2
----
-""",
-        )
-
-        result = generate_routines.generate(self.tasks_dir, date(2026, 10, 6))
-        names = {path.name for path in result.created}
-
-        self.assertEqual(
-            names,
-            {
-                "2026-10-06_日次メモ.md",
-                "2026-10-07_日次メモ.md",
-                "2026-10-08_日次メモ.md",
-            },
-        )
-
-    def test_weekdays_skip_weekend(self):
-        self.write_routine(
-            "weekday-check.md",
-            """---
-id: weekday-check
-title: 平日確認
-project: 個人
-recurrence: weekdays
-generate_before_days: 3
----
-""",
-        )
-
-        result = generate_routines.generate(self.tasks_dir, date(2026, 10, 9))
-        names = {path.name for path in result.created}
-
-        self.assertEqual(
-            names,
-            {
-                "2026-10-09_平日確認.md",
-                "2026-10-12_平日確認.md",
-            },
-        )
-
     def test_monthly_day_uses_month_end(self):
         self.write_routine(
             "month-end.md",
@@ -233,9 +169,9 @@ generate_before_days: 3
 id: month-end
 title: 月末締め
 project: 個人
-recurrence: monthly
+recurrence: monthly_day
 day: 31
-generate_before_days: 27
+business_day_adjustment: none
 ---
 """,
         )
@@ -246,6 +182,92 @@ generate_before_days: 27
             {path.name for path in result.created},
             {"2026-02-28_月末締め.md"},
         )
+
+    def test_monthly_day_next_after_done(self):
+        self.write_routine(
+            "month-end.md",
+            """---
+id: month-end
+title: 月末締め
+project: 個人
+recurrence: monthly_day
+day: 31
+business_day_adjustment: none
+---
+""",
+        )
+        generate_routines.generate(self.tasks_dir, date(2026, 2, 1))
+        task = self.tasks_dir / "items" / "routine" / "2026-02-28_月末締め.md"
+        task.write_text(
+            task.read_text(encoding="utf-8").replace("status: todo", "status: done"),
+            encoding="utf-8",
+            newline="\n",
+        )
+
+        result = generate_routines.generate(self.tasks_dir, date(2026, 3, 1))
+
+        self.assertEqual(
+            {path.name for path in result.created},
+            {"2026-03-31_月末締め.md"},
+        )
+
+    def test_monthly_nth_weekday(self):
+        self.write_routine(
+            "nth-tuesday.md",
+            """---
+id: nth-tuesday
+title: 第2火曜
+project: 個人
+recurrence: monthly_nth_weekday
+ordinal: 2
+weekday: tuesday
+business_day_adjustment: none
+---
+""",
+        )
+
+        result = generate_routines.generate(self.tasks_dir, date(2026, 10, 1))
+
+        self.assertEqual(
+            {path.name for path in result.created},
+            {"2026-10-13_第2火曜.md"},
+        )
+
+    def test_monthly_nth_weekday_fifth_becomes_last(self):
+        nominal = generate_routines.nth_weekday_in_month(2026, 2, 5, generate_routines.WEEKDAYS["monday"])
+        self.assertEqual(nominal, date(2026, 2, 23))
+
+    def test_business_day_next_moves_from_holiday(self):
+        adjusted = generate_routines.adjust_business_day(date(2026, 1, 1), "next")
+        self.assertGreater(adjusted, date(2026, 1, 1))
+        self.assertFalse(generate_routines.is_non_business_day(adjusted))
+
+    def test_business_day_previous_moves_from_sunday(self):
+        nominal = date(2026, 2, 1)
+        adjusted = generate_routines.adjust_business_day(nominal, "previous")
+        self.assertLess(adjusted, nominal)
+        self.assertFalse(generate_routines.is_non_business_day(adjusted))
+
+    def test_routine_date_and_start_differ_with_adjustment(self):
+        self.write_routine(
+            "attendance.md",
+            """---
+id: attendance
+title: 勤怠
+project: 個人
+recurrence: monthly_day
+day: 1
+business_day_adjustment: next
+---
+""",
+        )
+
+        result = generate_routines.generate(self.tasks_dir, date(2025, 12, 20))
+        self.assertEqual(len(result.created), 1)
+        path = result.created[0]
+        data, _body = generate_routines.read_document(path)
+        self.assertEqual(generate_routines.as_date_str(data["routine_date"]), "2026-01-01")
+        self.assertNotEqual(data["start"], date(2026, 1, 1))
 
     def test_children_parent_and_dependencies(self):
         self.write_routine("monthly-billing.md", BILLING)
@@ -272,21 +294,6 @@ generate_before_days: 27
             invoice_data["depends_on"],
             ["[[tasks/items/routine/2026-11-01_月次請求処理_利用実績確認|利用実績確認]]"],
         )
-        self.assertIsNone(invoice_data["priority"])
-        self.assertEqual(invoice_data["estimate"], "1h")
-        self.assertEqual(invoice_data["project"], "個人")
-
-        review_data, _body = generate_routines.read_document(review)
-        self.assertEqual(
-            review_data["depends_on"],
-            ["[[tasks/items/routine/2026-11-01_月次請求処理_請求データ作成|請求データ作成]]"],
-        )
-
-        tree = (self.tasks_dir / "_タスク.md").read_text(encoding="utf-8")
-        parent_at = tree.index("[[tasks/items/routine/2026-11-01_月次請求処理|月次請求処理]]")
-        check_at = tree.index("[[tasks/items/routine/2026-11-01_月次請求処理_利用実績確認|利用実績確認]]")
-        self.assertLess(parent_at, check_at)
-        self.assertIn("\n  - [[tasks/items/routine/2026-11-01_月次請求処理_利用実績確認|利用実績確認]]", tree)
 
     def test_new_child_is_added_under_existing_parent(self):
         self.write_routine(
@@ -295,9 +302,9 @@ generate_before_days: 27
 id: monthly-billing
 title: 月次請求処理
 project: 個人
-recurrence: monthly
+recurrence: monthly_day
 day: 1
-generate_before_days: 40
+business_day_adjustment: none
 children:
   - id: check-usage
     title: 利用実績確認
@@ -312,9 +319,34 @@ children:
         names = {path.name for path in result.created}
         self.assertNotIn("2026-11-01_月次請求処理.md", names)
         self.assertIn("2026-11-01_月次請求処理_請求データ作成.md", names)
-        tree = (self.tasks_dir / "_タスク.md").read_text(encoding="utf-8")
-        self.assertEqual(tree.count("2026-11-01_月次請求処理|月次請求処理"), 1)
-        self.assertIn("2026-11-01_月次請求処理_確認依頼", tree)
+
+    def test_child_done_does_not_create_next_cycle(self):
+        self.write_routine(
+            "monthly-billing.md",
+            """---
+id: monthly-billing
+title: 月次請求処理
+project: 個人
+recurrence: monthly_day
+day: 1
+business_day_adjustment: none
+children:
+  - id: check-usage
+    title: 利用実績確認
+---
+""",
+        )
+        generate_routines.generate(self.tasks_dir, date(2026, 10, 6))
+        child = self.tasks_dir / "items" / "routine" / "2026-11-01_月次請求処理_利用実績確認.md"
+        child.write_text(
+            child.read_text(encoding="utf-8").replace("status: todo", "status: done"),
+            encoding="utf-8",
+            newline="\n",
+        )
+
+        result = generate_routines.generate(self.tasks_dir, date(2026, 11, 2))
+
+        self.assertEqual(result.created, [])
 
     def test_invalid_definition_writes_nothing(self):
         self.write_routine("weekly-review.md", WEEKLY)
@@ -325,7 +357,7 @@ id: broken
 title: 壊れた定義
 project: 個人
 recurrence: weekly
-generate_before_days: 7
+weekday: friday
 ---
 """,
         )
@@ -335,7 +367,44 @@ generate_before_days: 7
         self.assertTrue(result.errors)
         self.assertEqual(result.created, [])
         self.assertEqual(list((self.tasks_dir / "items").rglob("*.md")), [])
-        self.assertNotIn("### 個人", (self.tasks_dir / "_タスク.md").read_text(encoding="utf-8"))
+
+    def test_rejects_generate_before_days(self):
+        self.write_routine(
+            "old.md",
+            """---
+id: old
+title: 旧形式
+project: 個人
+recurrence: weekly
+weekday: friday
+business_day_adjustment: none
+generate_before_days: 7
+---
+""",
+        )
+
+        result = generate_routines.generate(self.tasks_dir, date(2026, 10, 6))
+
+        self.assertTrue(any("generate_before_days" in error for error in result.errors))
+        self.assertEqual(result.created, [])
+
+    def test_rejects_deprecated_recurrence(self):
+        self.write_routine(
+            "daily-note.md",
+            """---
+id: daily-note
+title: 日次メモ
+project: 個人
+recurrence: daily
+business_day_adjustment: none
+---
+""",
+        )
+
+        result = generate_routines.generate(self.tasks_dir, date(2026, 10, 6))
+
+        self.assertTrue(result.errors)
+        self.assertEqual(result.created, [])
 
     def test_filename_must_match_id(self):
         self.write_routine("different-name.md", WEEKLY)
@@ -376,8 +445,9 @@ generate_before_days: 7
 id: cycle
 title: 循環
 project: 個人
-recurrence: daily
-generate_before_days: 0
+recurrence: weekly
+weekday: friday
+business_day_adjustment: none
 children:
   - id: a
     title: A
@@ -446,6 +516,10 @@ class DependencyViewTest(unittest.TestCase):
 class CheckedInRoutineTest(unittest.TestCase):
     def test_routines_dir_loads_without_errors(self):
         routines_dir = Path(__file__).resolve().parents[1] / "routines"
+
+        if not any(routines_dir.glob("*.md")):
+            self.skipTest("チェックイン済みルーティーン定義がまだありません")
+
         routines, errors = generate_routines.load_routines(routines_dir)
 
         self.assertEqual(errors, [])

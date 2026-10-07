@@ -32,7 +32,9 @@ tasks/items/<project>/<title>.md
 
 ルーティーンから生成されたタスクは例外で、次の場所にある。
 
-tasks/items/routine/{routine_date}_{title}.md
+`tasks/items/routine/{routine_date}_{title}.md`
+
+`routine_date` は休日補正前の論理期日であり、実際の期日はfrontmatterの `start` と `end` を参照する。
 
 このファイルは `tasks/_scripts/generate_routines.py` が作る。
 ファイル名と title は一致しなくてよい。
@@ -40,7 +42,7 @@ tasks/items/routine/{routine_date}_{title}.md
 
 生成済みタスクも通常の個人タスクとして扱う。
 ユーザーが指定した status、start、end、priority、estimate、本文は更新してよい。
-source_type、source_id、routine_date は変えない。
+source_type、source_id、routine_date、parent は変えない。
 
 frontmatterは基本的に以下を使用する。
 
@@ -162,8 +164,17 @@ GitHubの番号は `PR4` や `Issue12` のように書く。
 
 ## ルーティーン
 
-ルーティーン定義の変更後や期日タスクの生成を依頼されたときは、
+ルーティーン定義の変更後、期日タスクの生成依頼時、またはルーティーンタスクの完了反映後は、
 `tasks/_scripts/generate_routines.py` を実行する。
+
+生成済みルーティーンタスクの `source_type`、`source_id`、`routine_date`、`parent` は変更しない。
+`routine_date` は休日補正前の論理期日である。
+`start` と `end` は休日補正後の実期日である。
+
+ユーザーが親ルーティーンタスクの完了を指示した場合だけ `status: done` にする。
+完了反映後に生成スクリプトを実行し、次の周期の親タスクと子タスクを1件分だけ生成する。
+子タスクの完了だけでは次の周期を生成しない。
+未完了の親タスクがある場合も次の周期を生成しない。
 
 ## 操作後
 
