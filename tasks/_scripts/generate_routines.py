@@ -694,6 +694,8 @@ def render_task(
     else:
         lines.append("depends_on: []")
 
+    lines.append("related: []")
+
     lines.extend(
         [
             "",

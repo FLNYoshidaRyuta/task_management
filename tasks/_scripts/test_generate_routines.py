@@ -108,6 +108,7 @@ class GenerateRoutinesTest(unittest.TestCase):
         data, body = generate_routines.read_document(created[0])
         self.assertEqual(data["source_type"], "routine")
         self.assertEqual(data["source_id"], "weekly-review")
+        self.assertEqual(data.get("related"), [])
         self.assertEqual(generate_routines.as_date_str(data["routine_date"]), "2026-10-09")
         self.assertEqual(data["start"], date(2026, 10, 9))
         self.assertIn("来週の予定を整理", body)

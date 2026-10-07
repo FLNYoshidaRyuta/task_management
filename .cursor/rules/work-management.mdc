@@ -37,6 +37,7 @@ alwaysApply: true
 - `sources/**`
 - `tasks/ガントチャート.md`
 - `tasks/依存関係図.md`
+- `tasks/関連図.md`
 - `tasks/タスクビュー.base`
 - `.env`
 
@@ -49,9 +50,10 @@ alwaysApply: true
 
 - `tasks/ガントチャート.md`
 - `tasks/依存関係図.md`
+- `tasks/関連図.md`
 - `tasks/タスクビュー.base`
 
-ガントチャートと依存関係図は、
+ガントチャート、依存関係図、関連図は、
 
 `tasks/_scripts/generate_views.py`
 
@@ -173,6 +175,16 @@ Backlog上の以下の値を、
 同じ `source_type` と `source_id` は、同一の外部情報を指す。
 
 外部サービスに書かれていない事実を推測して追加しない。
+
+# 関連タスク
+
+`related` は個人タスク同士の「一緒に見る」関係である。`depends_on` は作業順序であり、混同しない。
+
+関連づけは人間が判断し、`task-manager` が両方のタスクの `related` に Wikilink を書く。片側だけに書かない。
+
+関連を付けても、相手タスクの `status`、`priority`、`start`、`end`、`estimate`、`source_type`、`source_id` はコピーしない。
+
+`tasks/関連図.md` は `generate_views.py` が `related` から生成する派生ビューである。
 
 # ルーティーン
 

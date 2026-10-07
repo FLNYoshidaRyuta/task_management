@@ -22,6 +22,10 @@ GitHub と Backlog のキャッシュを個人タスクと照合し、ユーザ�
 
 外部サービスの status、priority、dueDate、estimatedHours を、個人タスクの status、priority、start、end、estimate へコピーしない。
 
+照合は各タスクの `source_type` と `source_id` だけを使う。Backlog 課題本文の GitHub URL や、別ソース同士の同一作業は自動判定しない。
+
+個人タスク同士を関連づけるかは Inbox の対象外である。ユーザーが関連だと判断したときは、`task-manager` に指示する。
+
 ## Procedure
 
 ### 1. Fetch

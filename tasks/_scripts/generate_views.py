@@ -123,6 +123,111 @@ def render_dependency(tasks, vault_root: Path):
     return "\n".join(dependency)
 
 
+def resolve_task_path(value, path_to_id, title_to_ids):
+    path, label = parse_dependency_ref(value)
+
+    if path and path in path_to_id:
+        return path
+
+    ids = title_to_ids.get(label, [])
+
+    if len(ids) == 1:
+        node_id = ids[0]
+        for candidate, candidate_id in path_to_id.items():
+            if candidate_id == node_id:
+                return candidate
+
+    return None
+
+
+def render_related(tasks, vault_root: Path):
+    path_to_id = {}
+    title_to_ids = {}
+    path_to_title = {}
+
+    for index, task in enumerate(tasks):
+        node_id = f"T{index}"
+        path = task_link_path(task, vault_root)
+        title = as_text(task.get("title"))
+
+        path_to_id[path] = node_id
+        path_to_title[path] = title
+        title_to_ids.setdefault(title, []).append(node_id)
+
+    directed = set()
+    inconsistencies = []
+
+    for task in tasks:
+        source_path = task_link_path(task, vault_root)
+
+        for ref in task.get("related", []) or []:
+            target_path = resolve_task_path(ref, path_to_id, title_to_ids)
+
+            if target_path is None:
+                inconsistencies.append(
+                    f"- 解決できないリンク: `{source_path}` の related に {ref!r} がある"
+                )
+                continue
+
+            if target_path == source_path:
+                inconsistencies.append(
+                    f"- 自分自身: `{source_path}` の related に自分自身がある"
+                )
+                continue
+
+            directed.add((source_path, target_path))
+
+    edge_keys = set()
+    for source_path, target_path in directed:
+        edge_keys.add(tuple(sorted([source_path, target_path])))
+
+    for source_path, target_path in directed:
+        if (target_path, source_path) not in directed:
+            inconsistencies.append(
+                f"- 片側だけ: `{source_path}` の related に `{target_path}` がある"
+            )
+
+    lines = ["# 関連図", ""]
+
+    if not edge_keys and not inconsistencies:
+        lines.append("関連タスクはありません。")
+        lines.append("")
+        return "\n".join(lines)
+
+    if edge_keys:
+        participating = sorted({path for key in edge_keys for path in key})
+        local_ids = {path: f"T{index}" for index, path in enumerate(participating)}
+
+        lines.extend(
+            [
+                "```mermaid",
+                "flowchart LR",
+            ]
+        )
+
+        for path in participating:
+            local_id = local_ids[path]
+            lines.append(f'    {local_id}["{mermaid_text(path_to_title[path])}"]')
+
+        for left, right in sorted(edge_keys):
+            lines.append(f"    {local_ids[left]} --- {local_ids[right]}")
+
+        lines.extend(
+            [
+                "```",
+                "",
+            ]
+        )
+
+    if inconsistencies:
+        lines.append("## 不整合")
+        lines.append("")
+        lines.extend(inconsistencies)
+        lines.append("")
+
+    return "\n".join(lines)
+
+
 def main():
     tasks = []
 
@@ -216,6 +321,14 @@ def main():
 
     (TASKS_DIR / "依存関係図.md").write_text(
         dependency,
+        encoding="utf-8",
+        newline="\n",
+    )
+
+    related = render_related(tasks, TASKS_DIR.parent)
+
+    (TASKS_DIR / "関連図.md").write_text(
+        related,
         encoding="utf-8",
         newline="\n",
     )

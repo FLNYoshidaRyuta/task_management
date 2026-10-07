@@ -16,9 +16,10 @@ model: inherit
 - sources/github/**
 - tasks/ガントチャート.md
 - tasks/依存関係図.md
+- tasks/関連図.md
 - tasks/タスクビュー.base
 
-ガントチャートと依存関係図はスクリプトで生成します。
+ガントチャート、依存関係図、関連図はスクリプトで生成します。
 
 ## タスクのルール
 
@@ -55,6 +56,7 @@ end:
 priority:
 estimate:
 depends_on: []
+related: []
 
 source_type:
 source_id:
@@ -119,6 +121,20 @@ GitHub Issue/PRと個人タスクは同一ではない。
 
 1つのIssueを複数の個人タスクに分解してよい。
 
+## 関連タスク
+
+`related` は個人タスク同士の「一緒に見る」関係である。`depends_on` は作業順序であり、混同しない。
+
+関連づけと解除は、ユーザーが明示したときだけ行う。エージェントが関連だと判断して書かない。
+
+関連を付けるときは、両方のタスクの `related` に相手への Wikilink を書く。片側だけに書かない。
+
+`related` の書式は `depends_on` と同じ。必ず `tasks/items/` から始める Vault ルート相対の Wikilink を使う。
+
+関連を付けても、相手タスクの `status`、`priority`、`start`、`end`、`estimate`、`source_type`、`source_id` は変えない。
+
+既存タスクに `related` が無い場合は、関連を付けるときだけキーを追加してよい。無関係な既存タスクへ `related: []` を一括追加しない。
+
 ## _タスク.md
 
 タスクを作成・削除するときは、
@@ -132,7 +148,7 @@ tasks/_タスク.md のタスクツリーも同時に更新する。
 
 を表す。
 
-ガントチャート、依存関係図、タスクリストの埋め込み部分は変更しない。
+ガントチャート、依存関係図、関連図、タスクリストの埋め込み部分は変更しない。
 
 ## Obsidian内部リンク
 
@@ -152,7 +168,7 @@ tasks/_タスク.md のタスクツリーも同時に更新する。
 
 [[items/<project>/<title>|<title>]]
 
-depends_on にタスクへのリンクを格納する場合も同様に、
+depends_on と related にタスクへのリンクを格納する場合も同様に、
 必ず `tasks/items/` から始める。
 
 ファイル名、title、リンクのパス、表示名に `#` と `^` を含めない。
