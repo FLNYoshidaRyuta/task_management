@@ -1,4 +1,5 @@
 ---
+task_id: 12
 title: Instagram画像調整の際にサイズ選択がうまくできない
 project: 改善要望
 status: todo

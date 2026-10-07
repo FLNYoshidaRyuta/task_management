@@ -1,4 +1,5 @@
 ---
+task_id: 37
 title: "[技術負債] まいぷれくん agent-poc リファクタ epic（Phase 1-5）"
 project: agent-poc
 status: todo
@@ -15,4 +16,3 @@ source_id: FutureLinkNetwork/agent-dev#430
 source_url: https://github.com/FutureLinkNetwork/agent-dev/issues/430
 source_updated_at: 2026-09-16T15:24:29Z
 ---
-

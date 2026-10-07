@@ -38,6 +38,7 @@ tasks/items/<project>/<task>.md
 
 ```yaml
 ---
+task_id:
 title:
 project:
 status:
@@ -48,6 +49,8 @@ estimate:
 depends_on: []
 ---
 ```
+
+`task_id` は指示用の通し番号であり、正の整数を `tasks/_scripts/assign_task_ids.py` が付与する。削除後も番号は再利用しない。Obsidian の予約プロパティ `id` は使わない。
 
 一覧・ガント・依存関係図などは、この情報から生成する派生ビューとする。
 

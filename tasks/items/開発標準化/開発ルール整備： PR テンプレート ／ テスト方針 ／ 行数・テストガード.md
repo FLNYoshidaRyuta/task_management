@@ -1,4 +1,5 @@
 ---
+task_id: 39
 title: 開発ルール整備： PR テンプレート ／ テスト方針 ／ 行数・テストガード
 project: 開発標準化
 status: todo
@@ -16,4 +17,3 @@ source_id: FutureLinkNetwork/mypl_pro#1226
 source_url: https://github.com/FutureLinkNetwork/mypl_pro/issues/1226
 source_updated_at: 2026-09-23T11:51:50Z
 ---
-

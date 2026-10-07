@@ -1,4 +1,5 @@
 ---
+task_id: 1
 title: PR4 の Imagick 移行を再適用するために必要な対応
 project: 画質向上
 status: todo
@@ -12,7 +13,6 @@ source_repo: FutureLinkNetwork/089_ImageServer
 source_number: 12
 source_url: https://github.com/FutureLinkNetwork/089_ImageServer/issues/12
 ---
-
 ## 目的
 
 https://github.com/FutureLinkNetwork/089_ImageServer/pull/4 は、画像エンジンを GD から Imagick に変え、キャッシュディレクトリを `/mnt/extra-disk/temp-image` から `/mnt/extra-disk/temp-image-2026` に変える変更である。この変更でメモリと CPU が逼迫したため、https://github.com/FutureLinkNetwork/089_ImageServer/pull/7 で切り戻し済みである。

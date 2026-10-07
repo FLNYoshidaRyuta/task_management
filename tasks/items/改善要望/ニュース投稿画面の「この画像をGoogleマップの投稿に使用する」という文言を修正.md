@@ -1,4 +1,5 @@
 ---
+task_id: 10
 title: ニュース投稿画面の「この画像をGoogleマップの投稿に使用する」という文言を修正
 project: 改善要望
 status: todo
@@ -14,7 +15,6 @@ source_id: MYPL-4222
 source_url: https://fln2000.backlog.com/view/MYPL-4222
 source_updated_at: 2026-10-06T02:25:34Z
 ---
-
 実体とそろってないので修正
 
 ## Google Chat

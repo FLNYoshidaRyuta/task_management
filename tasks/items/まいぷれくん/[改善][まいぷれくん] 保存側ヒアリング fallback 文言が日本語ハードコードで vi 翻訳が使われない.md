@@ -1,4 +1,5 @@
 ---
+task_id: 21
 title: "[改善][まいぷれくん] 保存側ヒアリング fallback 文言が日本語ハードコードで vi 翻訳が使われない"
 project: まいぷれくん
 status: todo
@@ -16,4 +17,3 @@ source_id: FutureLinkNetwork/mypl_pro#986
 source_url: https://github.com/FutureLinkNetwork/mypl_pro/issues/986
 source_updated_at: 2026-09-27T10:16:16Z
 ---
-

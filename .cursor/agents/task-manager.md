@@ -64,6 +64,10 @@ source_url:
 source_updated_at:
 ---
 
+`task_id` は採番スクリプトが付ける。作成時に自分で書かない。
+既存タスクを書き直すときは、既にある `task_id` 行を残し、値を変えない。
+frontmatter に `id` は書かない。Obsidian の予約プロパティと競合する。
+
 statusは以下のみ。
 
 - todo
@@ -205,6 +209,8 @@ GitHubの番号は `PR4` や `Issue12` のように書く。
 タスクを変更した後は、必ず次の順で実行する。
 
 py .\tasks\_scripts\generate_routines.py
+
+py .\tasks\_scripts\assign_task_ids.py
 
 py .\tasks\_scripts\generate_views.py
 

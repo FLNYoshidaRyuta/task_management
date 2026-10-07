@@ -64,6 +64,29 @@ class RelatedViewTest(unittest.TestCase):
         self.assertIn("T0 --- T1", text)
         self.assertNotIn("## 不整合", text)
 
+    def test_related_label_includes_task_id(self):
+        link_a = "[[tasks/items/サンプル/B|B]]"
+        link_b = "[[tasks/items/サンプル/A|A]]"
+        tasks = [
+            self.task(
+                "tasks/items/サンプル/A.md",
+                "A",
+                task_id=12,
+                related=[link_a],
+            ),
+            self.task(
+                "tasks/items/サンプル/B.md",
+                "B",
+                task_id=3,
+                related=[link_b],
+            ),
+        ]
+
+        text = generate_views.render_related(tasks, self.vault)
+
+        self.assertIn('T0["12 A"]', text)
+        self.assertIn('T1["3 B"]', text)
+
     def test_one_sided_related_draws_edge_and_reports_inconsistency(self):
         link = "[[tasks/items/サンプル/B|B]]"
         tasks = [
@@ -178,6 +201,23 @@ class DependencyViewTest(unittest.TestCase):
         self.assertIn('T0["A"]', text)
         self.assertIn('T1["B"]', text)
         self.assertIn("T1 --> T0", text)
+
+    def test_dependency_label_includes_task_id(self):
+        link = "[[tasks/items/サンプル/B|B]]"
+        tasks = [
+            self.task(
+                "tasks/items/サンプル/A.md",
+                "A",
+                task_id=12,
+                depends_on=[link],
+            ),
+            self.task("tasks/items/サンプル/B.md", "B", task_id=3),
+        ]
+
+        text = generate_views.render_dependency(tasks, self.vault)
+
+        self.assertIn('T0["12 A"]', text)
+        self.assertIn('T1["3 B"]', text)
 
     def test_uninvolved_task_is_not_a_node(self):
         link = "[[tasks/items/サンプル/B|B]]"

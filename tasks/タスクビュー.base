@@ -3,6 +3,8 @@ filters:
     - file.inFolder("tasks/items")
     - file.ext == "md"
 properties:
+  task_id:
+    displayName: id
   file.name:
     displayName: タスク
   status:
@@ -27,6 +29,7 @@ views:
       property: project
       direction: ASC
     order:
+      - task_id
       - file.name
       - status
       - source_type
@@ -40,7 +43,8 @@ views:
       - parent
     columnSize:
       file.name: 241
-      note.source_type: 71
+      note.source_type: 89
+      note.start: 45
       note.source_url: 530
   - type: table
     name: 今日
@@ -54,6 +58,7 @@ views:
       property: project
       direction: ASC
     order:
+      - task_id
       - file.name
       - status
       - end
@@ -69,6 +74,7 @@ views:
       property: project
       direction: ASC
     order:
+      - task_id
       - file.name
       - status
       - end

@@ -19,6 +19,11 @@ alwaysApply: true
 
 個人タスクの正本は `tasks/items/**/*.md`。
 
+各タスクの frontmatter `task_id` は指示用の通し番号である。
+「タスク 12」は `task_id` が 12 の個人タスクを指す。
+Obsidian の予約プロパティ `id` は使わない。
+採番は `tasks/_scripts/assign_task_ids.py` が行う。
+
 タスクの階層と作業順序は `tasks/_タスク.md` にある。
 
 # 編集ルール
@@ -39,6 +44,7 @@ alwaysApply: true
 - `tasks/依存関係図.md`
 - `tasks/関連図.md`
 - `tasks/タスクビュー.base`
+- `tasks/_config/task-id.json`
 - `.env`
 
 `.env` は秘密情報を含むため、

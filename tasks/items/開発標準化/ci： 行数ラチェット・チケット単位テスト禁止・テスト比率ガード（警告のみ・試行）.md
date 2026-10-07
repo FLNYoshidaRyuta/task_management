@@ -1,4 +1,5 @@
 ---
+task_id: 46
 title: ci： 行数ラチェット・チケット単位テスト禁止・テスト比率ガード（警告のみ・試行）
 project: 開発標準化
 status: todo
@@ -16,4 +17,3 @@ source_id: FutureLinkNetwork/mypl_pro#1228
 source_url: https://github.com/FutureLinkNetwork/mypl_pro/pull/1228
 source_updated_at: 2026-09-18T00:05:21Z
 ---
-

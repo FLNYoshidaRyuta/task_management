@@ -39,6 +39,29 @@ def mermaid_text(value):
     )
 
 
+def task_display_label(task):
+    title = as_text(task.get("title"))
+    raw_id = task.get("task_id", task.get("id"))
+
+    if isinstance(raw_id, bool):
+        return title
+
+    if isinstance(raw_id, int) and raw_id > 0:
+        return f"{raw_id} {title}"
+
+    if isinstance(raw_id, str) and raw_id.strip().isdigit():
+        parsed = int(raw_id.strip())
+
+        if parsed > 0:
+            return f"{parsed} {title}"
+
+    return title
+
+
+def task_mermaid_label(task):
+    return mermaid_text(task_display_label(task))
+
+
 def task_link_path(task, vault_root: Path):
     rel = task["_path"].resolve().relative_to(vault_root.resolve()).as_posix()
 
@@ -90,7 +113,7 @@ def render_dependency(tasks, vault_root: Path):
     for index, task in enumerate(tasks):
         node_id = f"T{index}"
         path = task_link_path(task, vault_root)
-        title = as_text(task.get("title"))
+        title = task_display_label(task)
 
         path_to_id[path] = node_id
         path_to_title[path] = title
@@ -163,7 +186,7 @@ def render_related(tasks, vault_root: Path):
     for index, task in enumerate(tasks):
         node_id = f"T{index}"
         path = task_link_path(task, vault_root)
-        title = as_text(task.get("title"))
+        title = task_display_label(task)
 
         path_to_id[path] = node_id
         path_to_title[path] = title
@@ -300,7 +323,7 @@ def main():
         for task in visible:
             counter += 1
 
-            title = mermaid_text(task.get("title"))
+            title = task_mermaid_label(task)
             start = as_text(task.get("start"))
             end = as_text(task.get("end"))
             status = as_text(task.get("status"))

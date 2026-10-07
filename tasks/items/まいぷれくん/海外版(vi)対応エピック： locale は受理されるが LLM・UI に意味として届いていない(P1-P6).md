@@ -1,4 +1,5 @@
 ---
+task_id: 22
 title: 海外版(vi)対応エピック： locale は受理されるが LLM・UI に意味として届いていない(P1-P6)
 project: まいぷれくん
 status: todo
@@ -16,4 +17,3 @@ source_id: FutureLinkNetwork/mypl_pro#465
 source_url: https://github.com/FutureLinkNetwork/mypl_pro/issues/465
 source_updated_at: 2026-09-27T10:16:17Z
 ---
-

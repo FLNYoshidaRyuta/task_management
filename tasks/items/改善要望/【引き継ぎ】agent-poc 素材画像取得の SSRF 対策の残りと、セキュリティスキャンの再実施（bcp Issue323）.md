@@ -1,4 +1,5 @@
 ---
+task_id: 13
 title: 【引き継ぎ】agent-poc 素材画像取得の SSRF 対策の残りと、セキュリティスキャンの再実施（bcp Issue323）
 project: 改善要望
 status: todo
@@ -14,7 +15,6 @@ source_id: MYPL-4197
 source_url: https://fln2000.backlog.com/view/MYPL-4197
 source_updated_at: 2026-09-29T11:26:40Z
 ---
-
 GitHub issue: https://github.com/FutureLinkNetwork/business-console-pro/issues/323
 資料（脅威モデル・スキャン結果・境界強化の設計と実装計画・ADR 案）: https://github.com/FutureLinkNetwork/agent-dev/tree/docs/agent-poc-security-threat-model
 資料の場所と現状は issue のコメントにまとめています: https://github.com/FutureLinkNetwork/business-console-pro/issues/323#issuecomment-5889014020

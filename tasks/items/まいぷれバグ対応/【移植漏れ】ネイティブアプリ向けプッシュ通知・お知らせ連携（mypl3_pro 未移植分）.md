@@ -1,4 +1,5 @@
 ---
+task_id: 31
 title: 【移植漏れ】ネイティブアプリ向けプッシュ通知・お知らせ連携（mypl3_pro 未移植分）
 project: まいぷれバグ対応
 status: todo
@@ -15,4 +16,3 @@ source_id: FutureLinkNetwork/mypl_pro#1171
 source_url: https://github.com/FutureLinkNetwork/mypl_pro/issues/1171
 source_updated_at: 2026-09-16T07:07:00Z
 ---
-

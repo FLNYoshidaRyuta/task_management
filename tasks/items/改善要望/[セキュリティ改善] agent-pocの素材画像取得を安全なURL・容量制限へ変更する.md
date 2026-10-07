@@ -1,4 +1,5 @@
 ---
+task_id: 14
 title: "[セキュリティ改善] agent-pocの素材画像取得を安全なURL・容量制限へ変更する"
 project: 改善要望
 status: todo
@@ -14,7 +15,6 @@ source_id: FutureLinkNetwork/business-console-pro#323
 source_url: https://github.com/FutureLinkNetwork/business-console-pro/issues/323
 source_updated_at: 2026-09-29T11:08:53Z
 ---
-
 ## 現状と困りごと
 
 初回Codex Security監査 Issue309 で、Business Console Proからagent-pocへ渡した素材画像URLを、agent-pocがdestination検証とresponse byte上限なしでserver-side取得することが確認された。

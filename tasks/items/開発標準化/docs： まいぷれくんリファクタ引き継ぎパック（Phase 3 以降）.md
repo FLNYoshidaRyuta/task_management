@@ -1,4 +1,5 @@
 ---
+task_id: 47
 title: docs： まいぷれくんリファクタ引き継ぎパック（Phase 3 以降）
 project: 開発標準化
 status: todo
@@ -17,4 +18,3 @@ source_id: FutureLinkNetwork/mypl_pro#1230
 source_url: https://github.com/FutureLinkNetwork/mypl_pro/pull/1230
 source_updated_at: 2026-09-15T14:00:29Z
 ---
-
