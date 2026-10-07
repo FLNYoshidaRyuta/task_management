@@ -1,0 +1,635 @@
+﻿[
+  {
+    "source_type": "github_issue",
+    "source_id": "FutureLinkNetwork/mypl_pro#1365",
+    "title": "ニュース投稿画面の「この画像をGoogleマップの投稿に使用する」という文言を修正",
+    "source_url": "https://github.com/FutureLinkNetwork/mypl_pro/issues/1365",
+    "source_updated_at": "2026-10-06T02:25:08Z",
+    "external_state": "open",
+    "linked_tasks": [
+      {
+        "path": "tasks/items/改善要望/ニュース投稿画面の「この画像をGoogleマップの投稿に使用する」という文言を修正（GitHub Issue1365）.md",
+        "title": "ニュース投稿画面の「この画像をGoogleマップの投稿に使用する」という文言を修正（GitHub Issue1365）",
+        "status": "todo",
+        "source_updated_at": "2026-10-06T02:25:08Z"
+      }
+    ],
+    "cache_newer": false
+  },
+  {
+    "source_type": "github_issue",
+    "source_id": "FutureLinkNetwork/089_ImageServer#13",
+    "title": "再適用時に新キャッシュを優先し、無ければ旧キャッシュを参照する",
+    "source_url": "https://github.com/FutureLinkNetwork/089_ImageServer/issues/13",
+    "source_updated_at": "2026-10-06T06:30:42Z",
+    "external_state": "open",
+    "linked_tasks": [
+      {
+        "path": "tasks/items/画質向上/再適用時に新キャッシュを優先し、無ければ旧キャッシュを参照する.md",
+        "title": "再適用時に新キャッシュを優先し、無ければ旧キャッシュを参照する",
+        "status": "todo",
+        "source_updated_at": ""
+      }
+    ],
+    "cache_newer": null
+  },
+  {
+    "source_type": "github_issue",
+    "source_id": "FutureLinkNetwork/089_ImageServer#12",
+    "title": "#4 の Imagick 移行を再適用するために必要な対応",
+    "source_url": "https://github.com/FutureLinkNetwork/089_ImageServer/issues/12",
+    "source_updated_at": "2026-10-06T06:30:30Z",
+    "external_state": "open",
+    "linked_tasks": [
+      {
+        "path": "tasks/items/画質向上/PR4 の Imagick 移行を再適用するために必要な対応.md",
+        "title": "PR4 の Imagick 移行を再適用するために必要な対応",
+        "status": "todo",
+        "source_updated_at": ""
+      }
+    ],
+    "cache_newer": null
+  },
+  {
+    "source_type": "github_issue",
+    "source_id": "FutureLinkNetwork/056_img2.mypl.net#8",
+    "title": "画像キャッシュ検証により正常な画像が表示できなくなる",
+    "source_url": "https://github.com/FutureLinkNetwork/056_img2.mypl.net/issues/8",
+    "source_updated_at": "2026-10-06T06:29:54Z",
+    "external_state": "open",
+    "linked_tasks": [
+      {
+        "path": "tasks/items/画質向上/画像キャッシュ検証により正常な画像が表示できなくなる.md",
+        "title": "画像キャッシュ検証により正常な画像が表示できなくなる",
+        "status": "todo",
+        "source_updated_at": ""
+      }
+    ],
+    "cache_newer": null
+  },
+  {
+    "source_type": "github_issue",
+    "source_id": "FutureLinkNetwork/mypl_pro#1336",
+    "title": "まいぷれくん: ヒアリング質問の step id を plan_id に一本化し、hearingStepPlanIds と別名照合を不要にする（#974 / #1333 の follow-up）",
+    "source_url": "https://github.com/FutureLinkNetwork/mypl_pro/issues/1336",
+    "source_updated_at": "2026-10-02T02:30:30Z",
+    "external_state": "open",
+    "linked_tasks": [],
+    "cache_newer": null
+  },
+  {
+    "source_type": "github_issue",
+    "source_id": "FutureLinkNetwork/agent-dev#462",
+    "title": "吉田の疑問積み上げIssue",
+    "source_url": "https://github.com/FutureLinkNetwork/agent-dev/issues/462",
+    "source_updated_at": "2026-10-01T00:15:07Z",
+    "external_state": "open",
+    "linked_tasks": [],
+    "cache_newer": null
+  },
+  {
+    "source_type": "github_issue",
+    "source_id": "FutureLinkNetwork/agent-dev#461",
+    "title": "refactor: generateContent の送信処理を共通化する",
+    "source_url": "https://github.com/FutureLinkNetwork/agent-dev/issues/461",
+    "source_updated_at": "2026-09-30T12:40:04Z",
+    "external_state": "open",
+    "linked_tasks": [],
+    "cache_newer": null
+  },
+  {
+    "source_type": "github_issue",
+    "source_id": "FutureLinkNetwork/mypl_pro#1303",
+    "title": "[不具合][まいぷれくん] 一部の媒体だけ修正したターンへ戻ると、プレビューに修正した媒体しか表示されない",
+    "source_url": "https://github.com/FutureLinkNetwork/mypl_pro/issues/1303",
+    "source_updated_at": "2026-09-27T13:41:22Z",
+    "external_state": "open",
+    "linked_tasks": [],
+    "cache_newer": null
+  },
+  {
+    "source_type": "github_issue",
+    "source_id": "FutureLinkNetwork/agent-dev#455",
+    "title": "[セキュリティ] image_tag の Gemini 呼び出し失敗ログに API キー入りの URL が出力されている（Gemini は全件 400、OpenRouter 退避で稼働中）",
+    "source_url": "https://github.com/FutureLinkNetwork/agent-dev/issues/455",
+    "source_updated_at": "2026-10-01T07:56:33Z",
+    "external_state": "open",
+    "linked_tasks": [],
+    "cache_newer": null
+  },
+  {
+    "source_type": "github_issue",
+    "source_id": "FutureLinkNetwork/agent-dev#454",
+    "title": "確認カードの見出し（入れたい内容／注目したいポイント）がベトナム語画面でも日本語のまま表示される",
+    "source_url": "https://github.com/FutureLinkNetwork/agent-dev/issues/454",
+    "source_updated_at": "2026-09-27T09:49:29Z",
+    "external_state": "open",
+    "linked_tasks": [],
+    "cache_newer": null
+  },
+  {
+    "source_type": "github_issue",
+    "source_id": "FutureLinkNetwork/business-console-pro#658",
+    "title": "まいぷれくん: ヒアリングで複数質問が届くと receivedBatchId が255文字を超え会話が422で止まる（本体 mypl_pro#1298 の OEM 横展開）",
+    "source_url": "https://github.com/FutureLinkNetwork/business-console-pro/issues/658",
+    "source_updated_at": "2026-09-27T09:49:38Z",
+    "external_state": "open",
+    "linked_tasks": [],
+    "cache_newer": null
+  },
+  {
+    "source_type": "github_issue",
+    "source_id": "FutureLinkNetwork/mypl_pro#1288",
+    "title": "グループニュースの共有プレビューが日本語固定になる",
+    "source_url": "https://github.com/FutureLinkNetwork/mypl_pro/issues/1288",
+    "source_updated_at": "2026-09-25T03:10:13Z",
+    "external_state": "open",
+    "linked_tasks": [],
+    "cache_newer": null
+  },
+  {
+    "source_type": "github_issue",
+    "source_id": "FutureLinkNetwork/mypl_pro#1287",
+    "title": "グループニュースの画像の種類が再表示で消える",
+    "source_url": "https://github.com/FutureLinkNetwork/mypl_pro/issues/1287",
+    "source_updated_at": "2026-09-25T03:10:12Z",
+    "external_state": "open",
+    "linked_tasks": [],
+    "cache_newer": null
+  },
+  {
+    "source_type": "github_issue",
+    "source_id": "FutureLinkNetwork/mypl_pro#1286",
+    "title": "グループニュース編集がイベントカレンダーの解除待ちを画面に渡さない",
+    "source_url": "https://github.com/FutureLinkNetwork/mypl_pro/issues/1286",
+    "source_updated_at": "2026-09-25T03:10:12Z",
+    "external_state": "open",
+    "linked_tasks": [],
+    "cache_newer": null
+  },
+  {
+    "source_type": "github_issue",
+    "source_id": "FutureLinkNetwork/mypl_pro#1285",
+    "title": "グループニュースの保存で過去の予約日時と掲載終了日時を拒否しない",
+    "source_url": "https://github.com/FutureLinkNetwork/mypl_pro/issues/1285",
+    "source_updated_at": "2026-09-25T03:10:11Z",
+    "external_state": "open",
+    "linked_tasks": [],
+    "cache_newer": null
+  },
+  {
+    "source_type": "github_issue",
+    "source_id": "FutureLinkNetwork/mypl_pro#1284",
+    "title": "グループニュース公開後、掲載終了日時が編集画面に戻らない",
+    "source_url": "https://github.com/FutureLinkNetwork/mypl_pro/issues/1284",
+    "source_updated_at": "2026-09-25T03:10:11Z",
+    "external_state": "open",
+    "linked_tasks": [],
+    "cache_newer": null
+  },
+  {
+    "source_type": "github_issue",
+    "source_id": "FutureLinkNetwork/mypl_pro#1283",
+    "title": "店舗ニュース修正のグループニュースへの反映漏れ",
+    "source_url": "https://github.com/FutureLinkNetwork/mypl_pro/issues/1283",
+    "source_updated_at": "2026-09-25T03:10:10Z",
+    "external_state": "open",
+    "linked_tasks": [],
+    "cache_newer": null
+  },
+  {
+    "source_type": "github_issue",
+    "source_id": "FutureLinkNetwork/mypl_pro#1240",
+    "title": "画像トリミング時の切り落としに対する全体表示・白埋め対応",
+    "source_url": "https://github.com/FutureLinkNetwork/mypl_pro/issues/1240",
+    "source_updated_at": "2026-09-25T09:03:32Z",
+    "external_state": "open",
+    "linked_tasks": [],
+    "cache_newer": null
+  },
+  {
+    "source_type": "github_issue",
+    "source_id": "FutureLinkNetwork/056_img2.mypl.net#4",
+    "title": "画像取得失敗時のエラー画像表示の改善",
+    "source_url": "https://github.com/FutureLinkNetwork/056_img2.mypl.net/issues/4",
+    "source_updated_at": "2026-09-16T23:59:45Z",
+    "external_state": "open",
+    "linked_tasks": [],
+    "cache_newer": null
+  },
+  {
+    "source_type": "github_issue",
+    "source_id": "FutureLinkNetwork/mypl_pro#1237",
+    "title": "CMYK画像のアップロード前変換・422エラー文言改善・容量上限の整合性確認",
+    "source_url": "https://github.com/FutureLinkNetwork/mypl_pro/issues/1237",
+    "source_updated_at": "2026-09-16T09:22:38Z",
+    "external_state": "open",
+    "linked_tasks": [],
+    "cache_newer": null
+  },
+  {
+    "source_type": "github_issue",
+    "source_id": "FutureLinkNetwork/mypl_pro#1226",
+    "title": "開発ルール整備: PR テンプレート / テスト方針 / 行数・テストガード",
+    "source_url": "https://github.com/FutureLinkNetwork/mypl_pro/issues/1226",
+    "source_updated_at": "2026-09-23T11:51:50Z",
+    "external_state": "open",
+    "linked_tasks": [],
+    "cache_newer": null
+  },
+  {
+    "source_type": "github_issue",
+    "source_id": "FutureLinkNetwork/agent-dev#443",
+    "title": "test(agent-poc): test_partner_api.py を実態に合う名前へ改名する",
+    "source_url": "https://github.com/FutureLinkNetwork/agent-dev/issues/443",
+    "source_updated_at": "2026-09-16T15:24:34Z",
+    "external_state": "open",
+    "linked_tasks": [],
+    "cache_newer": null
+  },
+  {
+    "source_type": "github_issue",
+    "source_id": "FutureLinkNetwork/agent-dev#430",
+    "title": "[技術負債] まいぷれくん agent-poc リファクタ epic（Phase 1-5）",
+    "source_url": "https://github.com/FutureLinkNetwork/agent-dev/issues/430",
+    "source_updated_at": "2026-09-16T15:24:29Z",
+    "external_state": "open",
+    "linked_tasks": [],
+    "cache_newer": null
+  },
+  {
+    "source_type": "github_issue",
+    "source_id": "FutureLinkNetwork/mypl_pro#1181",
+    "title": "【1171-4】プッシュ経由の既読処理",
+    "source_url": "https://github.com/FutureLinkNetwork/mypl_pro/issues/1181",
+    "source_updated_at": "2026-09-16T07:07:23Z",
+    "external_state": "open",
+    "linked_tasks": [],
+    "cache_newer": null
+  },
+  {
+    "source_type": "github_issue",
+    "source_id": "FutureLinkNetwork/mypl_pro#1179",
+    "title": "【1171-3】Instagram 投稿結果のプッシュ通知",
+    "source_url": "https://github.com/FutureLinkNetwork/mypl_pro/issues/1179",
+    "source_updated_at": "2026-09-16T07:07:16Z",
+    "external_state": "open",
+    "linked_tasks": [],
+    "cache_newer": null
+  },
+  {
+    "source_type": "github_issue",
+    "source_id": "FutureLinkNetwork/mypl_pro#1171",
+    "title": "【移植漏れ】ネイティブアプリ向けプッシュ通知・お知らせ連携（mypl3_pro 未移植分）",
+    "source_url": "https://github.com/FutureLinkNetwork/mypl_pro/issues/1171",
+    "source_updated_at": "2026-09-16T07:07:00Z",
+    "external_state": "open",
+    "linked_tasks": [],
+    "cache_newer": null
+  },
+  {
+    "source_type": "github_issue",
+    "source_id": "FutureLinkNetwork/mypl_pro#1138",
+    "title": "画像加工・変換処理に伴う画質劣化の改善",
+    "source_url": "https://github.com/FutureLinkNetwork/mypl_pro/issues/1138",
+    "source_updated_at": "2026-10-01T15:32:36Z",
+    "external_state": "open",
+    "linked_tasks": [],
+    "cache_newer": null
+  },
+  {
+    "source_type": "github_issue",
+    "source_id": "FutureLinkNetwork/mypl_pro#1137",
+    "title": "Instagram向け送信画像の最適化（オリジナルサイズ・容量制限対応）",
+    "source_url": "https://github.com/FutureLinkNetwork/mypl_pro/issues/1137",
+    "source_updated_at": "2026-09-16T07:07:39Z",
+    "external_state": "open",
+    "linked_tasks": [],
+    "cache_newer": null
+  },
+  {
+    "source_type": "github_issue",
+    "source_id": "FutureLinkNetwork/mypl_pro#986",
+    "title": "[改善][まいぷれくん] 保存側ヒアリング fallback 文言が日本語ハードコードで vi 翻訳が使われない",
+    "source_url": "https://github.com/FutureLinkNetwork/mypl_pro/issues/986",
+    "source_updated_at": "2026-09-27T10:16:16Z",
+    "external_state": "open",
+    "linked_tasks": [],
+    "cache_newer": null
+  },
+  {
+    "source_type": "github_issue",
+    "source_id": "FutureLinkNetwork/mypl_pro#963",
+    "title": "[不具合] action_payload.value のターンも user_message が空で記録され、会話履歴から落ちる",
+    "source_url": "https://github.com/FutureLinkNetwork/mypl_pro/issues/963",
+    "source_updated_at": "2026-09-27T10:23:26Z",
+    "external_state": "open",
+    "linked_tasks": [],
+    "cache_newer": null
+  },
+  {
+    "source_type": "github_issue",
+    "source_id": "FutureLinkNetwork/mypl_pro#946",
+    "title": "参考画像／投稿素材（material_context.purpose）の分類を廃止するか判断する",
+    "source_url": "https://github.com/FutureLinkNetwork/mypl_pro/issues/946",
+    "source_updated_at": "2026-09-27T10:16:11Z",
+    "external_state": "open",
+    "linked_tasks": [],
+    "cache_newer": null
+  },
+  {
+    "source_type": "github_issue",
+    "source_id": "FutureLinkNetwork/agent-dev#282",
+    "title": "unified_post: legacy撤去後にヒアリングオーケストレーションの責務を整理する",
+    "source_url": "https://github.com/FutureLinkNetwork/agent-dev/issues/282",
+    "source_updated_at": "2026-09-16T15:24:39Z",
+    "external_state": "open",
+    "linked_tasks": [],
+    "cache_newer": null
+  },
+  {
+    "source_type": "github_issue",
+    "source_id": "FutureLinkNetwork/mypl_pro#677",
+    "title": "[技術負債] テストの node types 回避ハッチ（declare __dirname + @ts-expect-error）を一括解消する",
+    "source_url": "https://github.com/FutureLinkNetwork/mypl_pro/issues/677",
+    "source_updated_at": "2026-09-16T15:51:18Z",
+    "external_state": "open",
+    "linked_tasks": [],
+    "cache_newer": null
+  },
+  {
+    "source_type": "github_issue",
+    "source_id": "FutureLinkNetwork/mypl_pro#665",
+    "title": "[テスト基盤] MyplkunAgentServiceTest のヘルパーが migration に存在しない AGENT_DRAFT_ID カラムを作りスキーマ drift でバグを隠す",
+    "source_url": "https://github.com/FutureLinkNetwork/mypl_pro/issues/665",
+    "source_updated_at": "2026-09-16T15:24:25Z",
+    "external_state": "open",
+    "linked_tasks": [],
+    "cache_newer": null
+  },
+  {
+    "source_type": "github_issue",
+    "source_id": "FutureLinkNetwork/mypl_pro#494",
+    "title": "外部連携周りの仕様変更検知の自動化",
+    "source_url": "https://github.com/FutureLinkNetwork/mypl_pro/issues/494",
+    "source_updated_at": "2026-09-24T00:22:06Z",
+    "external_state": "open",
+    "linked_tasks": [],
+    "cache_newer": null
+  },
+  {
+    "source_type": "github_issue",
+    "source_id": "FutureLinkNetwork/mypl_pro#465",
+    "title": "海外版(vi)対応エピック: locale は受理されるが LLM・UI に意味として届いていない(P1-P6)",
+    "source_url": "https://github.com/FutureLinkNetwork/mypl_pro/issues/465",
+    "source_updated_at": "2026-09-27T10:16:17Z",
+    "external_state": "open",
+    "linked_tasks": [],
+    "cache_newer": null
+  },
+  {
+    "source_type": "github_issue",
+    "source_id": "FutureLinkNetwork/agent-dev#179",
+    "title": "[CI-3] main/developを保護し、必須CIが失敗したPRを合流不可にする",
+    "source_url": "https://github.com/FutureLinkNetwork/agent-dev/issues/179",
+    "source_updated_at": "2026-09-28T01:23:23Z",
+    "external_state": "open",
+    "linked_tasks": [],
+    "cache_newer": null
+  },
+  {
+    "source_type": "github_issue",
+    "source_id": "FutureLinkNetwork/business-console-pro#323",
+    "title": "[セキュリティ改善] agent-pocの素材画像取得を安全なURL・容量制限へ変更する",
+    "source_url": "https://github.com/FutureLinkNetwork/business-console-pro/issues/323",
+    "source_updated_at": "2026-09-29T11:08:53Z",
+    "external_state": "open",
+    "linked_tasks": [
+      {
+        "path": "tasks/items/改善要望/[セキュリティ改善] agent-pocの素材画像取得を安全なURL・容量制限へ変更する.md",
+        "title": "[セキュリティ改善] agent-pocの素材画像取得を安全なURL・容量制限へ変更する",
+        "status": "todo",
+        "source_updated_at": "2026-09-29T11:08:53Z"
+      }
+    ],
+    "cache_newer": false
+  },
+  {
+    "source_type": "github_issue",
+    "source_id": "FutureLinkNetwork/dev-standards#4",
+    "title": "[改善要望] 初手のプロンプトを定型にしてほしい",
+    "source_url": "https://github.com/FutureLinkNetwork/dev-standards/issues/4",
+    "source_updated_at": "2026-02-06T08:04:36Z",
+    "external_state": "open",
+    "linked_tasks": [],
+    "cache_newer": null
+  },
+  {
+    "source_type": "github_issue",
+    "source_id": "FutureLinkNetwork/test_spec_standards#1",
+    "title": "仕様書テンプレートの作成",
+    "source_url": "https://github.com/FutureLinkNetwork/test_spec_standards/issues/1",
+    "source_updated_at": "2025-11-06T01:39:13Z",
+    "external_state": "open",
+    "linked_tasks": [],
+    "cache_newer": null
+  },
+  {
+    "source_type": "github_pr",
+    "source_id": "FLNYoshidaRyuta/work-management#23",
+    "title": "feat: AI整理と定期実行、保守Skillを追加する",
+    "source_url": "https://github.com/FLNYoshidaRyuta/work-management/pull/23",
+    "source_updated_at": "2026-10-05T16:48:11Z",
+    "external_state": "open",
+    "linked_tasks": [],
+    "cache_newer": null
+  },
+  {
+    "source_type": "github_pr",
+    "source_id": "FutureLinkNetwork/mypl_docker_2#11",
+    "title": "feat(docker): DBとDockerネットワークを統一",
+    "source_url": "https://github.com/FutureLinkNetwork/mypl_docker_2/pull/11",
+    "source_updated_at": "2026-10-06T10:01:18Z",
+    "external_state": "open",
+    "linked_tasks": [],
+    "cache_newer": null
+  },
+  {
+    "source_type": "github_pr",
+    "source_id": "FutureLinkNetwork/mypl_docker#6",
+    "title": "feat(docker): 共通DBとネットワーク接続に対応",
+    "source_url": "https://github.com/FutureLinkNetwork/mypl_docker/pull/6",
+    "source_updated_at": "2026-10-05T02:42:26Z",
+    "external_state": "open",
+    "linked_tasks": [],
+    "cache_newer": null
+  },
+  {
+    "source_type": "github_pr",
+    "source_id": "FutureLinkNetwork/mypl_microservices_spec#40",
+    "title": "docs: proのJWT認証仕様とテスト仕様を追加する",
+    "source_url": "https://github.com/FutureLinkNetwork/mypl_microservices_spec/pull/40",
+    "source_updated_at": "2026-10-05T06:51:32Z",
+    "external_state": "open",
+    "linked_tasks": [],
+    "cache_newer": null
+  },
+  {
+    "source_type": "github_pr",
+    "source_id": "FutureLinkNetwork/089_ImageServer#11",
+    "title": "Imagick 移行時に旧キャッシュへフォールバックする",
+    "source_url": "https://github.com/FutureLinkNetwork/089_ImageServer/pull/11",
+    "source_updated_at": "2026-10-01T14:01:29Z",
+    "external_state": "open",
+    "linked_tasks": [],
+    "cache_newer": null
+  },
+  {
+    "source_type": "github_pr",
+    "source_id": "FutureLinkNetwork/mypl_pro#1262",
+    "title": "docs: プルリクエストテンプレートを追加",
+    "source_url": "https://github.com/FutureLinkNetwork/mypl_pro/pull/1262",
+    "source_updated_at": "2026-10-02T02:55:57Z",
+    "external_state": "open",
+    "linked_tasks": [],
+    "cache_newer": null
+  },
+  {
+    "source_type": "github_pr",
+    "source_id": "FutureLinkNetwork/mypl_docker#4",
+    "title": "fix: pro.m3.dev2 の接続先を新 Docker 環境へ切り替え",
+    "source_url": "https://github.com/FutureLinkNetwork/mypl_docker/pull/4",
+    "source_updated_at": "2026-09-25T10:20:13Z",
+    "external_state": "open",
+    "linked_tasks": [],
+    "cache_newer": null
+  },
+  {
+    "source_type": "github_pr",
+    "source_id": "FutureLinkNetwork/codex_test_mypl3_pro#95",
+    "title": "Feature/instagram news openstatus edit3",
+    "source_url": "https://github.com/FutureLinkNetwork/codex_test_mypl3_pro/pull/95",
+    "source_updated_at": "2026-02-05T23:21:24Z",
+    "external_state": "open",
+    "linked_tasks": [],
+    "cache_newer": null
+  },
+  {
+    "source_type": "github_pr",
+    "source_id": "FutureLinkNetwork/codex_test_mypl3_pro#27",
+    "title": "Instagram編集画面でニュース公開設定を変更可能にする",
+    "source_url": "https://github.com/FutureLinkNetwork/codex_test_mypl3_pro/pull/27",
+    "source_updated_at": "2026-02-05T09:04:01Z",
+    "external_state": "open",
+    "linked_tasks": [],
+    "cache_newer": null
+  },
+  {
+    "source_type": "github_pr",
+    "source_id": "FutureLinkNetwork/mypl_pro#1230",
+    "title": "docs: まいぷれくんリファクタ引き継ぎパック（Phase 3 以降）",
+    "source_url": "https://github.com/FutureLinkNetwork/mypl_pro/pull/1230",
+    "source_updated_at": "2026-09-15T14:00:29Z",
+    "external_state": "open",
+    "linked_tasks": [],
+    "cache_newer": null
+  },
+  {
+    "source_type": "github_pr",
+    "source_id": "FutureLinkNetwork/mypl_pro#1228",
+    "title": "ci: 行数ラチェット・チケット単位テスト禁止・テスト比率ガード（警告のみ・試行）",
+    "source_url": "https://github.com/FutureLinkNetwork/mypl_pro/pull/1228",
+    "source_updated_at": "2026-09-18T00:05:21Z",
+    "external_state": "open",
+    "linked_tasks": [],
+    "cache_newer": null
+  },
+  {
+    "source_type": "github_pr",
+    "source_id": "FutureLinkNetwork/mypl_pro#1227",
+    "title": "docs: PR テンプレート v2 案とテスト方針案（チーム相談用）",
+    "source_url": "https://github.com/FutureLinkNetwork/mypl_pro/pull/1227",
+    "source_updated_at": "2026-09-15T08:11:11Z",
+    "external_state": "open",
+    "linked_tasks": [],
+    "cache_newer": null
+  },
+  {
+    "source_type": "backlog_issue",
+    "source_id": "MYPL-4222",
+    "title": "ニュース投稿画面の「この画像をGoogleマップの投稿に使用する」という文言を修正",
+    "source_url": "https://fln2000.backlog.com/view/MYPL-4222",
+    "source_updated_at": "2026-10-06T02:25:34Z",
+    "external_state": "未対応",
+    "linked_tasks": [
+      {
+        "path": "tasks/items/改善要望/ニュース投稿画面の「この画像をGoogleマップの投稿に使用する」という文言を修正.md",
+        "title": "ニュース投稿画面の「この画像をGoogleマップの投稿に使用する」という文言を修正",
+        "status": "todo",
+        "source_updated_at": "2026-10-06T02:25:34Z"
+      }
+    ],
+    "cache_newer": false
+  },
+  {
+    "source_type": "backlog_issue",
+    "source_id": "MYPL-4221",
+    "title": "ニックネーム周りの調査",
+    "source_url": "https://fln2000.backlog.com/view/MYPL-4221",
+    "source_updated_at": "2026-10-06T02:21:01Z",
+    "external_state": "未対応",
+    "linked_tasks": [
+      {
+        "path": "tasks/items/改善要望/ニックネーム周りの調査.md",
+        "title": "ニックネーム周りの調査",
+        "status": "todo",
+        "source_updated_at": "2026-10-06T02:21:01Z"
+      }
+    ],
+    "cache_newer": false
+  },
+  {
+    "source_type": "backlog_issue",
+    "source_id": "MYPL-4184",
+    "title": "Instagram画像調整の際にサイズ選択がうまくできない",
+    "source_url": "https://fln2000.backlog.com/view/MYPL-4184",
+    "source_updated_at": "2026-10-02T02:07:10Z",
+    "external_state": "レビュー中",
+    "linked_tasks": [
+      {
+        "path": "tasks/items/改善要望/Instagram画像調整の際にサイズ選択がうまくできない.md",
+        "title": "Instagram画像調整の際にサイズ選択がうまくできない",
+        "status": "todo",
+        "source_updated_at": "2026-10-02T02:07:10Z"
+      }
+    ],
+    "cache_newer": false
+  },
+  {
+    "source_type": "backlog_issue",
+    "source_id": "MYPL-4197",
+    "title": "【引き継ぎ】agent-poc 素材画像取得の SSRF 対策の残りと、セキュリティスキャンの再実施（bcp #323）",
+    "source_url": "https://fln2000.backlog.com/view/MYPL-4197",
+    "source_updated_at": "2026-09-29T11:26:40Z",
+    "external_state": "未対応",
+    "linked_tasks": [
+      {
+        "path": "tasks/items/改善要望/【引き継ぎ】agent-poc 素材画像取得の SSRF 対策の残りと、セキュリティスキャンの再実施（bcp Issue323）.md",
+        "title": "【引き継ぎ】agent-poc 素材画像取得の SSRF 対策の残りと、セキュリティスキャンの再実施（bcp Issue323）",
+        "status": "todo",
+        "source_updated_at": "2026-09-29T11:26:40Z"
+      }
+    ],
+    "cache_newer": false
+  },
+  {
+    "source_type": "backlog_issue",
+    "source_id": "MYPL-4158",
+    "title": "Facebookアプリ「まいぷれ認証」で一般ユーザーがログインできない原因の調査と対応",
+    "source_url": "https://fln2000.backlog.com/view/MYPL-4158",
+    "source_updated_at": "2026-09-25T02:46:17Z",
+    "external_state": "未対応",
+    "linked_tasks": [],
+    "cache_newer": null
+  }
+]
