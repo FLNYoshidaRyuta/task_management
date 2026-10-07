@@ -7,6 +7,8 @@ end:
 priority:
 estimate:
 depends_on: []
+related:
+  - "[[tasks/items/改善要望/ニュース投稿画面の「この画像をGoogleマップの投稿に使用する」という文言を修正（GitHub Issue1365）|ニュース投稿画面の「この画像をGoogleマップの投稿に使用する」という文言を修正（GitHub Issue1365）]]"
 source_type: backlog_issue
 source_id: MYPL-4222
 source_url: https://fln2000.backlog.com/view/MYPL-4222

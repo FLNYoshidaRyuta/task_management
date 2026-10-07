@@ -1,0 +1,35 @@
+---
+title: ニュース投稿画面の「この画像をGoogleマップの投稿に使用する」という文言を修正（GitHub Issue1365）
+project: 改善要望
+status: todo
+start:
+end:
+priority:
+estimate:
+depends_on: []
+related:
+  - "[[tasks/items/改善要望/ニュース投稿画面の「この画像をGoogleマップの投稿に使用する」という文言を修正|ニュース投稿画面の「この画像をGoogleマップの投稿に使用する」という文言を修正]]"
+source_type: github_issue
+source_id: FutureLinkNetwork/mypl_pro#1365
+source_url: https://github.com/FutureLinkNetwork/mypl_pro/issues/1365
+source_updated_at: 2026-10-06T02:25:08Z
+---
+
+### 現状と困りごと
+
+ニュース投稿画面の「この画像をGoogleマップの投稿に使用する」という文言には違和感があります。選択できる内容は、GBPの「写真」に格納するか否かなので、そこの誤解が生じない文言を良いのではと思います。
+
+### 期待する挙動・提案
+
+文言は要調整。GBPというワードとGoogleマップという用語が混在している。
+
+基本はGBPというワードを使い
+* この画像をGBPの「写真」に投稿
+* この画像をGoogleマップの「写真」に投稿
+などに変更（デザシス的に体言止めにしてほしい）。主語が省略できるのであれば
+* Googleマップの「写真」に投稿
+というのも可能
+
+## Backlog
+
+https://fln2000.backlog.com/view/MYPL-4222
