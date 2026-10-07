@@ -22,6 +22,11 @@ SOURCE_FILES = {
     "github": GITHUB_FILES,
     "backlog": BACKLOG_FILES,
 }
+SOURCE_TYPES_FOR = {
+    "github": frozenset({"github_issue", "github_pr"}),
+    "backlog": frozenset({"backlog_issue"}),
+}
+TERMINAL_STATUSES = frozenset({"done", "canceled"})
 DATE_MS = re.compile(r"/Date\((-?\d+)(?:[+-]\d+)?\)/")
 
 
@@ -203,11 +208,72 @@ def load_tasks(vault: Path) -> dict[tuple[str, str], list[dict]]:
                 "path": path.relative_to(vault).as_posix(),
                 "title": data.get("title") or "",
                 "status": data.get("status") or "",
+                "source_url": data.get("source_url") or "",
                 "source_updated_at": as_text(data.get("source_updated_at")),
             }
         )
 
     return linked
+
+
+def active_source_types(sources: list[str]) -> frozenset[str]:
+    merged: set[str] = set()
+    for source in sources:
+        merged.update(SOURCE_TYPES_FOR[source])
+    return frozenset(merged)
+
+
+def missing_from_cache(
+    vault: Path,
+    cache_keys: set[tuple[str, str]],
+    source_types: frozenset[str],
+) -> list[dict]:
+    items_dir = vault / "tasks" / "items"
+    grouped: dict[tuple[str, str], list[dict]] = {}
+    if not items_dir.is_dir():
+        return []
+
+    for path in sorted(items_dir.rglob("*.md")):
+        relative = path.relative_to(items_dir)
+        if relative.parts and relative.parts[0] == "routine":
+            continue
+
+        data = read_frontmatter(path)
+        if data is None:
+            continue
+
+        identity = task_identity(data)
+        if identity is None:
+            continue
+
+        source_type, source_id = identity
+        if source_type not in source_types:
+            continue
+        if identity in cache_keys:
+            continue
+
+        status = data.get("status") or ""
+        if status in TERMINAL_STATUSES:
+            continue
+
+        grouped.setdefault(identity, []).append(
+            {
+                "path": path.relative_to(vault).as_posix(),
+                "title": data.get("title") or "",
+                "status": status,
+                "source_url": data.get("source_url") or "",
+                "source_updated_at": as_text(data.get("source_updated_at")),
+            }
+        )
+
+    return [
+        {
+            "source_type": key[0],
+            "source_id": key[1],
+            "tasks": grouped[key],
+        }
+        for key in sorted(grouped)
+    ]
 
 
 def cache_newer(cache_updated_at: str, tasks: list[dict]) -> bool | None:
@@ -222,13 +288,14 @@ def cache_newer(cache_updated_at: str, tasks: list[dict]) -> bool | None:
     return cache_time > min(known)
 
 
-def compare(vault: Path, sources: list[str]) -> list[dict]:
+def compare(vault: Path, sources: list[str]) -> dict:
     items: list[dict] = []
     for source in sources:
         for relative in SOURCE_FILES[source]:
             items.extend(load_json_list(vault / relative))
 
     candidates = merge_candidates(items)
+    cache_keys = {(item["source_type"], item["source_id"]) for item in candidates}
     tasks = load_tasks(vault)
     result = []
 
@@ -242,7 +309,12 @@ def compare(vault: Path, sources: list[str]) -> list[dict]:
             }
         )
 
-    return result
+    missing = missing_from_cache(vault, cache_keys, active_source_types(sources))
+
+    return {
+        "candidates": result,
+        "missing_from_cache": missing,
+    }
 
 
 def main() -> None:

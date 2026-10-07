@@ -63,7 +63,7 @@ class CompareInboxTest(unittest.TestCase):
         )
 
         result = compare_inbox.compare(self.vault, ["backlog"])
-        by_id = {item["source_id"]: item for item in result}
+        by_id = {item["source_id"]: item for item in result["candidates"]}
 
         self.assertEqual(by_id["MYPL-1"]["linked_tasks"], [])
         self.assertIsNone(by_id["MYPL-1"]["cache_newer"])
@@ -118,7 +118,10 @@ class CompareInboxTest(unittest.TestCase):
         )
 
         result = compare_inbox.compare(self.vault, ["github"])
-        by_id = {(item["source_type"], item["source_id"]): item for item in result}
+        by_id = {
+            (item["source_type"], item["source_id"]): item
+            for item in result["candidates"]
+        }
 
         pull_item = by_id[("github_pr", "owner/repo#4")]
         self.assertEqual(pull_item["title"], "新しいタイトル")
@@ -155,7 +158,8 @@ class CompareInboxTest(unittest.TestCase):
         )
 
         result = compare_inbox.compare(self.vault, ["backlog"])
-        self.assertEqual(result[0]["linked_tasks"], [])
+        self.assertEqual(result["candidates"][0]["linked_tasks"], [])
+        self.assertEqual(result["missing_from_cache"], [])
 
     def test_utf8_bom_cache_is_readable(self):
         path = self.vault / "sources/backlog/assigned-issues.json"
@@ -178,7 +182,80 @@ class CompareInboxTest(unittest.TestCase):
         )
 
         result = compare_inbox.compare(self.vault, ["backlog"])
-        self.assertEqual(result[0]["source_id"], "MYPL-3")
+        self.assertEqual(result["candidates"][0]["source_id"], "MYPL-3")
+
+    def test_missing_from_cache_when_task_not_in_cache(self):
+        write_json(self.vault / "sources/github/assigned-issues.json", [])
+        write_json(self.vault / "sources/github/my-prs.json", [])
+        write_json(self.vault / "sources/github/review-requests.json", [])
+        write_task(
+            self.vault / "tasks/items/画質向上/欠落.md",
+            "\n".join(
+                [
+                    "title: 欠落",
+                    "status: todo",
+                    "source_type: github_issue",
+                    "source_id: owner/repo#99",
+                    "source_url: https://github.com/owner/repo/issues/99",
+                ]
+            ),
+        )
+
+        result = compare_inbox.compare(self.vault, ["github"])
+        missing = result["missing_from_cache"]
+
+        self.assertEqual(len(missing), 1)
+        self.assertEqual(missing[0]["source_id"], "owner/repo#99")
+        self.assertEqual(missing[0]["tasks"][0]["path"], "tasks/items/画質向上/欠落.md")
+
+    def test_missing_from_cache_excludes_done_and_canceled(self):
+        write_json(self.vault / "sources/github/assigned-issues.json", [])
+        write_json(self.vault / "sources/github/my-prs.json", [])
+        write_json(self.vault / "sources/github/review-requests.json", [])
+        write_task(
+            self.vault / "tasks/items/画質向上/完了.md",
+            "\n".join(
+                [
+                    "title: 完了",
+                    "status: done",
+                    "source_type: github_issue",
+                    "source_id: owner/repo#1",
+                ]
+            ),
+        )
+        write_task(
+            self.vault / "tasks/items/画質向上/却下.md",
+            "\n".join(
+                [
+                    "title: 却下",
+                    "status: canceled",
+                    "source_type: github_issue",
+                    "source_id: owner/repo#2",
+                ]
+            ),
+        )
+
+        result = compare_inbox.compare(self.vault, ["github"])
+        self.assertEqual(result["missing_from_cache"], [])
+
+    def test_missing_from_cache_skips_other_source_when_github_only(self):
+        write_json(self.vault / "sources/github/assigned-issues.json", [])
+        write_json(self.vault / "sources/github/my-prs.json", [])
+        write_json(self.vault / "sources/github/review-requests.json", [])
+        write_task(
+            self.vault / "tasks/items/改善要望/Backlogだけ.md",
+            "\n".join(
+                [
+                    "title: Backlogだけ",
+                    "status: todo",
+                    "source_type: backlog_issue",
+                    "source_id: MYPL-404",
+                ]
+            ),
+        )
+
+        result = compare_inbox.compare(self.vault, ["github"])
+        self.assertEqual(result["missing_from_cache"], [])
 
     def test_missing_cache_raises(self):
         with self.assertRaises(FileNotFoundError):

@@ -30,6 +30,12 @@ def as_text(value):
     return str(value)
 
 
+def task_in_gantt(task) -> bool:
+    if not task.get("start") or not task.get("end"):
+        return False
+    return as_text(task.get("status")) != "canceled"
+
+
 def mermaid_text(value):
     return (
         as_text(value)
@@ -310,10 +316,7 @@ def main():
             if as_text(t.get("project")) == project
         ]
 
-        visible = [
-            t for t in project_tasks
-            if t.get("start") and t.get("end")
-        ]
+        visible = [t for t in project_tasks if task_in_gantt(t)]
 
         if not visible:
             continue
