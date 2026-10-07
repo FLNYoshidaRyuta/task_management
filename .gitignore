@@ -3,6 +3,7 @@ sources/
 sources/github/
 sources/backlog/
 __pycache__/
-.obsidian/workspace.json
-.obsidian/workspace-mobile.json
-.obsidian/cache/
+
+# Obsidian: core-plugins.json のみ共有
+.obsidian/*
+!.obsidian/core-plugins.json
