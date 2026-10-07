@@ -1,4 +1,8 @@
-﻿$ErrorActionPreference = "Stop"
+﻿param(
+    [switch]$RefreshStatuses
+)
+
+$ErrorActionPreference = "Stop"
 
 # ========================================
 # Paths
@@ -7,6 +11,9 @@
 $VaultDir = Resolve-Path (Join-Path $PSScriptRoot "..\..")
 $EnvFile = Join-Path $VaultDir ".env"
 $OutputDir = Join-Path $VaultDir "sources\backlog"
+$ConfigDir = Join-Path $VaultDir "tasks\_config"
+$ProjectsConfigFile = Join-Path $ConfigDir "backlog-projects.json"
+$StatusesConfigFile = Join-Path $ConfigDir "backlog-statuses.json"
 
 # ========================================
 # Load .env
@@ -80,9 +87,10 @@ function Invoke-BacklogGet {
 
     foreach ($key in $Query.Keys) {
         $encodedKey = [Uri]::EscapeDataString($key)
-        $encodedValue = [Uri]::EscapeDataString([string]$Query[$key])
-
-        $params += "$encodedKey=$encodedValue"
+        foreach ($value in @($Query[$key])) {
+            $encodedValue = [Uri]::EscapeDataString([string]$value)
+            $params += "$encodedKey=$encodedValue"
+        }
     }
 
     # APIキー
@@ -116,6 +124,197 @@ function Invoke-BacklogGet {
 }
 
 
+function Read-JsonConfig {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Path
+    )
+
+    if (-not (Test-Path $Path)) {
+        throw "Config not found: $Path"
+    }
+
+    $utf8 = New-Object System.Text.UTF8Encoding $false
+    $raw = [System.IO.File]::ReadAllText($Path, $utf8)
+
+    return ($raw | ConvertFrom-Json)
+}
+
+
+function Write-JsonConfig {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Path,
+
+        [Parameter(Mandatory = $true)]
+        $Object
+    )
+
+    $parent = Split-Path -Parent $Path
+    if (-not (Test-Path $parent)) {
+        New-Item -ItemType Directory -Force $parent | Out-Null
+    }
+
+    $json = $Object | ConvertTo-Json -Depth 20
+    $utf8 = New-Object System.Text.UTF8Encoding $false
+    [System.IO.File]::WriteAllText($Path, $json + "`n", $utf8)
+}
+
+
+function Get-DefaultStatusInclude {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$StatusName
+    )
+
+    if ($StatusName -eq "完了" -or $StatusName -eq "却下") {
+        return $false
+    }
+
+    return $true
+}
+
+
+function Get-FetchFilterIds {
+    param(
+        [Parameter(Mandatory = $true)]
+        $ProjectsConfig,
+
+        [Parameter(Mandatory = $true)]
+        $StatusesConfig
+    )
+
+    $projectIds = @(
+        $ProjectsConfig.projects |
+            Where-Object { $_.include -eq $true } |
+            ForEach-Object { [int]$_.projectId }
+    )
+
+    if ($projectIds.Count -eq 0) {
+        return @{
+            ProjectIds = @()
+            StatusIds  = @()
+        }
+    }
+
+    $includedProjects = [System.Collections.Generic.HashSet[int]]::new()
+    foreach ($projectId in $projectIds) {
+        [void]$includedProjects.Add($projectId)
+    }
+
+    $statusIds = @(
+        $StatusesConfig.statuses |
+            Where-Object {
+                $_.include -eq $true -and $includedProjects.Contains([int]$_.projectId)
+            } |
+            ForEach-Object { [int]$_.statusId } |
+            Select-Object -Unique
+    )
+
+    return @{
+        ProjectIds = $projectIds
+        StatusIds  = $statusIds
+    }
+}
+
+
+function Update-BacklogConfig {
+    $existingProjects = $null
+    $existingStatuses = $null
+
+    if (Test-Path $ProjectsConfigFile) {
+        $existingProjects = Read-JsonConfig -Path $ProjectsConfigFile
+    }
+    if (Test-Path $StatusesConfigFile) {
+        $existingStatuses = Read-JsonConfig -Path $StatusesConfigFile
+    }
+
+    $projectIncludeById = @{}
+    if ($existingProjects -and $existingProjects.projects) {
+        foreach ($row in $existingProjects.projects) {
+            $projectIncludeById[[int]$row.projectId] = [bool]$row.include
+        }
+    }
+
+    $statusIncludeByKey = @{}
+    if ($existingStatuses -and $existingStatuses.statuses) {
+        foreach ($row in $existingStatuses.statuses) {
+            $key = "{0}:{1}" -f [int]$row.projectId, [int]$row.statusId
+            $statusIncludeByKey[$key] = [bool]$row.include
+        }
+    }
+
+    Write-Host "Refreshing Backlog project and status config..."
+
+    $apiProjects = @(Invoke-BacklogGet -Path "/api/v2/projects")
+
+    $mergedProjects = @()
+    foreach ($project in $apiProjects) {
+        $projectId = [int]$project.id
+        $include = $true
+        if ($projectIncludeById.ContainsKey($projectId)) {
+            $include = $projectIncludeById[$projectId]
+        }
+
+        $mergedProjects += [PSCustomObject]@{
+            projectId   = $projectId
+            projectKey  = $project.projectKey
+            projectName = $project.name
+            include     = $include
+        }
+    }
+
+    $mergedProjects = @(
+        $mergedProjects | Sort-Object projectKey
+    )
+
+    $mergedStatuses = @()
+    foreach ($project in $mergedProjects) {
+        if (-not $project.include) {
+            continue
+        }
+
+        $apiStatuses = @(
+            Invoke-BacklogGet -Path "/api/v2/projects/$($project.projectId)/statuses"
+        )
+
+        foreach ($status in $apiStatuses) {
+            $statusId = [int]$status.id
+            $key = "{0}:{1}" -f $project.projectId, $statusId
+            $include = Get-DefaultStatusInclude -StatusName $status.name
+            if ($statusIncludeByKey.ContainsKey($key)) {
+                $include = $statusIncludeByKey[$key]
+            }
+
+            $mergedStatuses += [PSCustomObject]@{
+                projectId   = $project.projectId
+                projectKey  = $project.projectKey
+                projectName = $project.projectName
+                statusId    = $statusId
+                statusName  = $status.name
+                include     = $include
+            }
+        }
+    }
+
+    Write-JsonConfig -Path $ProjectsConfigFile -Object @{ projects = $mergedProjects }
+    Write-JsonConfig -Path $StatusesConfigFile -Object @{ statuses = $mergedStatuses }
+
+    Write-Host ""
+    Write-Host "Backlog config updated."
+    Write-Host "Projects: $($mergedProjects.Count)"
+    Write-Host "Statuses: $($mergedStatuses.Count)"
+    Write-Host "Output: tasks/_config/backlog-projects.json"
+    Write-Host "Output: tasks/_config/backlog-statuses.json"
+}
+
+
+if ($RefreshStatuses) {
+    Update-BacklogConfig
+    return
+}
+
+
 # ========================================
 # Current user
 # ========================================
@@ -132,7 +331,28 @@ Write-Host "User: $($me.name) (ID: $($me.id))"
 # Assigned issues
 # ========================================
 
+try {
+    $projectsConfig = Read-JsonConfig -Path $ProjectsConfigFile
+    $statusesConfig = Read-JsonConfig -Path $StatusesConfigFile
+    $filter = Get-FetchFilterIds -ProjectsConfig $projectsConfig -StatusesConfig $statusesConfig
+}
+catch {
+    Write-Host ""
+    Write-Host "Backlog fetch skipped: $($_.Exception.Message)"
+    Write-Host "Existing cache was not modified."
+    return
+}
+
+if ($filter.ProjectIds.Count -eq 0 -or $filter.StatusIds.Count -eq 0) {
+    Write-Host ""
+    Write-Host "Backlog fetch skipped: no included projectId or statusId in config."
+    Write-Host "Existing cache was not modified."
+    return
+}
+
 Write-Host "Fetching assigned issues..."
+Write-Host ("Included projects: {0}" -f $filter.ProjectIds.Count)
+Write-Host ("Included statuses: {0}" -f $filter.StatusIds.Count)
 
 $allIssues = @()
 $offset = 0
@@ -145,6 +365,8 @@ while ($true) {
             -Path "/api/v2/issues" `
             -Query @{
                 "assigneeId[]" = $me.id
+                "projectId[]"  = $filter.ProjectIds
+                "statusId[]"   = $filter.StatusIds
                 "sort"         = "updated"
                 "order"        = "desc"
                 "count"        = $count

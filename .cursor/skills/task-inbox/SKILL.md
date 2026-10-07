@@ -33,6 +33,8 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tasks/_scripts/fetch-github.
 powershell -NoProfile -ExecutionPolicy Bypass -File tasks/_scripts/fetch-backlog.ps1
 ```
 
+Inbox の通常取得では `-RefreshStatuses` を付けない。Backlog の課題は `tasks/_config/backlog-projects.json` と `tasks/_config/backlog-statuses.json` で `include` が `true` のプロジェクトと状態だけが対象になる。`include` が `false` のものは取得キャッシュに出ない。取得結果に無い課題を個人タスクでどうするかは、ユーザーが指示するまで決めない。
+
 失敗したソースは照合に使わない。成功したソースだけを次へ渡す。
 
 ### 2. Compare

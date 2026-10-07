@@ -1,0 +1,76 @@
+{
+    "projects":  [
+                     {
+                         "projectId":  721557,
+                         "projectKey":  "ALL_SYSTEM_REBUILD",
+                         "projectName":  "システム刷新・移行管理",
+                         "include":  false
+                     },
+                     {
+                         "projectId":  55571,
+                         "projectKey":  "COMMU_CHIKA",
+                         "projectName":  "コミュチカ",
+                         "include":  false
+                     },
+                     {
+                         "projectId":  670513,
+                         "projectKey":  "FLN_DEV_STANDARD",
+                         "projectName":  "FLN開発標準化",
+                         "include":  false
+                     },
+                     {
+                         "projectId":  53487,
+                         "projectKey":  "FURUSATO_BPO",
+                         "projectName":  "ふるさと納税（社内）",
+                         "include":  false
+                     },
+                     {
+                         "projectId":  536942,
+                         "projectKey":  "FURUSATO_SYS",
+                         "projectName":  "ふるさと納税開発管理",
+                         "include":  false
+                     },
+                     {
+                         "projectId":  55349,
+                         "projectKey":  "FURUSATO_TASK",
+                         "projectName":  "ふるさと納税タスク管理",
+                         "include":  false
+                     },
+                     {
+                         "projectId":  77076,
+                         "projectKey":  "INFRASTRUCTURE_RENEWAL",
+                         "projectName":  "FLNインフラチーム",
+                         "include":  false
+                     },
+                     {
+                         "projectId":  52644,
+                         "projectKey":  "MYPL",
+                         "projectName":  "まいぷれ課題管理",
+                         "include":  true
+                     },
+                     {
+                         "projectId":  820020,
+                         "projectKey":  "OEM_MYPL",
+                         "projectName":  "OEM_MYPL",
+                         "include":  true
+                     },
+                     {
+                         "projectId":  66066,
+                         "projectKey":  "SYSTEMDESIGN",
+                         "projectName":  "WEB制作・開発・保守タスク",
+                         "include":  false
+                     },
+                     {
+                         "projectId":  738157,
+                         "projectKey":  "VIETNAM",
+                         "projectName":  "まいぷれベトナム版対応",
+                         "include":  true
+                     },
+                     {
+                         "projectId":  139243,
+                         "projectKey":  "YUIFILL",
+                         "projectName":  "yuifill",
+                         "include":  false
+                     }
+                 ]
+}

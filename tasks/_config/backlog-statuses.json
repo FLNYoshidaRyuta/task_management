@@ -1,0 +1,164 @@
+{
+    "statuses":  [
+                     {
+                         "projectId":  52644,
+                         "projectKey":  "MYPL",
+                         "projectName":  "まいぷれ課題管理",
+                         "statusId":  1,
+                         "statusName":  "未対応",
+                         "include":  true
+                     },
+                     {
+                         "projectId":  52644,
+                         "projectKey":  "MYPL",
+                         "projectName":  "まいぷれ課題管理",
+                         "statusId":  357601,
+                         "statusName":  "調査中",
+                         "include":  true
+                     },
+                     {
+                         "projectId":  52644,
+                         "projectKey":  "MYPL",
+                         "projectName":  "まいぷれ課題管理",
+                         "statusId":  2876,
+                         "statusName":  "着手待ち",
+                         "include":  true
+                     },
+                     {
+                         "projectId":  52644,
+                         "projectKey":  "MYPL",
+                         "projectName":  "まいぷれ課題管理",
+                         "statusId":  357600,
+                         "statusName":  "状況確認中",
+                         "include":  true
+                     },
+                     {
+                         "projectId":  52644,
+                         "projectKey":  "MYPL",
+                         "projectName":  "まいぷれ課題管理",
+                         "statusId":  2820,
+                         "statusName":  "検討中",
+                         "include":  true
+                     },
+                     {
+                         "projectId":  52644,
+                         "projectKey":  "MYPL",
+                         "projectName":  "まいぷれ課題管理",
+                         "statusId":  2822,
+                         "statusName":  "保留",
+                         "include":  true
+                     },
+                     {
+                         "projectId":  52644,
+                         "projectKey":  "MYPL",
+                         "projectName":  "まいぷれ課題管理",
+                         "statusId":  2,
+                         "statusName":  "処理中",
+                         "include":  true
+                     },
+                     {
+                         "projectId":  52644,
+                         "projectKey":  "MYPL",
+                         "projectName":  "まいぷれ課題管理",
+                         "statusId":  3,
+                         "statusName":  "処理済み",
+                         "include":  true
+                     },
+                     {
+                         "projectId":  52644,
+                         "projectKey":  "MYPL",
+                         "projectName":  "まいぷれ課題管理",
+                         "statusId":  13066,
+                         "statusName":  "レビュー中",
+                         "include":  true
+                     },
+                     {
+                         "projectId":  52644,
+                         "projectKey":  "MYPL",
+                         "projectName":  "まいぷれ課題管理",
+                         "statusId":  13067,
+                         "statusName":  "リリース待ち",
+                         "include":  true
+                     },
+                     {
+                         "projectId":  52644,
+                         "projectKey":  "MYPL",
+                         "projectName":  "まいぷれ課題管理",
+                         "statusId":  2821,
+                         "statusName":  "却下",
+                         "include":  false
+                     },
+                     {
+                         "projectId":  52644,
+                         "projectKey":  "MYPL",
+                         "projectName":  "まいぷれ課題管理",
+                         "statusId":  4,
+                         "statusName":  "完了",
+                         "include":  false
+                     },
+                     {
+                         "projectId":  820020,
+                         "projectKey":  "OEM_MYPL",
+                         "projectName":  "OEM_MYPL",
+                         "statusId":  1,
+                         "statusName":  "未対応",
+                         "include":  true
+                     },
+                     {
+                         "projectId":  820020,
+                         "projectKey":  "OEM_MYPL",
+                         "projectName":  "OEM_MYPL",
+                         "statusId":  2,
+                         "statusName":  "処理中",
+                         "include":  true
+                     },
+                     {
+                         "projectId":  820020,
+                         "projectKey":  "OEM_MYPL",
+                         "projectName":  "OEM_MYPL",
+                         "statusId":  3,
+                         "statusName":  "処理済み",
+                         "include":  true
+                     },
+                     {
+                         "projectId":  820020,
+                         "projectKey":  "OEM_MYPL",
+                         "projectName":  "OEM_MYPL",
+                         "statusId":  4,
+                         "statusName":  "完了",
+                         "include":  false
+                     },
+                     {
+                         "projectId":  738157,
+                         "projectKey":  "VIETNAM",
+                         "projectName":  "まいぷれベトナム版対応",
+                         "statusId":  1,
+                         "statusName":  "未対応",
+                         "include":  true
+                     },
+                     {
+                         "projectId":  738157,
+                         "projectKey":  "VIETNAM",
+                         "projectName":  "まいぷれベトナム版対応",
+                         "statusId":  2,
+                         "statusName":  "処理中",
+                         "include":  true
+                     },
+                     {
+                         "projectId":  738157,
+                         "projectKey":  "VIETNAM",
+                         "projectName":  "まいぷれベトナム版対応",
+                         "statusId":  3,
+                         "statusName":  "処理済み",
+                         "include":  true
+                     },
+                     {
+                         "projectId":  738157,
+                         "projectKey":  "VIETNAM",
+                         "projectName":  "まいぷれベトナム版対応",
+                         "statusId":  4,
+                         "statusName":  "完了",
+                         "include":  false
+                     }
+                 ]
+}
