@@ -9,7 +9,7 @@ source_type:
   - backlog_issue
 priority: []
 status:
-  - todo
+  - done
 depends_on: []
 source_id: MYPL-4184
 source_url: https://fln2000.backlog.com/view/MYPL-4184
