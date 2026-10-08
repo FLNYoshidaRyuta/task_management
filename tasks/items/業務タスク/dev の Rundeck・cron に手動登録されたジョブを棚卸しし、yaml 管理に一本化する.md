@@ -9,7 +9,8 @@ end:
 priority: []
 estimate:
 depends_on: []
-related: []
+related:
+  - "[[tasks/items/開発標準化/dev の Rundeck・cron に手動登録されたジョブを棚卸しし、yaml 管理に一本化する|dev の Rundeck・cron に手動登録されたジョブを棚卸しし、yaml 管理に一本化する]]"
 
 source_type:
   - github_issue

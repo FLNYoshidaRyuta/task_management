@@ -9,7 +9,8 @@ end:
 priority: []
 estimate:
 depends_on: []
-related: []
+related:
+  - "[[tasks/items/まいぷれくん/まいぷれくん： Gemini が遅いと約120秒待って「Request timed out.」で失敗する（本番で OpenRouter への退避が動いていない）|まいぷれくん： Gemini が遅いと約120秒待って「Request timed out.」で失敗する（本番で OpenRouter への退避が動いていない）]]"
 
 source_type:
   - github_issue

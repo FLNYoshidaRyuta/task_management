@@ -9,7 +9,8 @@ end:
 priority: []
 estimate:
 depends_on: []
-related: []
+related:
+  - "[[tasks/items/agent-poc/Gemini が遅いと約120秒待って「Request timed out.」で失敗する（本番で OpenRouter への退避が一度も動いていない）|Gemini が遅いと約120秒待って「Request timed out.」で失敗する（本番で OpenRouter への退避が一度も動いていない）]]"
 
 source_type:
   - backlog_issue

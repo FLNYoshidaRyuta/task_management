@@ -9,7 +9,8 @@ end:
 priority: []
 estimate:
 depends_on: []
-related: []
+related:
+  - "[[tasks/items/開発標準化/dev への DB コピー時に GBP の連携情報も消す|dev への DB コピー時に GBP の連携情報も消す]]"
 
 source_type:
   - github_issue

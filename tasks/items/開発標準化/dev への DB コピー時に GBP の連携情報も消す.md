@@ -9,7 +9,8 @@ end:
 priority: []
 estimate:
 depends_on: []
-related: []
+related:
+  - "[[tasks/items/業務タスク/dev への DB コピー時に GBP の連携情報も消す|dev への DB コピー時に GBP の連携情報も消す]]"
 
 source_type:
   - backlog_issue
