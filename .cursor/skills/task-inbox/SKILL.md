@@ -1,7 +1,8 @@
 ---
 name: task-inbox
 description: >-
-  GitHub と Backlog の取得キャッシュを個人タスクと照合し、タスク化候補を提示する。
+  GitHub と Backlog の取得キャッシュを個人タスクと照合し、タスク化候補と更新を提示する。
+  確認後は inbox_hints で一致・更新差分を出し、関係と反映内容を提案する。
   ユーザーが Inbox、未タスクの Issue や課題、外部情報の取り込み、
   新しい仕事候補の確認を頼んだときに使う。タスクファイルは変更しない。
 ---
@@ -22,9 +23,9 @@ GitHub と Backlog のキャッシュを個人タスクと照合し、ユーザ�
 
 外部サービスの status、priority、dueDate、estimatedHours を、個人タスクの status、priority、start、end、estimate へコピーしない。
 
-照合は各タスクの `source_type` と `source_id` だけを使う。Backlog 課題本文の GitHub URL や、別ソース同士の同一作業は自動判定しない。
+照合は各タスクの `source_type` と `source_id` だけを使う。別ソースを同一タスクへ自動マージしない。
 
-個人タスク同士を関連づけるかは Inbox の対象外である。ユーザーが関連だと判断したときは、`task-manager` に指示する。
+Inbox はタスクファイルを書かない。一致と更新差分は `inbox_hints.py` で機械的に出し、親子・関連・依存の種類と反映内容はエージェントが提案する。採用後だけ `task-manager` が書く。
 
 ## Procedure
 
@@ -87,9 +88,47 @@ py .\tasks\_scripts\compare_inbox.py --sources github,backlog --format markdown
 
 タイトルを変える指定が無いときは、キャッシュの title を使う。priority、start、end、estimate の指定が無いときは空欄として渡す。
 
-### 5. Materialize
+ユーザーが新規候補も更新（`U`）も `M` の status 変更も選ばなかったときは、ここで終わる。
 
-#### 5a. 新規タスク化
+### 5. Propose
+
+ユーザーが選んだ新規候補と更新（`U`）を、`source_type:source_id` に変換してから次を実行する。Markdown の番号の再解釈はスクリプトに渡さない。
+
+```powershell
+py .\tasks\_scripts\inbox_hints.py --sources github,backlog `
+  --new backlog_issue:MYPL-4238 `
+  --update backlog_issue:MYPL-4221
+```
+
+新規だけのときは `--new` だけ。更新だけのときは `--update` だけ。
+
+出力の `## 一致` と `## 更新差分` を根拠に、ユーザーへ提案して止まる。スクリプト出力に無い関係や更新は提案しない。
+
+#### 5a. 一致からの関係提案
+
+`same_title` または `github_ref` があるときだけ、根拠ごとに次のいずれかを1つ提案する。
+
+- 別ソースの同一作業 → `related`（1タスクにまとめない）
+- 本文が親 Issue や移行対象を指している → `tasks/_タスク.md` の親子ネスト
+- 作業順が本文に書いてある → `depends_on`
+
+一致が無いときは関係提案を出さない。
+
+#### 5b. 更新差分からの反映提案
+
+`## 更新差分` があるとき、次を分けて提案する。
+
+- `source_updated_at` をキャッシュに合わせる
+- キャッシュ本文にありタスク本文に無い事実があれば、引用つきで本文追記を提案する
+- 外部 state は参考として示す。個人タスクの `status` を外部 state に合わせる提案は、ユーザーが status を明示したときだけ含める
+
+Backlog の status、priority、dueDate、estimatedHours を個人タスクの属性へコピーする提案はしない。
+
+採用・不採用をユーザーに確認してから次へ進む。
+
+### 6. Materialize
+
+#### 6a. 新規タスク化
 
 選ばれた候補だけを task-manager に渡す。
 
@@ -105,6 +144,14 @@ py .\tasks\_scripts\compare_inbox.py --sources github,backlog --format markdown
 
 `source_type` は `backlog_issue`、`github_issue`、`github_pr` のいずれかだけを渡す。渡したあと、task-manager の結果をそのまま報告する。
 
-#### 5b. キャッシュ欠落タスクの status 更新
+#### 6b. 更新の反映
+
+ユーザーが採用した更新だけを task-manager に渡す。`source_updated_at` の同期、本文追記、ユーザーが明示した status 変更など、採用された項目だけを含める。
+
+#### 6c. 関係の反映
+
+ユーザーが採用した親子・`related`・`depends_on` だけを task-manager に渡す。不採用の関係は書かない。
+
+#### 6d. キャッシュ欠落タスクの status 更新
 
 ユーザーが `M` 番号と `done` または `canceled` を明示したタスクだけを task-manager に渡す。渡す内容はタスク path と新しい status のみでよい。外部 Issue / 課題の close は行わない。

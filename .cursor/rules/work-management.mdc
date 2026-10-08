@@ -188,6 +188,8 @@ Backlog上の以下の値を、
 
 関連づけは人間が判断し、`task-manager` が両方のタスクの `related` に Wikilink を書く。片側だけに書かない。
 
+Inbox では `tasks/_scripts/inbox_hints.py` の一致結果を根拠に、親子・`related`・`depends_on` を提案してよい。ファイルへ書くのはユーザーが採用したあと、`task-manager` だけが行う。
+
 関連を付けても、相手タスクの `status`、`priority`、`start`、`end`、`estimate`、`source_type`、`source_id` はコピーしない。
 
 `tasks/関連図.md` は `generate_views.py` が `related` から生成する派生ビューである。
