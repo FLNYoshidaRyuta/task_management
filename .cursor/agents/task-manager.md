@@ -43,7 +43,7 @@ tasks/items/<project>/<title>.md
 
 生成済みタスクも通常の個人タスクとして扱う。
 ユーザーが指定した status、start、end、priority、estimate、本文は更新してよい。
-source_type、source_id、routine_date、parent は変えない。
+routine_date、parent は変えない。ユーザーが外部同期を指示したときだけ、該当チャンネルの `github_*` または `backlog_*` を更新する。
 
 frontmatterは基本的に以下を使用する。
 
@@ -59,17 +59,20 @@ estimate:
 depends_on: []
 related: []
 
-source_type: []
-source_id:
-source_url:
-source_updated_at:
+github_type: []
+github_id:
+github_url:
+github_updated_at:
+backlog_id:
+backlog_url:
+backlog_updated_at:
 ---
 
 `task_id` は採番スクリプトが付ける。作成時に自分で書かない。
 既存タスクを書き直すときは、既にある `task_id` 行を残し、値を変えない。
 frontmatter に `id` は書かない。Obsidian の予約プロパティと競合する。
 
-`status`、`priority`、`source_type` は YAML のリストで書く。未設定は `[]`、値があるときは1件だけ `- 値` とする。2件以上は書かない。
+`status`、`priority`、`github_type` は YAML のリストで書く。未設定は `[]`、値があるときは1件だけ `- 値` とする。2件以上は書かない。
 
 statusは以下のみ。
 
@@ -86,12 +89,12 @@ priorityは以下のみ。
 - Mid
 - Low
 
-source_typeは以下のみ。
+github_typeは以下のみ。
 
-- backlog_issue
 - github_issue
 - github_pr
-- routine
+
+ルーティーン生成タスクだけ `source_type: routine` と `source_id` を使う。
 
 ## 判断してはいけないこと
 
@@ -109,25 +112,15 @@ source_typeは以下のみ。
 
 sources/github/ はGitHubから取得した情報であり、読み取り専用。
 
-GitHub IssueやPRをタスク化するときは必ず以下を保持する。
+GitHub Issue や PR をタスク化するときは `github_type`、`github_id`、`github_url`、`github_updated_at` をキャッシュから入れる。
 
-- source_type
-- source_id
-- source_url
-- source_updated_at
+Backlog 課題をタスク化するときは `backlog_id`、`backlog_url`、`backlog_updated_at` を入れる。
 
-source_type は次のいずれか。
+同じ作業に GitHub と Backlog の両方があるときは1ファイルに両方のポインタを載せる。別ファイルに分けない。
 
-- Issue は github_issue
-- PR は github_pr
+`github_id` は `owner/repo#番号` とする。例: FutureLinkNetwork/089_ImageServer#12
 
-source_id は `owner/repo#番号` とする。
-
-例: FutureLinkNetwork/089_ImageServer#12
-
-GitHub Issue/PRと個人タスクは同一ではない。
-
-1つのIssueを複数の個人タスクに分解してよい。
+外部 Issue/PR/課題と個人タスクは同一ではない。1つの Issue を複数の個人タスクに分解してよい。
 
 ## 関連タスク
 
@@ -139,7 +132,7 @@ GitHub Issue/PRと個人タスクは同一ではない。
 
 `related` の書式は `depends_on` と同じ。必ず `tasks/items/` から始める Vault ルート相対の Wikilink を使う。
 
-関連を付けても、相手タスクの `status`、`priority`、`start`、`end`、`estimate`、`source_type`、`source_id` は変えない。
+関連を付けても、相手タスクの `status`、`priority`、`start`、`end`、`estimate`、`github_*`、`backlog_*` は変えない。
 
 既存タスクに `related` が無い場合は、関連を付けるときだけキーを追加してよい。無関係な既存タスクへ `related: []` を一括追加しない。
 

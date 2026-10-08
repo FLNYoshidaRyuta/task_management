@@ -8,6 +8,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import inbox_hints
+from test_compare_inbox import backlog_fm
 
 
 def write_json(path: Path, items: list) -> None:
@@ -153,29 +154,11 @@ class InboxHintsTest(unittest.TestCase):
         write_json(self.vault / "sources/backlog/assigned-issues.json", [])
         write_task(
             self.vault / "tasks/items/改善要望/同じ名前.md",
-            "\n".join(
-                [
-                    "title: 共通タイトル",
-                    "status:",
-                    "  - todo",
-                    "source_type:",
-                    "  - backlog_issue",
-                    "source_id: MYPL-X",
-                ]
-            ),
+            backlog_fm("共通タイトル", "MYPL-X"),
         )
         write_task(
             self.vault / "tasks/items/改善要望/同じ名前2.md",
-            "\n".join(
-                [
-                    "title: 共通タイトル",
-                    "status:",
-                    "  - todo",
-                    "source_type:",
-                    "  - backlog_issue",
-                    "source_id: MYPL-Y",
-                ]
-            ),
+            backlog_fm("共通タイトル", "MYPL-Y"),
         )
 
         md = inbox_hints.build_hints(self.vault, ["backlog"], [], [])
@@ -199,17 +182,7 @@ class InboxHintsTest(unittest.TestCase):
         )
         write_task(
             self.vault / "tasks/items/改善要望/更新対象.md",
-            "\n".join(
-                [
-                    "title: タスクタイトル",
-                    "status:",
-                    "  - todo",
-                    "source_type:",
-                    "  - backlog_issue",
-                    "source_id: MYPL-UPD",
-                    "source_updated_at: 2026-10-06T02:21:01Z",
-                ]
-            ),
+            backlog_fm("タスクタイトル", "MYPL-UPD", updated="2026-10-06T02:21:01Z"),
         )
 
         md = inbox_hints.build_hints(

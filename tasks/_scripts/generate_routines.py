@@ -709,6 +709,14 @@ def render_task(
     lines.extend(
         [
             "",
+            "github_type: []",
+            "github_id:",
+            "github_url:",
+            "github_updated_at:",
+            "backlog_id:",
+            "backlog_url:",
+            "backlog_updated_at:",
+            "",
             "source_type:",
             "  - routine",
             f"source_id: {yaml_scalar(source_id)}",

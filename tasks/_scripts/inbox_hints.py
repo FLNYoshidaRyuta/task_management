@@ -15,9 +15,9 @@ from compare_inbox import (
     load_json_list,
     parse_time,
     read_frontmatter,
-    task_identity,
     title_of,
 )
+from task_source_links import task_source_identities
 
 IDENTITY_RE = re.compile(r"^[^:]+:.+$")
 GITHUB_ISSUE_URL_RE = re.compile(
@@ -92,15 +92,28 @@ def load_all_tasks(vault: Path) -> list[dict]:
         if data is None:
             continue
 
-        identity = task_identity(data)
-        tasks.append(
-            {
-                "path": path.relative_to(vault).as_posix(),
-                "title": data.get("title") or "",
-                "source_type": identity[0] if identity else "",
-                "source_id": identity[1] if identity else "",
-            }
-        )
+        identities = task_source_identities(data)
+        rel_path = path.relative_to(vault).as_posix()
+        title = data.get("title") or ""
+        if not identities:
+            tasks.append(
+                {
+                    "path": rel_path,
+                    "title": title,
+                    "source_type": "",
+                    "source_id": "",
+                }
+            )
+            continue
+        for source_type, source_id in identities:
+            tasks.append(
+                {
+                    "path": rel_path,
+                    "title": title,
+                    "source_type": source_type,
+                    "source_id": source_id,
+                }
+            )
     return tasks
 
 

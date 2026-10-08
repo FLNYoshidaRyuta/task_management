@@ -28,16 +28,19 @@ PRIORITY_CHOICES = (
     "Low",
 )
 SOURCE_TYPE_CHOICES = (
-    "backlog_issue",
+    "routine",
+)
+
+GITHUB_TYPE_CHOICES = (
     "github_issue",
     "github_pr",
-    "routine",
 )
 
 PROPERTY_CHOICES = {
     "status": STATUS_CHOICES,
     "priority": PRIORITY_CHOICES,
     "source_type": SOURCE_TYPE_CHOICES,
+    "github_type": GITHUB_TYPE_CHOICES,
 }
 
 SINGLE_CHOICE_FIELDS = {

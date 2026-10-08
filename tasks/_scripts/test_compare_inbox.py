@@ -19,6 +19,43 @@ def write_task(path: Path, frontmatter: str) -> None:
     path.write_text(f"---\n{frontmatter}\n---\n本文\n", encoding="utf-8")
 
 
+def backlog_fm(title: str, backlog_id: str, updated: str = "", url: str = "") -> str:
+    backlog_url = url or f"https://example.test/view/{backlog_id}"
+    lines = [
+        f"title: {title}",
+        "status:",
+        "  - todo",
+        f"backlog_id: {backlog_id}",
+        f"backlog_url: {backlog_url}",
+    ]
+    if updated:
+        lines.append(f"backlog_updated_at: {updated}")
+    return "\n".join(lines)
+
+
+def github_fm(
+    title: str,
+    github_id: str,
+    github_type: str = "github_issue",
+    updated: str = "",
+    url: str = "",
+) -> str:
+    repo, number = github_id.split("#", 1)
+    github_url = url or f"https://github.com/{repo}/issues/{number}"
+    lines = [
+        f"title: {title}",
+        "status:",
+        "  - todo",
+        "github_type:",
+        f"  - {github_type}",
+        f"github_id: {github_id}",
+        f"github_url: {github_url}",
+    ]
+    if updated:
+        lines.append(f"github_updated_at: {updated}")
+    return "\n".join(lines)
+
+
 class CompareInboxTest(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
@@ -51,17 +88,7 @@ class CompareInboxTest(unittest.TestCase):
         )
         write_task(
             self.vault / "tasks/items/改善要望/更新された課題.md",
-            "\n".join(
-                [
-                    "title: 更新された課題",
-                    "status:",
-                    "  - todo",
-                    "source_type:",
-                    "  - backlog_issue",
-                    "source_id: MYPL-2",
-                    "source_updated_at: 2026-10-06T00:00:00Z",
-                ]
-            ),
+            backlog_fm("更新された課題", "MYPL-2", updated="2026-10-06T00:00:00Z"),
         )
 
         result = compare_inbox.compare(self.vault, ["backlog"])
@@ -95,17 +122,7 @@ class CompareInboxTest(unittest.TestCase):
         write_json(self.vault / "sources/github/review-requests.json", [review])
         write_task(
             self.vault / "tasks/items/画質向上/旧キー.md",
-            "\n".join(
-                [
-                    "title: 旧キー",
-                    "status:",
-                    "  - todo",
-                    "source_type:",
-                    "  - github_issue",
-                    "source_repo: owner/repo",
-                    "source_number: 12",
-                ]
-            ),
+            github_fm("旧キー", "owner/repo#12"),
         )
         write_json(
             self.vault / "sources/github/assigned-issues.json",
@@ -195,16 +212,10 @@ class CompareInboxTest(unittest.TestCase):
         write_json(self.vault / "sources/github/review-requests.json", [])
         write_task(
             self.vault / "tasks/items/画質向上/欠落.md",
-            "\n".join(
-                [
-                    "title: 欠落",
-                    "status:",
-                    "  - todo",
-                    "source_type:",
-                    "  - github_issue",
-                    "source_id: owner/repo#99",
-                    "source_url: https://github.com/owner/repo/issues/99",
-                ]
+            github_fm(
+                "欠落",
+                "owner/repo#99",
+                url="https://github.com/owner/repo/issues/99",
             ),
         )
 
@@ -221,29 +232,11 @@ class CompareInboxTest(unittest.TestCase):
         write_json(self.vault / "sources/github/review-requests.json", [])
         write_task(
             self.vault / "tasks/items/画質向上/完了.md",
-            "\n".join(
-                [
-                    "title: 完了",
-                    "status:",
-                    "  - done",
-                    "source_type:",
-                    "  - github_issue",
-                    "source_id: owner/repo#1",
-                ]
-            ),
+            github_fm("完了", "owner/repo#1").replace("  - todo", "  - done"),
         )
         write_task(
             self.vault / "tasks/items/画質向上/却下.md",
-            "\n".join(
-                [
-                    "title: 却下",
-                    "status:",
-                    "  - canceled",
-                    "source_type:",
-                    "  - github_issue",
-                    "source_id: owner/repo#2",
-                ]
-            ),
+            github_fm("却下", "owner/repo#2").replace("  - todo", "  - canceled"),
         )
 
         result = compare_inbox.compare(self.vault, ["github"])
@@ -255,16 +248,7 @@ class CompareInboxTest(unittest.TestCase):
         write_json(self.vault / "sources/github/review-requests.json", [])
         write_task(
             self.vault / "tasks/items/改善要望/Backlogだけ.md",
-            "\n".join(
-                [
-                    "title: Backlogだけ",
-                    "status:",
-                    "  - todo",
-                    "source_type:",
-                    "  - backlog_issue",
-                    "source_id: MYPL-404",
-                ]
-            ),
+            backlog_fm("Backlogだけ", "MYPL-404"),
         )
 
         result = compare_inbox.compare(self.vault, ["github"])
@@ -306,47 +290,21 @@ class CompareInboxTest(unittest.TestCase):
         )
         write_task(
             self.vault / "tasks/items/改善要望/更新あり.md",
-            "\n".join(
-                [
-                    "title: 更新あり",
-                    "status:",
-                    "  - todo",
-                    "source_type:",
-                    "  - backlog_issue",
-                    "source_id: MYPL-UPD",
-                    "source_updated_at: 2026-10-06T00:00:00Z",
-                ]
-            ),
+            backlog_fm("更新あり", "MYPL-UPD", updated="2026-10-06T00:00:00Z"),
         )
         write_task(
             self.vault / "tasks/items/改善要望/同期済み.md",
-            "\n".join(
-                [
-                    "title: 同期済み",
-                    "status:",
-                    "  - todo",
-                    "source_type:",
-                    "  - backlog_issue",
-                    "source_id: MYPL-LINKED",
-                    "source_updated_at: 2026-10-05T00:00:00Z",
-                ]
-            ),
+            backlog_fm("同期済み", "MYPL-LINKED", updated="2026-10-05T00:00:00Z"),
         )
         write_json(self.vault / "sources/github/assigned-issues.json", [])
         write_json(self.vault / "sources/github/my-prs.json", [])
         write_json(self.vault / "sources/github/review-requests.json", [])
         write_task(
             self.vault / "tasks/items/画質向上/欠落表示.md",
-            "\n".join(
-                [
-                    "title: 欠落表示",
-                    "status:",
-                    "  - todo",
-                    "source_type:",
-                    "  - github_issue",
-                    "source_id: owner/repo#77",
-                    "source_url: https://github.com/owner/repo/issues/77",
-                ]
+            github_fm(
+                "欠落表示",
+                "owner/repo#77",
+                url="https://github.com/owner/repo/issues/77",
             ),
         )
 
@@ -371,6 +329,129 @@ class CompareInboxTest(unittest.TestCase):
         self.assertIn("M1. **github_issue** | `owner/repo#77`", md)
         self.assertIn("欠落表示", md)
 
+    def test_dual_source_task_links_both_channels(self):
+        write_json(
+            self.vault / "sources/github/assigned-issues.json",
+            [
+                {
+                    "sourceType": "github_issue",
+                    "sourceId": "org/repo#1",
+                    "sourceUrl": "https://github.com/org/repo/issues/1",
+                    "sourceUpdatedAt": "2026-10-08T00:00:00Z",
+                    "title": "GitHub",
+                    "state": "open",
+                }
+            ],
+        )
+        write_json(self.vault / "sources/github/my-prs.json", [])
+        write_json(self.vault / "sources/github/review-requests.json", [])
+        write_json(
+            self.vault / "sources/backlog/assigned-issues.json",
+            [
+                {
+                    "sourceType": "backlog_issue",
+                    "sourceId": "MYPL-9",
+                    "sourceUrl": "https://example.test/view/MYPL-9",
+                    "sourceUpdatedAt": "2026-10-08T01:00:00Z",
+                    "summary": "Backlog",
+                    "status": {"name": "未対応"},
+                }
+            ],
+        )
+        write_task(
+            self.vault / "tasks/items/業務タスク/両方.md",
+            "\n".join(
+                [
+                    "title: 両方",
+                    "status:",
+                    "  - todo",
+                    "github_type:",
+                    "  - github_issue",
+                    "github_id: org/repo#1",
+                    "github_url: https://github.com/org/repo/issues/1",
+                    "github_updated_at: 2026-10-07T00:00:00Z",
+                    "backlog_id: MYPL-9",
+                    "backlog_url: https://example.test/view/MYPL-9",
+                    "backlog_updated_at: 2026-10-07T00:00:00Z",
+                ]
+            ),
+        )
+
+        result = compare_inbox.compare(self.vault, ["github", "backlog"])
+        by_key = {
+            (item["source_type"], item["source_id"]): item for item in result["candidates"]
+        }
+        self.assertEqual(len(by_key[("github_issue", "org/repo#1")]["linked_tasks"]), 1)
+        self.assertEqual(len(by_key[("backlog_issue", "MYPL-9")]["linked_tasks"]), 1)
+        self.assertTrue(by_key[("github_issue", "org/repo#1")]["cache_newer"])
+        self.assertTrue(by_key[("backlog_issue", "MYPL-9")]["cache_newer"])
+
+    def test_attach_backlog_to_existing_github_task(self):
+        write_json(
+            self.vault / "sources/backlog/assigned-issues.json",
+            [
+                {
+                    "sourceType": "backlog_issue",
+                    "sourceId": "MYPL-99",
+                    "sourceUrl": "https://example.test/view/MYPL-99",
+                    "sourceUpdatedAt": "2026-10-08T00:00:00Z",
+                    "summary": "Backlog only",
+                    "description": "https://github.com/org/repo/issues/5",
+                    "status": {"name": "未対応"},
+                }
+            ],
+        )
+        write_task(
+            self.vault / "tasks/items/業務タスク/GitHubだけ.md",
+            github_fm("GitHubだけ", "org/repo#5"),
+        )
+
+        result = compare_inbox.compare(self.vault, ["backlog"])
+        item = result["candidates"][0]
+        self.assertEqual(item["linked_tasks"], [])
+        self.assertEqual(
+            item["attach_to"], "tasks/items/業務タスク/GitHubだけ.md"
+        )
+
+    def test_missing_only_for_absent_channel(self):
+        write_json(self.vault / "sources/github/assigned-issues.json", [])
+        write_json(self.vault / "sources/github/my-prs.json", [])
+        write_json(self.vault / "sources/github/review-requests.json", [])
+        write_json(
+            self.vault / "sources/backlog/assigned-issues.json",
+            [
+                {
+                    "sourceType": "backlog_issue",
+                    "sourceId": "MYPL-1",
+                    "sourceUrl": "https://example.test/view/MYPL-1",
+                    "sourceUpdatedAt": "2026-10-08T00:00:00Z",
+                    "summary": "ある",
+                    "status": {"name": "未対応"},
+                }
+            ],
+        )
+        write_task(
+            self.vault / "tasks/items/業務タスク/片方欠落.md",
+            "\n".join(
+                [
+                    "title: 片方欠落",
+                    "status:",
+                    "  - todo",
+                    "github_type:",
+                    "  - github_issue",
+                    "github_id: org/repo#404",
+                    "github_url: https://github.com/org/repo/issues/404",
+                    "backlog_id: MYPL-1",
+                    "backlog_url: https://example.test/view/MYPL-1",
+                ]
+            ),
+        )
+
+        result = compare_inbox.compare(self.vault, ["github", "backlog"])
+        missing = result["missing_from_cache"]
+        self.assertEqual(len(missing), 1)
+        self.assertEqual(missing[0]["source_id"], "org/repo#404")
+
     def test_format_markdown_empty_sections(self):
         write_json(self.vault / "sources/github/assigned-issues.json", [])
         write_json(self.vault / "sources/github/my-prs.json", [])
@@ -382,6 +463,7 @@ class CompareInboxTest(unittest.TestCase):
 
         self.assertIn("## 新規候補", md)
         self.assertIn("（0件）", md)
+        self.assertIn("## 追記候補", md)
         self.assertIn("## 更新あり", md)
         self.assertIn("## キャッシュに無い未完了タスク", md)
 

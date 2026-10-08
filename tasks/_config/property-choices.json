@@ -14,9 +14,10 @@
     "Low"
   ],
   "source_type": [
-    "backlog_issue",
-    "github_issue",
-    "github_pr",
     "routine"
+  ],
+  "github_type": [
+    "github_issue",
+    "github_pr"
   ]
 }

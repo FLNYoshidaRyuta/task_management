@@ -17,8 +17,10 @@ properties:
     displayName: priority
   estimate:
     displayName: estimate
-  source_url:
-    displayName: source
+  github_id:
+    displayName: github
+  backlog_id:
+    displayName: backlog
 views:
   - type: table
     name: 現役
@@ -33,21 +35,21 @@ views:
       - task_id
       - file.name
       - status
-      - source_type
+      - github_id
+      - backlog_id
       - start
       - end
       - priority
       - estimate
-      - source_url
       - related
       - depends_on
       - parent
     sort: []
     columnSize:
       file.name: 448
-      note.source_type: 89
+      note.github_id: 120
+      note.backlog_id: 100
       note.start: 61
-      note.source_url: 225
       note.related: 138
       note.depends_on: 113
   - type: table

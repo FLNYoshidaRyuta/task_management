@@ -23,7 +23,7 @@ GitHub と Backlog のキャッシュを個人タスクと照合し、ユーザ�
 
 外部サービスの status、priority、dueDate、estimatedHours を、個人タスクの status、priority、start、end、estimate へコピーしない。
 
-照合は各タスクの `source_type` と `source_id` だけを使う。別ソースを同一タスクへ自動マージしない。
+照合は各タスクの `github_type`+`github_id` と `backlog_id` を使う。ファイルへの追記はユーザー指示後の task-manager だけが行う。
 
 Inbox はタスクファイルを書かない。一致と更新差分は `inbox_hints.py` で機械的に出し、親子・関連・依存の種類と反映内容はエージェントが提案する。採用後だけ `task-manager` が書く。
 
@@ -60,9 +60,10 @@ py .\tasks\_scripts\compare_inbox.py --sources github,backlog --format markdown
 
 `--format markdown` の出力をそのままユーザーに提示する。内容は次の3セクションである。
 
-- **新規候補**: 番号 `1`, `2`, …（`linked_tasks` が空のキャッシュ項目）
-- **更新あり**: 番号 `U1`, `U2`, …（紐づきありかつキャッシュの `source_updated_at` がタスクより新しい）
-- **キャッシュに無い未完了タスク**: 番号 `M1`, `M2`, …
+- **新規候補**: 番号 `1`, `2`, …（紐づきも追記候補も無いキャッシュ項目）
+- **追記候補**: 番号 `A1`, `A2`, …（`attach_to` に既存タスク path がある項目。別チャンネルを足す候補）
+- **更新あり**: 番号 `U1`, `U2`, …（紐づきありかつキャッシュの `source_updated_at` がタスクの当該チャンネルより新しい）
+- **キャッシュに無い未完了タスク**: 番号 `M1`, `M2`, …（欠落したチャンネルの id 単位）
 
 各項目に含まれる source_type、source_id、title、url、外部状態、更新日時、紐づくタスク path はスクリプト出力を正とする。エージェントが手で並べ替えや再採番をしない。
 
@@ -108,7 +109,7 @@ py .\tasks\_scripts\inbox_hints.py --sources github,backlog `
 
 `same_title` または `github_ref` があるときだけ、根拠ごとに次のいずれかを1つ提案する。
 
-- 別ソースの同一作業 → `related`（1タスクにまとめない）
+- 別ソースの同一作業 → 既存タスクへ `backlog_*` または `github_*` を足す（`attach_to` と一致提案が揃うとき）
 - 本文が親 Issue や移行対象を指している → `tasks/_タスク.md` の親子ネスト
 - 作業順が本文に書いてある → `depends_on`
 
@@ -118,7 +119,7 @@ py .\tasks\_scripts\inbox_hints.py --sources github,backlog `
 
 `## 更新差分` があるとき、次を分けて提案する。
 
-- `source_updated_at` をキャッシュに合わせる
+- 当該チャンネルの `github_updated_at` または `backlog_updated_at` をキャッシュに合わせる
 - キャッシュ本文にありタスク本文に無い事実があれば、引用つきで本文追記を提案する
 - 外部 state は参考として示す。個人タスクの `status` を外部 state に合わせる提案は、ユーザーが status を明示したときだけ含める
 
@@ -136,13 +137,10 @@ Backlog の status、priority、dueDate、estimatedHours を個人タスクの�
 
 - project
 - title
-- source_type
-- source_id
-- source_url
-- source_updated_at
+- キャッシュから取った GitHub または Backlog のポインタ（`github_*` / `backlog_*`）
 - ユーザーが明示した status、priority、start、end、estimate、本文
 
-`source_type` は `backlog_issue`、`github_issue`、`github_pr` のいずれかだけを渡す。渡したあと、task-manager の結果をそのまま報告する。
+追記候補（`A` 番号）のときは、新規ファイルを作らず `attach_to` のタスク path に足すチャンネルだけを渡す。
 
 #### 6b. 更新の反映
 

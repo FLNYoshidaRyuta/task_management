@@ -162,23 +162,21 @@ Backlog上の以下の値を、
 逆に、外部Issueや課題が存在しても、
 必ず個人タスク化する必要はない。
 
-外部情報を個人タスク化するときは、
-元情報を追跡できるように以下を保持する。
+外部情報を個人タスク化するときは、作業1件の frontmatter に次を載せる。片方だけのときは空欄にする。
 
-- `source_type`
-- `source_id`
-- `source_url`
-- `source_updated_at`
+- GitHub: `github_type`（`github_issue` または `github_pr`）、`github_id`、`github_url`、`github_updated_at`
+- Backlog: `backlog_id`、`backlog_url`、`backlog_updated_at`
 
-`source_id` の形は次のとおり。
+`github_id` と Backlog の `backlog_id` の形は次のとおり。
 
-| source_type | source_id |
+| チャンネル | id の形 |
 |---|---|
-| `backlog_issue` | 課題キー。例: `MYPL-4221` |
-| `github_issue` | `owner/repo#番号`。例: `FutureLinkNetwork/089_ImageServer#12` |
-| `github_pr` | `owner/repo#番号`。例: `FutureLinkNetwork/089_ImageServer#4` |
+| GitHub Issue / PR | `owner/repo#番号`。例: `FutureLinkNetwork/089_ImageServer#12` |
+| Backlog 課題 | 課題キー。例: `MYPL-4221` |
 
-同じ `source_type` と `source_id` は、同一の外部情報を指す。
+ルーティーン生成タスクだけ `source_type: routine` と `source_id` を使う。
+
+Inbox 照合は各チャンネルの id で行う。同一作業を別タスクに分けない。追記候補は `compare_inbox.py` の `attach_to` を正とする。
 
 外部サービスに書かれていない事実を推測して追加しない。
 
@@ -190,7 +188,7 @@ Backlog上の以下の値を、
 
 Inbox では `tasks/_scripts/inbox_hints.py` の一致結果を根拠に、親子・`related`・`depends_on` を提案してよい。ファイルへ書くのはユーザーが採用したあと、`task-manager` だけが行う。
 
-関連を付けても、相手タスクの `status`、`priority`、`start`、`end`、`estimate`、`source_type`、`source_id` はコピーしない。
+関連を付けても、相手タスクの `status`、`priority`、`start`、`end`、`estimate`、`github_*`、`backlog_*` はコピーしない。
 
 `tasks/関連図.md` は `generate_views.py` が `related` から生成する派生ビューである。
 

@@ -12,6 +12,13 @@ from pathlib import Path
 import yaml
 
 from task_properties import single_choice
+from task_source_links import (
+    backlog_keys_from_text,
+    github_ids_from_text,
+    task_source_identities,
+    task_updated_at_for_channel,
+    task_url_for_channel,
+)
 
 
 GITHUB_FILES = (
@@ -130,6 +137,14 @@ def candidate_from_item(item: dict) -> dict | None:
     if not source_type or not source_id:
         return None
 
+    link_text = ""
+    if source_type == "backlog_issue":
+        description = item.get("description")
+        link_text = description if isinstance(description, str) else ""
+    elif source_type in ("github_issue", "github_pr"):
+        body = item.get("body")
+        link_text = body if isinstance(body, str) else ""
+
     return {
         "source_type": source_type,
         "source_id": source_id,
@@ -137,6 +152,7 @@ def candidate_from_item(item: dict) -> dict | None:
         "source_url": item.get("sourceUrl") or "",
         "source_updated_at": as_text(item.get("sourceUpdatedAt")),
         "external_state": external_state(item),
+        "_link_text": link_text,
     }
 
 
@@ -163,29 +179,6 @@ def merge_candidates(items: list[dict]) -> list[dict]:
     return [merged[key] for key in order]
 
 
-def task_identity(data: dict) -> tuple[str, str] | None:
-    source_type = single_choice(data.get("source_type"))
-    if not source_type or source_type == "routine":
-        return None
-
-    source_id = data.get("source_id")
-    if isinstance(source_id, str) and source_id:
-        return source_type, source_id
-
-    source_repo = data.get("source_repo")
-    source_number = data.get("source_number")
-    if (
-        source_type in ("github_issue", "github_pr")
-        and isinstance(source_repo, str)
-        and source_repo
-        and source_number is not None
-        and str(source_number).strip()
-    ):
-        return source_type, f"{source_repo}#{source_number}"
-
-    return None
-
-
 def load_tasks(vault: Path) -> dict[tuple[str, str], list[dict]]:
     items_dir = vault / "tasks" / "items"
     linked: dict[tuple[str, str], list[dict]] = {}
@@ -201,21 +194,55 @@ def load_tasks(vault: Path) -> dict[tuple[str, str], list[dict]]:
         if data is None:
             continue
 
-        identity = task_identity(data)
-        if identity is None:
-            continue
-
-        linked.setdefault(identity, []).append(
-            {
-                "path": path.relative_to(vault).as_posix(),
-                "title": data.get("title") or "",
-                "status": single_choice(data.get("status")),
-                "source_url": data.get("source_url") or "",
-                "source_updated_at": as_text(data.get("source_updated_at")),
-            }
-        )
+        for source_type, source_id in task_source_identities(data):
+            linked.setdefault((source_type, source_id), []).append(
+                {
+                    "path": path.relative_to(vault).as_posix(),
+                    "title": data.get("title") or "",
+                    "status": single_choice(data.get("status")),
+                    "source_url": task_url_for_channel(data, source_type),
+                    "source_updated_at": as_text(
+                        task_updated_at_for_channel(data, source_type)
+                    ),
+                }
+            )
 
     return linked
+
+
+def find_attach_target(
+    candidate: dict,
+    tasks: dict[tuple[str, str], list[dict]],
+) -> str | None:
+    link_text = candidate.get("_link_text") or ""
+    source_type = candidate["source_type"]
+    source_id = candidate["source_id"]
+
+    if source_type == "backlog_issue":
+        for gh_type, gh_id in github_ids_from_text(link_text):
+            linked = tasks.get((gh_type, gh_id), [])
+            if len(linked) != 1:
+                continue
+            task = linked[0]
+            backlog_linked = tasks.get(("backlog_issue", source_id), [])
+            if any(item["path"] == task["path"] for item in backlog_linked):
+                continue
+            return task["path"]
+        return None
+
+    if source_type in ("github_issue", "github_pr"):
+        for backlog_key in backlog_keys_from_text(link_text):
+            linked = tasks.get(("backlog_issue", backlog_key), [])
+            if len(linked) != 1:
+                continue
+            task = linked[0]
+            gh_linked = tasks.get((source_type, source_id), [])
+            if any(item["path"] == task["path"] for item in gh_linked):
+                continue
+            return task["path"]
+        return None
+
+    return None
 
 
 def active_source_types(sources: list[str]) -> frozenset[str]:
@@ -244,29 +271,28 @@ def missing_from_cache(
         if data is None:
             continue
 
-        identity = task_identity(data)
-        if identity is None:
-            continue
-
-        source_type, source_id = identity
-        if source_type not in source_types:
-            continue
-        if identity in cache_keys:
-            continue
-
         status = single_choice(data.get("status"))
         if status in TERMINAL_STATUSES:
             continue
 
-        grouped.setdefault(identity, []).append(
-            {
-                "path": path.relative_to(vault).as_posix(),
-                "title": data.get("title") or "",
-                "status": status,
-                "source_url": data.get("source_url") or "",
-                "source_updated_at": as_text(data.get("source_updated_at")),
-            }
-        )
+        for source_type, source_id in task_source_identities(data):
+            if source_type not in source_types:
+                continue
+            identity = (source_type, source_id)
+            if identity in cache_keys:
+                continue
+
+            grouped.setdefault(identity, []).append(
+                {
+                    "path": path.relative_to(vault).as_posix(),
+                    "title": data.get("title") or "",
+                    "status": status,
+                    "source_url": task_url_for_channel(data, source_type),
+                    "source_updated_at": as_text(
+                        task_updated_at_for_channel(data, source_type)
+                    ),
+                }
+            )
 
     return [
         {
@@ -303,13 +329,19 @@ def compare(vault: Path, sources: list[str]) -> dict:
 
     for candidate in candidates:
         linked = tasks.get((candidate["source_type"], candidate["source_id"]), [])
-        result.append(
-            {
-                **candidate,
-                "linked_tasks": linked,
-                "cache_newer": cache_newer(candidate["source_updated_at"], linked),
-            }
-        )
+        attach_to = None
+        if not linked:
+            attach_to = find_attach_target(candidate, tasks)
+
+        public = {key: value for key, value in candidate.items() if not key.startswith("_")}
+        entry = {
+            **public,
+            "linked_tasks": linked,
+            "cache_newer": cache_newer(candidate["source_updated_at"], linked),
+        }
+        if attach_to:
+            entry["attach_to"] = attach_to
+        result.append(entry)
 
     missing = missing_from_cache(vault, cache_keys, active_source_types(sources))
 
@@ -324,7 +356,14 @@ def format_markdown(result: dict) -> str:
     candidates = result.get("candidates", [])
     missing = result.get("missing_from_cache", [])
 
-    new_items = [c for c in candidates if not c.get("linked_tasks")]
+    new_items = [
+        c
+        for c in candidates
+        if not c.get("linked_tasks") and not c.get("attach_to")
+    ]
+    attach_items = [
+        c for c in candidates if not c.get("linked_tasks") and c.get("attach_to")
+    ]
     updated_items = [
         c
         for c in candidates
@@ -342,6 +381,17 @@ def format_markdown(result: dict) -> str:
             lines.append(
                 f"   - state: {c.get('external_state') or ''} | updated: {c.get('source_updated_at') or ''}"
             )
+    lines.append("")
+
+    lines.append("## 追記候補")
+    if not attach_items:
+        lines.append("（0件）")
+    else:
+        for i, c in enumerate(attach_items, 1):
+            lines.append(f"A{i}. **{c.get('source_type')}** | `{c.get('source_id')}`")
+            lines.append(f"   - title: {c.get('title') or ''}")
+            lines.append(f"   - url: {c.get('source_url') or ''}")
+            lines.append(f"   - attach_to: `{c.get('attach_to') or ''}`")
     lines.append("")
 
     lines.append("## 更新あり")

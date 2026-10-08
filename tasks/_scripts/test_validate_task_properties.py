@@ -47,8 +47,10 @@ class ValidateTaskPropertiesTest(unittest.TestCase):
                     "  - todo",
                     "priority:",
                     "  - High",
-                    "source_type:",
+                    "github_type:",
                     "  - github_issue",
+                    "github_id: org/repo#1",
+                    "github_url: https://github.com/org/repo/issues/1",
                     "---",
                     "",
                 ]
@@ -93,6 +95,51 @@ class ValidateTaskPropertiesTest(unittest.TestCase):
         )
         errors = validate_task_properties.validate_file(path)
         self.assertTrue(any("0件または1件" in item for item in errors))
+
+    def test_new_dual_pointers_are_valid(self):
+        path = self.write_task(
+            "dual.md",
+            "\n".join(
+                [
+                    "---",
+                    "title: dual",
+                    "status:",
+                    "  - todo",
+                    "priority: []",
+                    "source_type: []",
+                    "github_type:",
+                    "  - github_issue",
+                    "github_id: org/repo#1",
+                    "github_url: https://github.com/org/repo/issues/1",
+                    "backlog_id: MYPL-1",
+                    "backlog_url: https://example.test/view/MYPL-1",
+                    "---",
+                    "",
+                ]
+            ),
+        )
+        self.assertEqual(validate_task_properties.validate_file(path), [])
+
+    def test_github_id_without_type_is_invalid(self):
+        path = self.write_task(
+            "bad.md",
+            "\n".join(
+                [
+                    "---",
+                    "title: bad",
+                    "status:",
+                    "  - todo",
+                    "priority: []",
+                    "source_type: []",
+                    "github_id: org/repo#1",
+                    "github_url: https://github.com/org/repo/issues/1",
+                    "---",
+                    "",
+                ]
+            ),
+        )
+        errors = validate_task_properties.validate_file(path)
+        self.assertTrue(any("github_type" in item for item in errors))
 
     def test_unknown_priority_is_invalid(self):
         path = self.write_task(
