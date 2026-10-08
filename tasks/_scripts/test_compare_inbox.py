@@ -274,6 +274,117 @@ class CompareInboxTest(unittest.TestCase):
         with self.assertRaises(FileNotFoundError):
             compare_inbox.compare(self.vault, ["github"])
 
+    def test_format_markdown_sections_and_numbering(self):
+        write_json(
+            self.vault / "sources/backlog/assigned-issues.json",
+            [
+                {
+                    "sourceType": "backlog_issue",
+                    "sourceId": "MYPL-NEW",
+                    "sourceUrl": "https://example.test/view/MYPL-NEW",
+                    "sourceUpdatedAt": "2026-10-06T03:00:00Z",
+                    "summary": "新規だけ",
+                    "status": {"name": "未対応"},
+                },
+                {
+                    "sourceType": "backlog_issue",
+                    "sourceId": "MYPL-UPD",
+                    "sourceUrl": "https://example.test/view/MYPL-UPD",
+                    "sourceUpdatedAt": "2026-10-07T00:00:00Z",
+                    "summary": "更新あり",
+                    "status": {"name": "処理中"},
+                },
+                {
+                    "sourceType": "backlog_issue",
+                    "sourceId": "MYPL-LINKED",
+                    "sourceUrl": "https://example.test/view/MYPL-LINKED",
+                    "sourceUpdatedAt": "2026-10-05T00:00:00Z",
+                    "summary": "紐づき同期済み",
+                    "status": {"name": "未対応"},
+                },
+            ],
+        )
+        write_task(
+            self.vault / "tasks/items/改善要望/更新あり.md",
+            "\n".join(
+                [
+                    "title: 更新あり",
+                    "status:",
+                    "  - todo",
+                    "source_type:",
+                    "  - backlog_issue",
+                    "source_id: MYPL-UPD",
+                    "source_updated_at: 2026-10-06T00:00:00Z",
+                ]
+            ),
+        )
+        write_task(
+            self.vault / "tasks/items/改善要望/同期済み.md",
+            "\n".join(
+                [
+                    "title: 同期済み",
+                    "status:",
+                    "  - todo",
+                    "source_type:",
+                    "  - backlog_issue",
+                    "source_id: MYPL-LINKED",
+                    "source_updated_at: 2026-10-05T00:00:00Z",
+                ]
+            ),
+        )
+        write_json(self.vault / "sources/github/assigned-issues.json", [])
+        write_json(self.vault / "sources/github/my-prs.json", [])
+        write_json(self.vault / "sources/github/review-requests.json", [])
+        write_task(
+            self.vault / "tasks/items/画質向上/欠落表示.md",
+            "\n".join(
+                [
+                    "title: 欠落表示",
+                    "status:",
+                    "  - todo",
+                    "source_type:",
+                    "  - github_issue",
+                    "source_id: owner/repo#77",
+                    "source_url: https://github.com/owner/repo/issues/77",
+                ]
+            ),
+        )
+
+        result = compare_inbox.compare(self.vault, ["backlog", "github"])
+        md = compare_inbox.format_markdown(result)
+
+        self.assertIn("## 新規候補", md)
+        self.assertIn("1. **backlog_issue** | `MYPL-NEW`", md)
+        self.assertIn("title: 新規だけ", md)
+        self.assertIn("state: 未対応", md)
+        self.assertNotIn("MYPL-UPD", md.split("## 更新あり")[0])
+
+        self.assertIn("## 更新あり", md)
+        self.assertIn("U1. **backlog_issue** | `MYPL-UPD`", md)
+        self.assertIn("cache updated: 2026-10-07T00:00:00Z", md)
+        self.assertIn("tasks/items/改善要望/更新あり.md", md)
+        self.assertIn("task updated: 2026-10-06T00:00:00Z", md)
+        self.assertNotIn("U2.", md)
+        self.assertNotIn("MYPL-LINKED", md.split("## キャッシュに無い")[0].split("## 更新あり")[1])
+
+        self.assertIn("## キャッシュに無い未完了タスク", md)
+        self.assertIn("M1. **github_issue** | `owner/repo#77`", md)
+        self.assertIn("欠落表示", md)
+
+    def test_format_markdown_empty_sections(self):
+        write_json(self.vault / "sources/github/assigned-issues.json", [])
+        write_json(self.vault / "sources/github/my-prs.json", [])
+        write_json(self.vault / "sources/github/review-requests.json", [])
+        write_json(self.vault / "sources/backlog/assigned-issues.json", [])
+
+        result = compare_inbox.compare(self.vault, ["github", "backlog"])
+        md = compare_inbox.format_markdown(result)
+
+        self.assertIn("## 新規候補", md)
+        self.assertIn("（0件）", md)
+        self.assertIn("## 更新あり", md)
+        self.assertIn("## キャッシュに無い未完了タスク", md)
+
 
 if __name__ == "__main__":
     unittest.main()

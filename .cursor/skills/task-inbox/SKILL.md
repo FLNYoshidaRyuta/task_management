@@ -43,53 +43,35 @@ Inbox の通常取得では `-RefreshStatuses` を付けない。Backlog の課�
 
 ### 2. Compare
 
-成功したソースだけを指定して実行する。標準出力は JSON で、次の2つを含む。
-
-- `candidates`: キャッシュ側の一覧（従来の照合結果）
-- `missing_from_cache`: 個人タスクに `source_type` / `source_id` があるが、今回のキャッシュに無い未完了タスク
+成功したソースだけを指定して、人向け Markdown を標準出力する。
 
 ```powershell
-py .\tasks\_scripts\compare_inbox.py --sources github,backlog
+py .\tasks\_scripts\compare_inbox.py --sources github,backlog --format markdown
 ```
 
 片方だけ成功したときは、`--sources github` または `--sources backlog` にする。
 
-自分で `sources/**` と `tasks/items/**` を突き合わせて分類しない。
+機械処理用に JSON が必要なときだけ `--format json` を使う。既定は `json` だが、Inbox の提示では `markdown` を使う。
+
+自分で `sources/**` と `tasks/items/**` を突き合わせて分類しない。一時的な整形用 Python やテキストファイルを作らない。
 
 ### 3. Present
 
-#### 3a. 新規候補
+`--format markdown` の出力をそのままユーザーに提示する。内容は次の3セクションである。
 
-`candidates` のうち `linked_tasks` が空のものだけに番号を付ける。
+- **新規候補**: 番号 `1`, `2`, …（`linked_tasks` が空のキャッシュ項目）
+- **更新あり**: 番号 `U1`, `U2`, …（紐づきありかつキャッシュの `source_updated_at` がタスクより新しい）
+- **キャッシュに無い未完了タスク**: 番号 `M1`, `M2`, …
 
-各新規候補には次を出す。
-
-- 番号
-- source_type
-- source_id
-- title
-- source_url
-- external_state
-- source_updated_at
+各項目に含まれる source_type、source_id、title、url、外部状態、更新日時、紐づくタスク path はスクリプト出力を正とする。エージェントが手で並べ替えや再採番をしない。
 
 タイトルだけでは内容が分からないときだけ、キャッシュの本文を短く要約する。キャッシュに無い事実は足さない。
 
-`linked_tasks` があるものは、紐づくタスクをすべてパスで示す。`cache_newer` が true のものは、タスク側とキャッシュ側の更新時刻を並べる。
-
 優先度や、タスク化すべきだという推奨は書かない。
 
-#### 3b. キャッシュに無いタスク
+#### 3b. キャッシュに無いタスク（補足）
 
-`missing_from_cache` が空でなければ、新規候補とは別の番号 `M1`, `M2`, … を付けて示す。
-
-各要素には次を出す。
-
-- 番号（`M` 接頭辞）
-- source_type
-- source_id
-- 紐づくタスクごとの path、title、status、source_url、source_updated_at
-
-キャッシュに無い理由は推測しない。完了・却下・担当外れなどの可能性だけを短く述べてよい。
+`M` 番号の扱いは従来どおり。キャッシュに無い理由は推測しない。完了・却下・担当外れなどの可能性だけを短く述べてよい。
 
 次の3択をユーザーに聞く。Inbox 実行時点では status を変えない。
 

@@ -319,10 +319,77 @@ def compare(vault: Path, sources: list[str]) -> dict:
     }
 
 
+def format_markdown(result: dict) -> str:
+    lines: list[str] = []
+    candidates = result.get("candidates", [])
+    missing = result.get("missing_from_cache", [])
+
+    new_items = [c for c in candidates if not c.get("linked_tasks")]
+    updated_items = [
+        c
+        for c in candidates
+        if c.get("linked_tasks") and c.get("cache_newer") is True
+    ]
+
+    lines.append("## 新規候補")
+    if not new_items:
+        lines.append("（0件）")
+    else:
+        for i, c in enumerate(new_items, 1):
+            lines.append(f"{i}. **{c.get('source_type')}** | `{c.get('source_id')}`")
+            lines.append(f"   - title: {c.get('title') or ''}")
+            lines.append(f"   - url: {c.get('source_url') or ''}")
+            lines.append(
+                f"   - state: {c.get('external_state') or ''} | updated: {c.get('source_updated_at') or ''}"
+            )
+    lines.append("")
+
+    lines.append("## 更新あり")
+    if not updated_items:
+        lines.append("（0件）")
+    else:
+        for i, c in enumerate(updated_items, 1):
+            lines.append(f"U{i}. **{c.get('source_type')}** | `{c.get('source_id')}`")
+            lines.append(f"   - title: {c.get('title') or ''}")
+            lines.append(f"   - url: {c.get('source_url') or ''}")
+            lines.append(f"   - cache updated: {c.get('source_updated_at') or ''}")
+            for t in c.get("linked_tasks") or []:
+                lines.append(
+                    f"   - task: `{t.get('path') or ''}` | status: {t.get('status') or ''} | task updated: {t.get('source_updated_at') or ''}"
+                )
+    lines.append("")
+
+    lines.append("## キャッシュに無い未完了タスク")
+    if not missing:
+        lines.append("（0件）")
+    else:
+        for i, m in enumerate(missing, 1):
+            lines.append(f"M{i}. **{m.get('source_type')}** | `{m.get('source_id')}`")
+            for t in m.get("tasks") or []:
+                lines.append(f"   - `{t.get('path') or ''}` | {t.get('title') or ''} | status: {t.get('status') or ''} | task updated: {t.get('source_updated_at') or ''}")
+                if t.get("source_url"):
+                    lines.append(f"     - url: {t.get('source_url')}")
+    lines.append("")
+
+    return "\n".join(lines)
+
+
+def configure_stdout_utf8() -> None:
+    reconfigure = getattr(sys.stdout, "reconfigure", None)
+    if callable(reconfigure):
+        reconfigure(encoding="utf-8")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--vault", type=Path)
     parser.add_argument("--sources", default="github,backlog")
+    parser.add_argument(
+        "--format",
+        choices=("json", "markdown"),
+        default="json",
+        help="output format (default: json)",
+    )
     args = parser.parse_args()
 
     vault = args.vault or Path(__file__).resolve().parents[2]
@@ -338,8 +405,15 @@ def main() -> None:
     except (FileNotFoundError, ValueError, json.JSONDecodeError) as exc:
         raise SystemExit(str(exc)) from exc
 
-    json.dump(result, sys.stdout, ensure_ascii=False, indent=2)
-    sys.stdout.write("\n")
+    configure_stdout_utf8()
+    if args.format == "markdown":
+        text = format_markdown(result)
+        sys.stdout.write(text)
+        if not text.endswith("\n"):
+            sys.stdout.write("\n")
+    else:
+        json.dump(result, sys.stdout, ensure_ascii=False, indent=2)
+        sys.stdout.write("\n")
 
 
 if __name__ == "__main__":
