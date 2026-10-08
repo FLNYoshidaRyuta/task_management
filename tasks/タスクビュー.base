@@ -24,8 +24,8 @@ views:
     name: 現役
     filters:
       and:
-        - status != "done"
-        - status != "canceled"
+        - status.contains("done") == false
+        - status.contains("canceled") == false
     groupBy:
       property: project
       direction: ASC
@@ -42,19 +42,22 @@ views:
       - related
       - depends_on
       - parent
+    sort: []
     columnSize:
-      file.name: 241
+      file.name: 448
       note.source_type: 89
-      note.start: 45
-      note.source_url: 530
+      note.start: 61
+      note.source_url: 225
+      note.related: 138
+      note.depends_on: 113
   - type: table
     name: 今日
     filters:
       and:
-        - status != "done"
-        - status != "canceled"
+        - status.contains("done") == false
+        - status.contains("canceled") == false
         - or:
-            - status == "in_progress"
+            - status.contains("in_progress")
             - end == today()
     groupBy:
       property: project
@@ -69,8 +72,8 @@ views:
     name: 1週間以内
     filters:
       and:
-        - status != "done"
-        - status != "canceled"
+        - status.contains("done") == false
+        - status.contains("canceled") == false
         - end >= today()
         - end <= today() + "7d"
     groupBy:

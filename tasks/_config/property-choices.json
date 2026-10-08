@@ -1,0 +1,22 @@
+{
+  "status": [
+    "todo",
+    "in_progress",
+    "to_release",
+    "done",
+    "canceled"
+  ],
+  "priority": [
+    "Critical_bug",
+    "bug",
+    "High",
+    "Mid",
+    "Low"
+  ],
+  "source_type": [
+    "backlog_issue",
+    "github_issue",
+    "github_pr",
+    "routine"
+  ]
+}

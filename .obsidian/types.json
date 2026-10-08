@@ -1,0 +1,7 @@
+{
+  "types": {
+    "status": "multitext",
+    "priority": "multitext",
+    "source_type": "multitext"
+  }
+}

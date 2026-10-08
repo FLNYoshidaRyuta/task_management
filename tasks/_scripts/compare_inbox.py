@@ -11,6 +11,8 @@ from pathlib import Path
 
 import yaml
 
+from task_properties import single_choice
+
 
 GITHUB_FILES = (
     "sources/github/assigned-issues.json",
@@ -162,8 +164,8 @@ def merge_candidates(items: list[dict]) -> list[dict]:
 
 
 def task_identity(data: dict) -> tuple[str, str] | None:
-    source_type = data.get("source_type")
-    if not isinstance(source_type, str) or not source_type or source_type == "routine":
+    source_type = single_choice(data.get("source_type"))
+    if not source_type or source_type == "routine":
         return None
 
     source_id = data.get("source_id")
@@ -207,7 +209,7 @@ def load_tasks(vault: Path) -> dict[tuple[str, str], list[dict]]:
             {
                 "path": path.relative_to(vault).as_posix(),
                 "title": data.get("title") or "",
-                "status": data.get("status") or "",
+                "status": single_choice(data.get("status")),
                 "source_url": data.get("source_url") or "",
                 "source_updated_at": as_text(data.get("source_updated_at")),
             }
@@ -252,7 +254,7 @@ def missing_from_cache(
         if identity in cache_keys:
             continue
 
-        status = data.get("status") or ""
+        status = single_choice(data.get("status"))
         if status in TERMINAL_STATUSES:
             continue
 

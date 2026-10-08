@@ -106,7 +106,7 @@ class GenerateRoutinesTest(unittest.TestCase):
         self.assertEqual(result.errors, [])
 
         data, body = generate_routines.read_document(created[0])
-        self.assertEqual(data["source_type"], "routine")
+        self.assertEqual(data["source_type"], ["routine"])
         self.assertEqual(data["source_id"], "weekly-review")
         self.assertEqual(data.get("related"), [])
         self.assertEqual(generate_routines.as_date_str(data["routine_date"]), "2026-10-09")
@@ -127,7 +127,10 @@ class GenerateRoutinesTest(unittest.TestCase):
         generate_routines.generate(self.tasks_dir, date(2026, 10, 6))
         task = self.tasks_dir / "items" / "routine" / "2026-10-09_週次レビュー.md"
         task.write_text(
-            task.read_text(encoding="utf-8").replace("status: todo", "status: done"),
+            task.read_text(encoding="utf-8").replace(
+                "status:\n  - todo",
+                "status:\n  - done",
+            ),
             encoding="utf-8",
             newline="\n",
         )
@@ -147,7 +150,7 @@ class GenerateRoutinesTest(unittest.TestCase):
         result = generate_routines.generate(self.tasks_dir, date(2026, 10, 6))
 
         self.assertEqual(result.created, [])
-        self.assertIn("status: todo", task.read_text(encoding="utf-8"))
+        self.assertIn("  - todo", task.read_text(encoding="utf-8"))
         self.assertEqual((self.tasks_dir / "_タスク.md").read_text(encoding="utf-8"), before)
 
     def test_dry_run_writes_nothing(self):
@@ -200,7 +203,10 @@ business_day_adjustment: none
         generate_routines.generate(self.tasks_dir, date(2026, 2, 1))
         task = self.tasks_dir / "items" / "routine" / "2026-02-28_月末締め.md"
         task.write_text(
-            task.read_text(encoding="utf-8").replace("status: todo", "status: done"),
+            task.read_text(encoding="utf-8").replace(
+                "status:\n  - todo",
+                "status:\n  - done",
+            ),
             encoding="utf-8",
             newline="\n",
         )
@@ -340,7 +346,10 @@ children:
         generate_routines.generate(self.tasks_dir, date(2026, 10, 6))
         child = self.tasks_dir / "items" / "routine" / "2026-11-01_月次請求処理_利用実績確認.md"
         child.write_text(
-            child.read_text(encoding="utf-8").replace("status: todo", "status: done"),
+            child.read_text(encoding="utf-8").replace(
+                "status:\n  - todo",
+                "status:\n  - done",
+            ),
             encoding="utf-8",
             newline="\n",
         )

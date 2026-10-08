@@ -42,13 +42,25 @@ task_id:
 title:
 project:
 status:
+  - todo
 start:
 end:
-priority:
+priority: []
 estimate:
 depends_on: []
+source_type: []
 ---
 ```
+
+`status`、`priority`、`source_type` は Obsidian のリスト型で、各キーは空リストまたは1件だけのリストとする。候補外や2件以上は `tasks/_scripts/validate_task_properties.py` で検証する。取り得る値の一覧は `tasks/_config/property-choices.json` に置き、`tasks/_scripts/task_properties.py` と揃える。
+
+Obsidian コアの Bases 一覧は、リスト型プロパティに固定の選択肢ドロップダウンを出さない。タスクビューで候補から選ぶには、Vault 同梱の **Task property enums** プラグインを有効にする。
+
+1. **設定 → コミュニティプラグイン** でセーフモードをオフにする
+2. インストール済みの **Task property enums** をオンにする
+3. Obsidian を再読み込みする
+
+プラグインは `tasks/_config/property-choices.json` を読み、Properties と Bases の `status` / `priority` / `source_type` に `<select>` を重ねる。保存時は frontmatter を `[]` または `["値"]` の形に書き戻す。
 
 `task_id` は指示用の通し番号であり、正の整数を `tasks/_scripts/assign_task_ids.py` が付与する。削除後も番号は再利用しない。Obsidian の予約プロパティ `id` は使わない。
 

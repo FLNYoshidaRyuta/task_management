@@ -1,0 +1,9 @@
+{
+  "id": "task-property-enums",
+  "name": "Task property enums",
+  "version": "1.0.0",
+  "minAppVersion": "1.8.0",
+  "description": "Shows fixed dropdowns for task status, priority, and source_type in Properties and Bases.",
+  "author": "task_management",
+  "isDesktopOnly": false
+}

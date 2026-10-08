@@ -4,6 +4,11 @@ sources/github/
 sources/backlog/
 __pycache__/
 
-# Obsidian: core-plugins.json のみ共有
+# Obsidian: 共有する設定だけ残す
 .obsidian/*
 !.obsidian/core-plugins.json
+!.obsidian/types.json
+!.obsidian/community-plugins.json
+!.obsidian/plugins/
+!.obsidian/plugins/task-property-enums/
+!.obsidian/plugins/task-property-enums/**

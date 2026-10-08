@@ -13,6 +13,8 @@ from pathlib import Path
 
 import yaml
 
+from task_properties import single_choice
+
 try:
     import jpholiday
 except ImportError:
@@ -142,6 +144,13 @@ def optional_field(key: str, value: str) -> str:
         return f"{key}:"
 
     return f"{key}: {yaml_scalar(value)}"
+
+
+def single_choice_lines(key: str, value: str) -> list[str]:
+    if value == "":
+        return [f"{key}: []"]
+
+    return [f"{key}:", f"  - {yaml_scalar(value)}"]
 
 
 def validate_title(title: str, label: str, errors: list[str]):
@@ -610,7 +619,7 @@ def index_existing(items_dir: Path):
             errors.append(f"{path.name}: {exc}")
             continue
 
-        if not data or str(data.get("source_type") or "") != "routine":
+        if not data or single_choice(data.get("source_type")) != "routine":
             continue
 
         source_id = str(data.get("source_id") or "").strip()
@@ -639,7 +648,7 @@ def index_existing(items_dir: Path):
             errors.append(f"{path.name}: routine_date が不正です")
             continue
 
-        status = str(data.get("status") or "todo").strip()
+        status = single_choice(data.get("status")) or "todo"
         parents.setdefault(source_id, []).append((parsed_date, status, path))
 
     return found, parents, errors
@@ -676,10 +685,11 @@ def render_task(
         "---",
         f"title: {yaml_scalar(title)}",
         f"project: {yaml_scalar(project)}",
-        "status: todo",
+        "status:",
+        "  - todo",
         f"start: {actual_date.isoformat()}",
         f"end: {actual_date.isoformat()}",
-        optional_field("priority", priority),
+        *single_choice_lines("priority", priority),
         optional_field("estimate", estimate),
     ]
 
@@ -699,7 +709,8 @@ def render_task(
     lines.extend(
         [
             "",
-            "source_type: routine",
+            "source_type:",
+            "  - routine",
             f"source_id: {yaml_scalar(source_id)}",
             f"routine_date: {nominal_date.isoformat()}",
             "---",

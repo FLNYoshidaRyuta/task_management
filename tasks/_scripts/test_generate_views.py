@@ -148,7 +148,7 @@ class GanttVisibilityTest(unittest.TestCase):
     def test_canceled_task_is_excluded_from_gantt(self):
         task = {
             "title": "却下",
-            "status": "canceled",
+            "status": ["canceled"],
             "start": "2026-10-01",
             "end": "2026-10-02",
         }
@@ -157,6 +157,15 @@ class GanttVisibilityTest(unittest.TestCase):
     def test_todo_with_dates_is_in_gantt(self):
         task = {
             "title": "現役",
+            "status": ["todo"],
+            "start": "2026-10-01",
+            "end": "2026-10-02",
+        }
+        self.assertTrue(generate_views.task_in_gantt(task))
+
+    def test_legacy_string_status_still_works(self):
+        task = {
+            "title": "互換",
             "status": "todo",
             "start": "2026-10-01",
             "end": "2026-10-02",

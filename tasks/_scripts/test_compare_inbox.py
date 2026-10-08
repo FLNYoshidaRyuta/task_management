@@ -54,8 +54,10 @@ class CompareInboxTest(unittest.TestCase):
             "\n".join(
                 [
                     "title: 更新された課題",
-                    "status: todo",
-                    "source_type: backlog_issue",
+                    "status:",
+                    "  - todo",
+                    "source_type:",
+                    "  - backlog_issue",
                     "source_id: MYPL-2",
                     "source_updated_at: 2026-10-06T00:00:00Z",
                 ]
@@ -96,8 +98,10 @@ class CompareInboxTest(unittest.TestCase):
             "\n".join(
                 [
                     "title: 旧キー",
-                    "status: todo",
-                    "source_type: github_issue",
+                    "status:",
+                    "  - todo",
+                    "source_type:",
+                    "  - github_issue",
                     "source_repo: owner/repo",
                     "source_number: 12",
                 ]
@@ -151,7 +155,8 @@ class CompareInboxTest(unittest.TestCase):
             "\n".join(
                 [
                     "title: 日次",
-                    "source_type: routine",
+                    "source_type:",
+                    "  - routine",
                     "source_id: MYPL-9",
                 ]
             ),
@@ -193,8 +198,10 @@ class CompareInboxTest(unittest.TestCase):
             "\n".join(
                 [
                     "title: 欠落",
-                    "status: todo",
-                    "source_type: github_issue",
+                    "status:",
+                    "  - todo",
+                    "source_type:",
+                    "  - github_issue",
                     "source_id: owner/repo#99",
                     "source_url: https://github.com/owner/repo/issues/99",
                 ]
@@ -217,8 +224,10 @@ class CompareInboxTest(unittest.TestCase):
             "\n".join(
                 [
                     "title: 完了",
-                    "status: done",
-                    "source_type: github_issue",
+                    "status:",
+                    "  - done",
+                    "source_type:",
+                    "  - github_issue",
                     "source_id: owner/repo#1",
                 ]
             ),
@@ -228,8 +237,10 @@ class CompareInboxTest(unittest.TestCase):
             "\n".join(
                 [
                     "title: 却下",
-                    "status: canceled",
-                    "source_type: github_issue",
+                    "status:",
+                    "  - canceled",
+                    "source_type:",
+                    "  - github_issue",
                     "source_id: owner/repo#2",
                 ]
             ),
@@ -247,8 +258,10 @@ class CompareInboxTest(unittest.TestCase):
             "\n".join(
                 [
                     "title: Backlogだけ",
-                    "status: todo",
-                    "source_type: backlog_issue",
+                    "status:",
+                    "  - todo",
+                    "source_type:",
+                    "  - backlog_issue",
                     "source_id: MYPL-404",
                 ]
             ),

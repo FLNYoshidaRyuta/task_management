@@ -2,6 +2,8 @@ from pathlib import Path
 import re
 import yaml
 
+from task_properties import single_choice
+
 TASKS_DIR = Path(__file__).resolve().parent.parent
 ITEMS_DIR = TASKS_DIR / "items"
 
@@ -33,7 +35,7 @@ def as_text(value):
 def task_in_gantt(task) -> bool:
     if not task.get("start") or not task.get("end"):
         return False
-    return as_text(task.get("status")) != "canceled"
+    return single_choice(task.get("status")) != "canceled"
 
 
 def mermaid_text(value):
@@ -329,7 +331,7 @@ def main():
             title = task_mermaid_label(task)
             start = as_text(task.get("start"))
             end = as_text(task.get("end"))
-            status = as_text(task.get("status"))
+            status = single_choice(task.get("status"))
 
             prefix = ""
             task_id = f"t{counter}"

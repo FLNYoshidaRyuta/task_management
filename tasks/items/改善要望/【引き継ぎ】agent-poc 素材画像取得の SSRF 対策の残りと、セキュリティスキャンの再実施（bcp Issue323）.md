@@ -2,15 +2,17 @@
 task_id: 13
 title: 【引き継ぎ】agent-poc 素材画像取得の SSRF 対策の残りと、セキュリティスキャンの再実施（bcp Issue323）
 project: 改善要望
-status: todo
 start:
 end:
-priority:
 estimate:
+source_type:
+  - backlog_issue
+priority: []
+status:
+  - todo
 depends_on: []
 related:
   - "[[tasks/items/改善要望/[セキュリティ改善] agent-pocの素材画像取得を安全なURL・容量制限へ変更する|[セキュリティ改善] agent-pocの素材画像取得を安全なURL・容量制限へ変更する]]"
-source_type: backlog_issue
 source_id: MYPL-4197
 source_url: https://fln2000.backlog.com/view/MYPL-4197
 source_updated_at: 2026-09-29T11:26:40Z

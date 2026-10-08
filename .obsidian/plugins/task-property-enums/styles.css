@@ -1,0 +1,18 @@
+.custom-task-enum-select {
+  width: 100%;
+  max-width: 100%;
+}
+
+.bases-td .custom-task-enum-select.mod-base {
+  position: absolute;
+  inset: 2px 4px;
+  z-index: 2;
+}
+
+.metadata-property-value .custom-task-enum-select {
+  margin-top: 2px;
+}
+
+.task-property-enums-hidden {
+  display: none !important;
+}

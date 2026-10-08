@@ -1,0 +1,22 @@
+name: Validate tasks
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Export property choices
+        run: python tasks/_scripts/export_property_choices.py
+      - name: Validate task properties
+        run: python tasks/_scripts/validate_task_properties.py
+      - name: Run task scripts tests
+        run: python -m unittest discover -s tasks/_scripts -p "test_*.py"

@@ -50,15 +50,16 @@ frontmatterは基本的に以下を使用する。
 ---
 title:
 project:
-status: todo
+status:
+  - todo
 start:
 end:
-priority:
+priority: []
 estimate:
 depends_on: []
 related: []
 
-source_type:
+source_type: []
 source_id:
 source_url:
 source_updated_at:
@@ -67,6 +68,8 @@ source_updated_at:
 `task_id` は採番スクリプトが付ける。作成時に自分で書かない。
 既存タスクを書き直すときは、既にある `task_id` 行を残し、値を変えない。
 frontmatter に `id` は書かない。Obsidian の予約プロパティと競合する。
+
+`status`、`priority`、`source_type` は YAML のリストで書く。未設定は `[]`、値があるときは1件だけ `- 値` とする。2件以上は書かない。
 
 statusは以下のみ。
 
@@ -212,6 +215,8 @@ GitHubの番号は `PR4` や `Issue12` のように書く。
 py .\tasks\_scripts\generate_routines.py
 
 py .\tasks\_scripts\assign_task_ids.py
+
+py .\tasks\_scripts\validate_task_properties.py
 
 py .\tasks\_scripts\generate_views.py
 
