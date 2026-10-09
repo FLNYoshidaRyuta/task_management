@@ -21,7 +21,8 @@ backlog_id: ""
 backlog_url: ""
 backlog_updated_at: ""
 ---
-## 現状と困りごと
+
+## 概要
 
 初回Codex Security監査 Issue309 で、Business Console Proからagent-pocへ渡した素材画像URLを、agent-pocがdestination検証とresponse byte上限なしでserver-side取得することが確認された。
 
@@ -29,12 +30,12 @@ backlog_updated_at: ""
 
 このままではblind SSRFと、巨大response／data URLによるメモリ・provider費用・可用性への影響が残る。
 
-## 期待する挙動・提案
-
-詳細は GitHub Issue 本文を参照する。
-
 https://github.com/FutureLinkNetwork/business-console-pro/issues/323
 
-## Backlog
-
 https://fln2000.backlog.com/view/MYPL-4197
+
+## やったこと
+
+## 残りのやること
+
+詳細は GitHub Issue 本文を参照する。

@@ -20,13 +20,26 @@ backlog_id: MYPL-4197
 backlog_url: https://fln2000.backlog.com/view/MYPL-4197
 backlog_updated_at: 2026-09-29T11:26:40Z
 ---
+
+## 概要
+
 GitHub issue: https://github.com/FutureLinkNetwork/business-console-pro/issues/323
 資料（脅威モデル・スキャン結果・境界強化の設計と実装計画・ADR 案）: https://github.com/FutureLinkNetwork/agent-dev/tree/docs/agent-poc-security-threat-model
 資料の場所と現状は issue のコメントにまとめています: https://github.com/FutureLinkNetwork/business-console-pro/issues/323#issuecomment-5889014020
 
-内容：
-・画像解析で利用者が送った URL を agent-poc が取得できるため、内部 URL や巨大なファイルを取得される余地がある（SSRF）。agent-dev#215 で一部対応済みで、送り先の限定・DNS rebinding 対策・Pro 側の容量上限・runbook などが残っています。
-・Codex Security のスキャンは 397 ファイル中 229 ファイルで容量停止した途中結果です。残り 168 ファイルを含めたスキャンのやり直しもお願いします。
-・資料は 7 月時点のコードが前提なので、着手時に現行コードとの差分確認をお願いします。
+画像解析で利用者が送った URL を agent-poc が取得できるため、内部 URL や巨大なファイルを取得される余地がある（SSRF）。
 
-急ぎではありません。
+資料は 7 月時点のコードが前提なので、着手時に現行コードとの差分確認が必要。急ぎではない。
+
+## やったこと
+
+- agent-dev#215 で一部対応済み
+
+## 残りのやること
+
+- 送り先の限定
+- DNS rebinding 対策
+- Pro 側の容量上限
+- runbook
+- Codex Security のスキャンは 397 ファイル中 229 ファイルで容量停止した途中結果。残り 168 ファイルを含めたスキャンのやり直し
+- 着手時に現行コードとの差分確認
