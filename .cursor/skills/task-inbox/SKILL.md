@@ -95,13 +95,23 @@ py .\tasks\_scripts\compare_inbox.py --sources github,backlog --format markdown
 
 ユーザーが選んだ新規候補と更新（`U`）を、`source_type:source_id` に変換してから次を実行する。Markdown の番号の再解釈はスクリプトに渡さない。
 
+更新（`U`）があるときは、先に会話コメントを取る。
+
+```powershell
+py .\tasks\_scripts\fetch_comments.py --sources github,backlog `
+  --update github_issue:FutureLinkNetwork/agent-dev#467 `
+  --update backlog_issue:MYPL-4221
+```
+
+続けて一致と更新差分を出す。
+
 ```powershell
 py .\tasks\_scripts\inbox_hints.py --sources github,backlog `
   --new backlog_issue:MYPL-4238 `
   --update backlog_issue:MYPL-4221
 ```
 
-新規だけのときは `--new` だけ。更新だけのときは `--update` だけ。
+新規だけのときは `fetch_comments.py` を呼ばず、`inbox_hints.py` は `--new` だけ。更新だけのときは `--update` だけ。
 
 出力の `## 一致` と `## 更新差分` を根拠に、ユーザーへ提案して止まる。スクリプト出力に無い関係や更新は提案しない。
 
@@ -120,10 +130,14 @@ py .\tasks\_scripts\inbox_hints.py --sources github,backlog `
 `## 更新差分` があるとき、次を分けて提案する。
 
 - 当該チャンネルの `github_updated_at` または `backlog_updated_at` をキャッシュに合わせる
-- キャッシュ本文にありタスク本文に無い事実があれば、引用つきで本文追記を提案する
+- 選ばれたチャンネルの説明欄全文とコメントにある事実だけを使い、本文を「概要」「やったこと」「残りのやること」の3節で提案する
+- 事実が無い節は見出しだけとし、空にする。「記載なし」とは書かない
+- タスクに他チャンネルのポインタがあるときは、既存本文にある他チャンネルの事実を残す。今回の差分に無いからといって消さない
 - 外部 state は参考として示す。個人タスクの `status` を外部 state に合わせる提案は、ユーザーが status を明示したときだけ含める
 
 Backlog の status、priority、dueDate、estimatedHours を個人タスクの属性へコピーする提案はしない。
+
+更新差分の `comments: 未取得` のときは、先に `fetch_comments.py` を実行してから再度 `inbox_hints.py` を実行する。
 
 採用・不採用をユーザーに確認してから次へ進む。
 
@@ -144,7 +158,7 @@ Backlog の status、priority、dueDate、estimatedHours を個人タスクの�
 
 #### 6b. 更新の反映
 
-ユーザーが採用した更新だけを task-manager に渡す。`source_updated_at` の同期、本文追記、ユーザーが明示した status 変更など、採用された項目だけを含める。
+ユーザーが採用した更新だけを task-manager に渡す。`source_updated_at` の同期、採用された3節本文、ユーザーが明示した status 変更など、採用された項目だけを含める。他チャンネルの既存事実を消す指示が無いときは、task-manager に残すよう伝える。
 
 #### 6c. 関係の反映
 

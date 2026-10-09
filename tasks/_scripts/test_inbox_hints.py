@@ -196,8 +196,157 @@ class InboxHintsTest(unittest.TestCase):
         self.assertIn("cache source_updated_at: 2026-10-08T09:34:44Z", md)
         self.assertIn("task source_updated_at: 2026-10-06T02:21:01Z", md)
         self.assertIn("external state: 調査中", md)
-        self.assertIn("cache body excerpt:", md)
+        self.assertIn("cache body:", md)
         self.assertIn("追記された本文", md)
+        self.assertIn("comments: 未取得", md)
+
+    def test_update_section_includes_full_body_and_comments(self):
+        long_body = "A" * 600
+        write_json(
+            self.vault / "sources/backlog/assigned-issues.json",
+            [
+                {
+                    "sourceType": "backlog_issue",
+                    "sourceId": "MYPL-LONG",
+                    "sourceUrl": "https://example.test/view/MYPL-LONG",
+                    "sourceUpdatedAt": "2026-10-08T09:34:44Z",
+                    "summary": "長文",
+                    "description": long_body,
+                    "status": {"name": "調査中"},
+                }
+            ],
+        )
+        write_json(
+            self.vault / "sources/backlog/comments.json",
+            [
+                {
+                    "sourceType": "backlog_issue",
+                    "sourceId": "MYPL-LONG",
+                    "comments": [
+                        {
+                            "id": "1",
+                            "author": "吉田",
+                            "createdAt": "2026-10-09T04:15:43Z",
+                            "updatedAt": "2026-10-09T04:15:43Z",
+                            "url": "",
+                            "body": "進捗コメント",
+                        }
+                    ],
+                }
+            ],
+        )
+        write_task(
+            self.vault / "tasks/items/改善要望/長文更新.md",
+            backlog_fm("長文", "MYPL-LONG", updated="2026-10-06T02:21:01Z"),
+        )
+
+        md = inbox_hints.build_hints(
+            self.vault,
+            ["backlog"],
+            [],
+            [("backlog_issue", "MYPL-LONG")],
+        )
+
+        self.assertIn(long_body, md)
+        self.assertNotIn("…", md)
+        self.assertIn("comments: 1", md)
+        self.assertIn("進捗コメント", md)
+
+    def test_update_section_zero_comments(self):
+        write_json(
+            self.vault / "sources/backlog/assigned-issues.json",
+            [
+                {
+                    "sourceType": "backlog_issue",
+                    "sourceId": "MYPL-ZERO",
+                    "sourceUrl": "https://example.test/view/MYPL-ZERO",
+                    "sourceUpdatedAt": "2026-10-08T09:34:44Z",
+                    "summary": "ゼロ",
+                    "description": "本文",
+                    "status": {"name": "調査中"},
+                }
+            ],
+        )
+        write_json(
+            self.vault / "sources/backlog/comments.json",
+            [
+                {
+                    "sourceType": "backlog_issue",
+                    "sourceId": "MYPL-ZERO",
+                    "comments": [],
+                }
+            ],
+        )
+        write_task(
+            self.vault / "tasks/items/改善要望/ゼロコメント.md",
+            backlog_fm("ゼロ", "MYPL-ZERO", updated="2026-10-06T02:21:01Z"),
+        )
+
+        md = inbox_hints.build_hints(
+            self.vault,
+            ["backlog"],
+            [],
+            [("backlog_issue", "MYPL-ZERO")],
+        )
+
+        self.assertIn("comments: 0", md)
+
+    def test_comment_body_does_not_trigger_github_ref_on_update(self):
+        write_json(
+            self.vault / "sources/github/assigned-issues.json",
+            [
+                {
+                    "sourceType": "github_issue",
+                    "sourceId": "FutureLinkNetwork/agent-dev#467",
+                    "sourceUrl": "https://github.com/FutureLinkNetwork/agent-dev/issues/467",
+                    "sourceUpdatedAt": "2026-10-08T09:34:44Z",
+                    "title": "Gemini timeout",
+                    "state": "open",
+                    "body": "説明",
+                }
+            ],
+        )
+        write_json(
+            self.vault / "sources/github/comments.json",
+            [
+                {
+                    "sourceType": "github_issue",
+                    "sourceId": "FutureLinkNetwork/agent-dev#467",
+                    "comments": [
+                        {
+                            "id": "1",
+                            "author": "bot",
+                            "createdAt": "2026-10-09T01:00:00Z",
+                            "updatedAt": "2026-10-09T01:00:00Z",
+                            "url": "",
+                            "body": "see FutureLinkNetwork/mypl_spec#85",
+                        }
+                    ],
+                }
+            ],
+        )
+        write_task(
+            self.vault / "tasks/items/agent-poc/Gemini timeout.md",
+            (
+                "title: Gemini timeout\n"
+                "project: agent-poc\n"
+                "status:\n  - in_progress\n"
+                "github_type:\n  - github_issue\n"
+                "github_id: FutureLinkNetwork/agent-dev#467\n"
+                "github_url: https://github.com/FutureLinkNetwork/agent-dev/issues/467\n"
+                "github_updated_at: 2026-10-06T02:21:01Z\n"
+            ),
+        )
+
+        md = inbox_hints.build_hints(
+            self.vault,
+            ["github"],
+            [],
+            [("github_issue", "FutureLinkNetwork/agent-dev#467")],
+        )
+
+        self.assertIn("## 更新差分", md)
+        self.assertNotIn("`github_ref`", md)
 
     def test_output_has_no_relation_keywords(self):
         write_json(

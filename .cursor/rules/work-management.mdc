@@ -17,6 +17,12 @@ alwaysApply: true
 `sources/**` は外部サービスから取得したキャッシュであり、
 タスク管理上の正本ではない。
 
+会話コメントは一覧取得に含めない。Inbox で更新（U）を選んだチャンネルだけ、
+`tasks/_scripts/fetch_comments.py` が次へ書く。
+
+- `sources/github/comments.json`
+- `sources/backlog/comments.json`
+
 個人タスクの正本は `tasks/items/**/*.md`。
 
 各タスクの frontmatter `task_id` は指示用の通し番号である。

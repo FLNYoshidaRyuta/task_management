@@ -17,6 +17,7 @@ from compare_inbox import (
     read_frontmatter,
     title_of,
 )
+from fetch_comments import COMMENT_CACHE_FILES, load_comment_cache
 from task_source_links import task_source_identities
 
 IDENTITY_RE = re.compile(r"^[^:]+:.+$")
@@ -237,10 +238,72 @@ def collect_matches(
     return lines
 
 
+def load_comments_index(
+    vault: Path,
+    sources: list[str],
+) -> dict[tuple[str, str], list[dict]]:
+    index: dict[tuple[str, str], list[dict]] = {}
+    if "github" in sources:
+        path = vault / COMMENT_CACHE_FILES["github"]
+        if path.is_file():
+            for entry in load_comment_cache(path):
+                source_type = entry.get("sourceType")
+                source_id = entry.get("sourceId")
+                comments = entry.get("comments")
+                if (
+                    isinstance(source_type, str)
+                    and isinstance(source_id, str)
+                    and source_type
+                    and source_id
+                    and isinstance(comments, list)
+                ):
+                    index[(source_type, source_id)] = comments
+    if "backlog" in sources:
+        path = vault / COMMENT_CACHE_FILES["backlog"]
+        if path.is_file():
+            for entry in load_comment_cache(path):
+                source_type = entry.get("sourceType")
+                source_id = entry.get("sourceId")
+                comments = entry.get("comments")
+                if (
+                    isinstance(source_type, str)
+                    and isinstance(source_id, str)
+                    and source_type
+                    and source_id
+                    and isinstance(comments, list)
+                ):
+                    index[(source_type, source_id)] = comments
+    return index
+
+
+def format_comments(comments: list[dict] | None) -> list[str]:
+    if comments is None:
+        return ["  - comments: 未取得"]
+    lines = [f"  - comments: {len(comments)}"]
+    for comment in comments:
+        lines.append(
+            "  - comment"
+            f" {comment.get('createdAt') or ''}"
+            f" {comment.get('author') or ''}: {comment.get('body') or ''}"
+        )
+    return lines
+
+
+def format_cache_body_lines(body: str) -> list[str]:
+    text = body.strip()
+    if not text:
+        return []
+    lines = ["  - cache body:"]
+    for line in text.splitlines():
+        lines.append(f"    {line}")
+    return lines
+
+
 def format_update_section(
     update_keys: list[tuple[str, str]],
     candidates_by_key: dict[tuple[str, str], dict],
     cache_index: dict[tuple[str, str], dict],
+    comments_index: dict[tuple[str, str], list[dict]],
 ) -> list[str]:
     lines: list[str] = []
     for key in update_keys:
@@ -271,11 +334,9 @@ def format_update_section(
                 lines.append(f"  - task title: {task_title}")
             if state:
                 lines.append(f"  - external state: {state}")
-            if body:
-                excerpt = body.strip()
-                if len(excerpt) > BODY_EXCERPT_LEN:
-                    excerpt = excerpt[:BODY_EXCERPT_LEN] + "…"
-                lines.append(f"  - cache body excerpt: {excerpt}")
+            lines.extend(format_cache_body_lines(body))
+            cached_comments = comments_index.get(key)
+            lines.extend(format_comments(cached_comments))
     return lines
 
 
@@ -300,6 +361,7 @@ def build_hints(
             raise ValueError(f"unknown update candidate: {key[0]}:{key[1]}")
 
     cache_index = load_cache_index(vault, sources)
+    comments_index = load_comments_index(vault, sources)
     existing_tasks = load_all_tasks(vault)
 
     lines: list[str] = []
@@ -316,7 +378,12 @@ def build_hints(
 
     lines.append("## 更新差分")
     if update_keys:
-        update_lines = format_update_section(update_keys, candidates_by_key, cache_index)
+        update_lines = format_update_section(
+            update_keys,
+            candidates_by_key,
+            cache_index,
+            comments_index,
+        )
         if update_lines:
             lines.extend(update_lines)
         else:
