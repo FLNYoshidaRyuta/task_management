@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import datetime
 import re
 import sys
 from pathlib import Path
@@ -68,6 +69,16 @@ def validate_pointer_pairs(
         errors.append(f"{rel}: {label} の updated_at だけが設定されています")
 
     return errors
+
+
+def validate_focus_date(value) -> list[str]:
+    if value is None or value == "":
+        return []
+    if isinstance(value, datetime.date) and not isinstance(value, datetime.datetime):
+        return []
+    if isinstance(value, str) and re.fullmatch(r"\d{4}-\d{2}-\d{2}", value):
+        return []
+    return ["focus_date は空、または YYYY-MM-DD です"]
 
 
 def validate_source_shape(rel: str, data: dict) -> list[str]:
@@ -142,6 +153,10 @@ def validate_file(path: Path) -> list[str]:
         if key == "source_type" and data.get(key) is None and not is_routine_task(data):
             continue
         for message in validate_value(key, data.get(key), allowed):
+            errors.append(f"{rel}: {message}")
+
+    if "focus_date" in data:
+        for message in validate_focus_date(data.get("focus_date")):
             errors.append(f"{rel}: {message}")
 
     errors.extend(validate_source_shape(rel, data))

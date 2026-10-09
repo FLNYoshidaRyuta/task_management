@@ -2,6 +2,7 @@
   "types": {
     "status": "multitext",
     "priority": "multitext",
-    "source_type": "multitext"
+    "source_type": "multitext",
+    "focus_date": "date"
   }
 }

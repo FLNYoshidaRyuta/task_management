@@ -13,6 +13,8 @@ properties:
     displayName: start
   end:
     displayName: end
+  focus_date:
+    displayName: 今日やる
   priority:
     displayName: priority
   estimate:
@@ -22,6 +24,21 @@ properties:
   backlog_id:
     displayName: backlog
 views:
+  - type: table
+    name: 今日やる
+    filters:
+      and:
+        - status.contains("done") == false
+        - status.contains("canceled") == false
+        - focus_date == today()
+    order:
+      - task_id
+      - file.name
+      - status
+      - focus_date
+      - priority
+      - end
+    sort: []
   - type: table
     name: 現役
     filters:
@@ -35,21 +52,23 @@ views:
       - task_id
       - file.name
       - status
+      - priority
       - github_id
       - backlog_id
       - start
       - end
-      - priority
+      - focus_date
       - estimate
       - related
       - depends_on
       - parent
     sort: []
     columnSize:
-      file.name: 448
-      note.github_id: 291
+      file.name: 420
+      note.github_id: 108
       note.backlog_id: 100
       note.start: 79
+      note.end: 91
       note.related: 138
       note.depends_on: 113
   - type: table

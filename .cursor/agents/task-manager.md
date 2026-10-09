@@ -54,6 +54,7 @@ status:
   - todo
 start:
 end:
+focus_date:
 priority: []
 estimate:
 depends_on: []
@@ -87,6 +88,8 @@ backlog_updated_at:
 frontmatter に `id` は書かない。Obsidian の予約プロパティと競合する。
 
 `status`、`priority`、`github_type` は YAML のリストで書く。未設定は `[]`、値があるときは1件だけ `- 値` とする。2件以上は書かない。
+
+`focus_date` は「今日やる」日付。`YYYY-MM-DD` の1行、または空欄。ユーザーが今日やる／外すを指示したときだけ更新する。指示が無い既存タスクへ `focus_date` を一括追加しない。
 
 statusは以下のみ。
 

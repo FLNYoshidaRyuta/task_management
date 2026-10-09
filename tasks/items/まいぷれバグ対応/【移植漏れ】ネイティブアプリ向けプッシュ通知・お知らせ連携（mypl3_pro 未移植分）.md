@@ -4,6 +4,7 @@ title: 【移植漏れ】ネイティブアプリ向けプッシュ通知・お�
 project: まいぷれバグ対応
 start: ""
 end: ""
+focus_date: 2026-10-14
 estimate:
 priority:
   - bug

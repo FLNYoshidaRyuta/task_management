@@ -4,6 +4,7 @@ title: "[セキュリティ] image_tag の Gemini 呼び出し失敗ログに AP
 project: agent-poc
 start:
 end: ""
+focus_date: 2026-10-14
 estimate:
 priority:
   - bug

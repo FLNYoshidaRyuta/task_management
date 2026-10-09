@@ -141,6 +141,103 @@ class ValidateTaskPropertiesTest(unittest.TestCase):
         errors = validate_task_properties.validate_file(path)
         self.assertTrue(any("github_type" in item for item in errors))
 
+    def test_focus_date_absent_is_valid(self):
+        path = self.write_task(
+            "ok.md",
+            "\n".join(
+                [
+                    "---",
+                    "title: sample",
+                    "status:",
+                    "  - todo",
+                    "priority: []",
+                    "source_type: []",
+                    "---",
+                    "",
+                ]
+            ),
+        )
+        self.assertEqual(validate_task_properties.validate_file(path), [])
+
+    def test_focus_date_empty_is_valid(self):
+        path = self.write_task(
+            "ok.md",
+            "\n".join(
+                [
+                    "---",
+                    "title: sample",
+                    "status:",
+                    "  - todo",
+                    "priority: []",
+                    "source_type: []",
+                    'focus_date: ""',
+                    "---",
+                    "",
+                ]
+            ),
+        )
+        self.assertEqual(validate_task_properties.validate_file(path), [])
+
+    def test_focus_date_iso_is_valid(self):
+        path = self.write_task(
+            "ok.md",
+            "\n".join(
+                [
+                    "---",
+                    "title: sample",
+                    "status:",
+                    "  - todo",
+                    "priority: []",
+                    "source_type: []",
+                    "focus_date: 2026-10-09",
+                    "---",
+                    "",
+                ]
+            ),
+        )
+        self.assertEqual(validate_task_properties.validate_file(path), [])
+
+    def test_focus_date_garbage_string_is_invalid(self):
+        path = self.write_task(
+            "bad.md",
+            "\n".join(
+                [
+                    "---",
+                    "title: sample",
+                    "status:",
+                    "  - todo",
+                    "priority: []",
+                    "source_type: []",
+                    "focus_date: today",
+                    "---",
+                    "",
+                ]
+            ),
+        )
+        errors = validate_task_properties.validate_file(path)
+        self.assertTrue(any("focus_date" in item for item in errors))
+
+    def test_focus_date_list_is_invalid(self):
+        path = self.write_task(
+            "bad.md",
+            "\n".join(
+                [
+                    "---",
+                    "title: sample",
+                    "status:",
+                    "  - todo",
+                    "priority: []",
+                    "source_type: []",
+                    "focus_date:",
+                    "  - 2026-10-09",
+                    "---",
+                    "",
+                ]
+            ),
+        )
+        errors = validate_task_properties.validate_file(path)
+        self.assertTrue(any("focus_date" in item for item in errors))
+
     def test_unknown_priority_is_invalid(self):
         path = self.write_task(
             "bad.md",
