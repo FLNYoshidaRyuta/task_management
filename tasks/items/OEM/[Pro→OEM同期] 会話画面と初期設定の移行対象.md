@@ -14,7 +14,8 @@ depends_on: []
 related: []
 github_type:
   - github_issue
-github_id: FutureLinkNetwork/business-console-pro#667
+github_repo: business-console-pro
+github_id: Issue#667
 github_url: https://github.com/FutureLinkNetwork/business-console-pro/issues/667
 github_updated_at: 2026-10-09T13:00:20Z
 backlog_id: ""

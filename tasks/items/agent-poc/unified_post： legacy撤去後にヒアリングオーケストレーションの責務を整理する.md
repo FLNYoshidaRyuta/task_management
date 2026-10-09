@@ -12,14 +12,14 @@ status:
 depends_on: []
 github_type:
   - github_issue
-github_id: FutureLinkNetwork/agent-dev#282
+github_repo: agent-dev
+github_id: Issue#282
 github_url: https://github.com/FutureLinkNetwork/agent-dev/issues/282
 github_updated_at: 2026-09-16T15:24:39Z
 backlog_id: ""
 backlog_url: ""
 backlog_updated_at: ""
 ---
-
 ## 概要
 
 ## やったこと

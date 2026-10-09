@@ -14,14 +14,14 @@ depends_on: []
 related: []
 github_type:
   - github_issue
-github_id: FutureLinkNetwork/mypl_pro#1365
+github_repo: mypl_pro
+github_id: Issue#1365
 github_url: https://github.com/FutureLinkNetwork/mypl_pro/issues/1365
 github_updated_at: 2026-10-06T02:25:08Z
 backlog_id: MYPL-4222
 backlog_url: https://fln2000.backlog.com/view/MYPL-4222
 backlog_updated_at: 2026-10-06T02:25:34Z
 ---
-
 ## 概要
 
 ニュース投稿画面の「この画像をGoogleマップの投稿に使用する」という文言には違和感があります。選択できる内容は、GBPの「写真」に格納するか否かなので、そこの誤解が生じない文言を良いのではと思います。

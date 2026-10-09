@@ -15,14 +15,14 @@ related:
   - "[[tasks/items/まいぷれバグ対応/【1171-4】プッシュ経由の既読処理|【1171-4】プッシュ経由の既読処理]]"
 github_type:
   - github_issue
-github_id: FutureLinkNetwork/mypl_pro#1179
+github_repo: mypl_pro
+github_id: Issue#1179
 github_url: https://github.com/FutureLinkNetwork/mypl_pro/issues/1179
 github_updated_at: 2026-09-16T07:07:16Z
 backlog_id: ""
 backlog_url: ""
 backlog_updated_at: ""
 ---
-
 ## 概要
 
 ## やったこと

@@ -12,14 +12,14 @@ status:
 depends_on: []
 github_type:
   - github_issue
-github_id: FutureLinkNetwork/mypl_pro#665
+github_repo: mypl_pro
+github_id: Issue#665
 github_url: https://github.com/FutureLinkNetwork/mypl_pro/issues/665
 github_updated_at: 2026-09-16T15:24:25Z
 backlog_id: ""
 backlog_url: ""
 backlog_updated_at: ""
 ---
-
 ## 概要
 
 ## やったこと

@@ -17,14 +17,14 @@ related:
   - "[[tasks/items/開発標準化/ci： 行数ラチェット・チケット単位テスト禁止・テスト比率ガード（警告のみ・試行）|ci： 行数ラチェット・チケット単位テスト禁止・テスト比率ガード（警告のみ・試行）]]"
 github_type:
   - github_pr
-github_id: FutureLinkNetwork/mypl_pro#1230
+github_repo: mypl_pro
+github_id: PR#1230
 github_url: https://github.com/FutureLinkNetwork/mypl_pro/pull/1230
 github_updated_at: 2026-09-15T14:00:29Z
 backlog_id: ""
 backlog_url: ""
 backlog_updated_at: ""
 ---
-
 ## 概要
 
 ## やったこと

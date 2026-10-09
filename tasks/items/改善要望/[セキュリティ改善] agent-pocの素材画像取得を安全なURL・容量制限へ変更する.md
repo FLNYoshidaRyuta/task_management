@@ -14,14 +14,14 @@ related:
   - "[[tasks/items/改善要望/【引き継ぎ】agent-poc 素材画像取得の SSRF 対策の残りと、セキュリティスキャンの再実施（bcp Issue323）|【引き継ぎ】agent-poc 素材画像取得の SSRF 対策の残りと、セキュリティスキャンの再実施（bcp Issue323）]]"
 github_type:
   - github_issue
-github_id: FutureLinkNetwork/business-console-pro#323
+github_repo: business-console-pro
+github_id: Issue#323
 github_url: https://github.com/FutureLinkNetwork/business-console-pro/issues/323
 github_updated_at: 2026-09-29T11:08:53Z
 backlog_id: ""
 backlog_url: ""
 backlog_updated_at: ""
 ---
-
 ## 概要
 
 初回Codex Security監査 Issue309 で、Business Console Proからagent-pocへ渡した素材画像URLを、agent-pocがdestination検証とresponse byte上限なしでserver-side取得することが確認された。

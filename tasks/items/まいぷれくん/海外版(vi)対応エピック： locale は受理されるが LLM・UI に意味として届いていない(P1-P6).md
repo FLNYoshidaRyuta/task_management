@@ -16,14 +16,14 @@ related:
   - "[[tasks/items/まいぷれバグ対応/グループニュースの共有プレビューが日本語固定になる|グループニュースの共有プレビューが日本語固定になる]]"
 github_type:
   - github_issue
-github_id: FutureLinkNetwork/mypl_pro#465
+github_repo: mypl_pro
+github_id: Issue#465
 github_url: https://github.com/FutureLinkNetwork/mypl_pro/issues/465
 github_updated_at: 2026-09-27T10:16:17Z
 backlog_id: ""
 backlog_url: ""
 backlog_updated_at: ""
 ---
-
 ## 概要
 
 ## やったこと

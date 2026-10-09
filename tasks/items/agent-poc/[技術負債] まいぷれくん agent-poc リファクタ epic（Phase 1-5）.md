@@ -15,14 +15,14 @@ related:
   - "[[tasks/items/agent-poc/test(agent-poc)： test_partner_api.py を実態に合う名前へ改名する|test(agent-poc)： test_partner_api.py を実態に合う名前へ改名する]]"
 github_type:
   - github_issue
-github_id: FutureLinkNetwork/agent-dev#430
+github_repo: agent-dev
+github_id: Issue#430
 github_url: https://github.com/FutureLinkNetwork/agent-dev/issues/430
 github_updated_at: 2026-09-16T15:24:29Z
 backlog_id: ""
 backlog_url: ""
 backlog_updated_at: ""
 ---
-
 ## 概要
 
 ## やったこと

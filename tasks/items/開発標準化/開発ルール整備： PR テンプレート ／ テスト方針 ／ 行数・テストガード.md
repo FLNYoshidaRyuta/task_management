@@ -16,14 +16,14 @@ related:
   - "[[tasks/items/開発標準化/docs： まいぷれくんリファクタ引き継ぎパック（Phase 3 以降）|docs： まいぷれくんリファクタ引き継ぎパック（Phase 3 以降）]]"
 github_type:
   - github_issue
-github_id: FutureLinkNetwork/mypl_pro#1226
+github_repo: mypl_pro
+github_id: Issue#1226
 github_url: https://github.com/FutureLinkNetwork/mypl_pro/issues/1226
 github_updated_at: 2026-09-23T11:51:50Z
 backlog_id: ""
 backlog_url: ""
 backlog_updated_at: ""
 ---
-
 ## 概要
 
 ## やったこと

@@ -14,7 +14,8 @@ depends_on: []
 related: []
 github_type:
   - github_issue
-github_id: FutureLinkNetwork/mypl_spec#85
+github_repo: mypl_spec
+github_id: Issue#85
 github_url: https://github.com/FutureLinkNetwork/mypl_spec/issues/85
 github_updated_at: 2026-10-09T00:10:18Z
 backlog_id: MYPL-4236

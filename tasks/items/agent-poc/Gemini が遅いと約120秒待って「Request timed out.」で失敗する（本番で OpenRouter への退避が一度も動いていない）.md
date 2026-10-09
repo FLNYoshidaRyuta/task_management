@@ -13,7 +13,8 @@ depends_on: []
 related: []
 github_type:
   - github_issue
-github_id: FutureLinkNetwork/agent-dev#467
+github_repo: agent-dev
+github_id: Issue#467
 github_url: https://github.com/FutureLinkNetwork/agent-dev/issues/467
 github_updated_at: 2026-10-09T06:29:03Z
 backlog_id: MYPL-4238

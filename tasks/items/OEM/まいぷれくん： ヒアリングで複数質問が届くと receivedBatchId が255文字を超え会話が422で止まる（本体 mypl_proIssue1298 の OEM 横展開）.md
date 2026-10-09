@@ -12,14 +12,14 @@ status:
 depends_on: []
 github_type:
   - github_issue
-github_id: FutureLinkNetwork/business-console-pro#658
+github_repo: business-console-pro
+github_id: Issue#658
 github_url: https://github.com/FutureLinkNetwork/business-console-pro/issues/658
 github_updated_at: 2026-09-27T09:49:38Z
 backlog_id: ""
 backlog_url: ""
 backlog_updated_at: ""
 ---
-
 ## 概要
 
 ## やったこと

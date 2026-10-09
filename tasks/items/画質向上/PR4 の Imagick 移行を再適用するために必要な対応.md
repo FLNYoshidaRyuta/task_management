@@ -13,14 +13,14 @@ status:
 depends_on: []
 github_type:
   - github_issue
-github_id: FutureLinkNetwork/089_ImageServer#12
+github_repo: 089_ImageServer
+github_id: Issue#12
 github_url: https://github.com/FutureLinkNetwork/089_ImageServer/issues/12
 github_updated_at: ""
 backlog_id: ""
 backlog_url: ""
 backlog_updated_at: ""
 ---
-
 ## 概要
 
 https://github.com/FutureLinkNetwork/089_ImageServer/pull/4 は、画像エンジンを GD から Imagick に変え、キャッシュディレクトリを `/mnt/extra-disk/temp-image` から `/mnt/extra-disk/temp-image-2026` に変える変更である。
