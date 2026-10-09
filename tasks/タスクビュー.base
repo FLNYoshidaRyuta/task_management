@@ -49,7 +49,7 @@ views:
       file.name: 448
       note.github_id: 291
       note.backlog_id: 100
-      note.start: 61
+      note.start: 79
       note.related: 138
       note.depends_on: 113
   - type: table

@@ -1,25 +1,25 @@
 ---
 task_id: 14
-title: '[セキュリティ改善] agent-pocの素材画像取得を安全なURL・容量制限へ変更する'
+title: "[セキュリティ改善] agent-pocの素材画像取得を安全なURL・容量制限へ変更する"
 project: 改善要望
-start: ''
-end: ''
-estimate: null
-priority: []
+start: ""
+end: ""
+estimate:
+priority:
+  - Low
 status:
-- todo
+  - todo
 depends_on: []
 related:
-- '[[tasks/items/改善要望/【引き継ぎ】agent-poc 素材画像取得の SSRF 対策の残りと、セキュリティスキャンの再実施（bcp Issue323）|【引き継ぎ】agent-poc
-  素材画像取得の SSRF 対策の残りと、セキュリティスキャンの再実施（bcp Issue323）]]'
+  - "[[tasks/items/改善要望/【引き継ぎ】agent-poc 素材画像取得の SSRF 対策の残りと、セキュリティスキャンの再実施（bcp Issue323）|【引き継ぎ】agent-poc 素材画像取得の SSRF 対策の残りと、セキュリティスキャンの再実施（bcp Issue323）]]"
 github_type:
-- github_issue
+  - github_issue
 github_id: FutureLinkNetwork/business-console-pro#323
 github_url: https://github.com/FutureLinkNetwork/business-console-pro/issues/323
-github_updated_at: '2026-09-29T11:08:53Z'
-backlog_id: ''
-backlog_url: ''
-backlog_updated_at: ''
+github_updated_at: 2026-09-29T11:08:53Z
+backlog_id: ""
+backlog_url: ""
+backlog_updated_at: ""
 ---
 ## 現状と困りごと
 

@@ -2,22 +2,23 @@
 task_id: 13
 title: 【引き継ぎ】agent-poc 素材画像取得の SSRF 対策の残りと、セキュリティスキャンの再実施（bcp Issue323）
 project: 改善要望
-start: ''
-end: ''
-estimate: null
-priority: []
+start: ""
+end: ""
+estimate:
+priority:
+  - Low
 status:
-- todo
+  - todo
 depends_on: []
 related:
-- '[[tasks/items/改善要望/[セキュリティ改善] agent-pocの素材画像取得を安全なURL・容量制限へ変更する|[セキュリティ改善] agent-pocの素材画像取得を安全なURL・容量制限へ変更する]]'
+  - "[[tasks/items/改善要望/[セキュリティ改善] agent-pocの素材画像取得を安全なURL・容量制限へ変更する|[セキュリティ改善] agent-pocの素材画像取得を安全なURL・容量制限へ変更する]]"
 github_type: []
-github_id: ''
-github_url: ''
-github_updated_at: ''
+github_id: ""
+github_url: ""
+github_updated_at: ""
 backlog_id: MYPL-4197
 backlog_url: https://fln2000.backlog.com/view/MYPL-4197
-backlog_updated_at: '2026-09-29T11:26:40Z'
+backlog_updated_at: 2026-09-29T11:26:40Z
 ---
 GitHub issue: https://github.com/FutureLinkNetwork/business-console-pro/issues/323
 資料（脅威モデル・スキャン結果・境界強化の設計と実装計画・ADR 案）: https://github.com/FutureLinkNetwork/agent-dev/tree/docs/agent-poc-security-threat-model

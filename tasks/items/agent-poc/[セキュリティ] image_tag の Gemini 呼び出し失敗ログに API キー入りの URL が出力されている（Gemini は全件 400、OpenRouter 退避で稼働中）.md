@@ -5,9 +5,10 @@ project: agent-poc
 start:
 end: ""
 estimate:
-priority: []
+priority:
+  - bug
 status:
-  - todo
+  - in_progress
 depends_on: []
 github_type:
   - github_issue

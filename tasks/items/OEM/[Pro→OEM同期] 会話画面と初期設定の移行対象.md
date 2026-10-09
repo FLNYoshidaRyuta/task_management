@@ -7,7 +7,7 @@ status:
 start: ""
 end: ""
 priority:
-  - bug
+  - Mid
 estimate:
 depends_on: []
 related: []

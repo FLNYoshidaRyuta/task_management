@@ -5,7 +5,8 @@ project: agent-poc
 start: ""
 end: ""
 estimate:
-priority: []
+priority:
+  - Low
 status:
   - todo
 depends_on: []

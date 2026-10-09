@@ -2,21 +2,22 @@
 task_id: 1
 title: PR4 の Imagick 移行を再適用するために必要な対応
 project: 画質向上
-start: ''
-end: ''
-estimate: null
-priority: []
+start: ""
+end: ""
+estimate:
+priority:
+  - High
 status:
-- todo
+  - todo
 depends_on: []
 github_type:
-- github_issue
+  - github_issue
 github_id: FutureLinkNetwork/089_ImageServer#12
 github_url: https://github.com/FutureLinkNetwork/089_ImageServer/issues/12
-github_updated_at: ''
-backlog_id: ''
-backlog_url: ''
-backlog_updated_at: ''
+github_updated_at: ""
+backlog_id: ""
+backlog_url: ""
+backlog_updated_at: ""
 ---
 ## 目的
 
