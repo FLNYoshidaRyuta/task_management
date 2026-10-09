@@ -49,7 +49,8 @@ class ValidateTaskPropertiesTest(unittest.TestCase):
                     "  - High",
                     "github_type:",
                     "  - github_issue",
-                    "github_id: org/repo#1",
+                    "github_repo: repo",
+                    "github_id: Issue#1",
                     "github_url: https://github.com/org/repo/issues/1",
                     "---",
                     "",
@@ -109,7 +110,8 @@ class ValidateTaskPropertiesTest(unittest.TestCase):
                     "source_type: []",
                     "github_type:",
                     "  - github_issue",
-                    "github_id: org/repo#1",
+                    "github_repo: repo",
+                    "github_id: Issue#1",
                     "github_url: https://github.com/org/repo/issues/1",
                     "backlog_id: MYPL-1",
                     "backlog_url: https://example.test/view/MYPL-1",
@@ -120,7 +122,7 @@ class ValidateTaskPropertiesTest(unittest.TestCase):
         )
         self.assertEqual(validate_task_properties.validate_file(path), [])
 
-    def test_github_id_without_type_is_invalid(self):
+    def test_github_pointer_incomplete_is_invalid(self):
         path = self.write_task(
             "bad.md",
             "\n".join(
@@ -131,6 +133,30 @@ class ValidateTaskPropertiesTest(unittest.TestCase):
                     "  - todo",
                     "priority: []",
                     "source_type: []",
+                    "github_id: Issue#1",
+                    "github_url: https://github.com/org/repo/issues/1",
+                    "---",
+                    "",
+                ]
+            ),
+        )
+        errors = validate_task_properties.validate_file(path)
+        self.assertTrue(any("揃えて指定" in item for item in errors))
+
+    def test_legacy_github_id_is_invalid(self):
+        path = self.write_task(
+            "bad.md",
+            "\n".join(
+                [
+                    "---",
+                    "title: bad",
+                    "status:",
+                    "  - todo",
+                    "priority: []",
+                    "source_type: []",
+                    "github_type:",
+                    "  - github_issue",
+                    "github_repo: repo",
                     "github_id: org/repo#1",
                     "github_url: https://github.com/org/repo/issues/1",
                     "---",
@@ -139,7 +165,31 @@ class ValidateTaskPropertiesTest(unittest.TestCase):
             ),
         )
         errors = validate_task_properties.validate_file(path)
-        self.assertTrue(any("github_type" in item for item in errors))
+        self.assertTrue(any("旧形式" in item for item in errors))
+
+    def test_github_prefix_mismatch_is_invalid(self):
+        path = self.write_task(
+            "bad.md",
+            "\n".join(
+                [
+                    "---",
+                    "title: bad",
+                    "status:",
+                    "  - todo",
+                    "priority: []",
+                    "source_type: []",
+                    "github_type:",
+                    "  - github_issue",
+                    "github_repo: repo",
+                    "github_id: PR#1",
+                    "github_url: https://github.com/org/repo/issues/1",
+                    "---",
+                    "",
+                ]
+            ),
+        )
+        errors = validate_task_properties.validate_file(path)
+        self.assertTrue(any("接頭辞" in item for item in errors))
 
     def test_focus_date_absent_is_valid(self):
         path = self.write_task(

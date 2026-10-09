@@ -10,8 +10,16 @@ from pathlib import Path
 
 import yaml
 
-from task_properties import SINGLE_CHOICE_FIELDS
-from task_source_links import as_str, is_routine_task, uses_legacy_source_fields
+from task_properties import SINGLE_CHOICE_FIELDS, single_choice
+from task_source_links import (
+    REPO_RE,
+    REPO_WITH_OWNER_RE,
+    as_str,
+    github_cache_identity_from_pointer,
+    is_routine_task,
+    parse_display_github_id,
+    uses_legacy_source_fields,
+)
 
 TASKS_DIR = Path(__file__).resolve().parent.parent
 ITEMS_DIR = TASKS_DIR / "items"
@@ -71,6 +79,51 @@ def validate_pointer_pairs(
     return errors
 
 
+def validate_github_pointer(rel: str, data: dict) -> list[str]:
+    errors: list[str] = []
+    gh_type_val = single_choice(data.get("github_type"))
+    gh_repo = as_str(data.get("github_repo"))
+    gh_id = as_str(data.get("github_id"))
+    gh_url = as_str(data.get("github_url"))
+    gh_updated = as_str(data.get("github_updated_at"))
+
+    has_any = bool(gh_type_val or gh_repo or gh_id or gh_url)
+    has_all = bool(gh_type_val and gh_repo and gh_id and gh_url)
+    if has_any and not has_all:
+        errors.append(
+            f"{rel}: github_type / github_repo / github_id / github_url は揃えて指定してください"
+        )
+
+    if gh_updated and not gh_id:
+        errors.append(f"{rel}: GitHub の updated_at だけが設定されています")
+
+    if not gh_id:
+        return errors
+
+    parsed = parse_display_github_id(gh_id)
+    if parsed is None:
+        if "/" in gh_id and "#" in gh_id:
+            errors.append(
+                f"{rel}: github_id は Issue#番号 または PR#番号 です（旧形式は移行してください）"
+            )
+        else:
+            errors.append(f"{rel}: github_id は Issue#番号 または PR#番号 です")
+
+    if gh_repo and REPO_WITH_OWNER_RE.fullmatch(gh_repo):
+        errors.append(f"{rel}: github_repo はリポジトリ名のみです（owner/ は付けない）")
+    elif gh_repo and not REPO_RE.fullmatch(gh_repo):
+        errors.append(f"{rel}: github_repo は空でないリポジトリ名です")
+
+    if parsed and gh_type_val and parsed[0] != gh_type_val:
+        errors.append(f"{rel}: github_id の接頭辞が github_type と一致しません")
+
+    if gh_url and parsed and gh_repo and gh_type_val:
+        if github_cache_identity_from_pointer(gh_type_val, gh_url, gh_repo, gh_id) is None:
+            errors.append(f"{rel}: github_url が github_repo / github_id / github_type と一致しません")
+
+    return errors
+
+
 def validate_focus_date(value) -> list[str]:
     if value is None or value == "":
         return []
@@ -85,7 +138,11 @@ def validate_source_shape(rel: str, data: dict) -> list[str]:
     errors: list[str] = []
 
     if is_routine_task(data):
-        if as_str(data.get("github_id")) or as_str(data.get("backlog_id")):
+        if (
+            as_str(data.get("github_id"))
+            or as_str(data.get("github_repo"))
+            or as_str(data.get("backlog_id"))
+        ):
             errors.append(f"{rel}: ルーティーンに github_* / backlog_* を設定できません")
         if ALLOW_LEGACY_SOURCE and uses_legacy_source_fields(data):
             errors.append(f"{rel}: ルーティーンに旧 source_id を設定できません")
@@ -95,20 +152,10 @@ def validate_source_shape(rel: str, data: dict) -> list[str]:
     if github_type is not None:
         errors.extend(validate_value("github_type", github_type, SINGLE_CHOICE_FIELDS["github_type"]))
 
-    errors.extend(
-        validate_pointer_pairs(rel, data, "github_id", "github_url", "github_updated_at", "GitHub")
-    )
+    errors.extend(validate_github_pointer(rel, data))
     errors.extend(
         validate_pointer_pairs(rel, data, "backlog_id", "backlog_url", "backlog_updated_at", "Backlog")
     )
-
-    gh_type = data.get("github_type")
-    gh_type_val = gh_type[0] if isinstance(gh_type, list) and len(gh_type) == 1 else ""
-    gh_id = as_str(data.get("github_id"))
-    if gh_type_val and not gh_id:
-        errors.append(f"{rel}: github_type があるとき github_id が必要です")
-    if gh_id and not gh_type_val:
-        errors.append(f"{rel}: github_id があるとき github_type が必要です")
 
     if ALLOW_LEGACY_SOURCE:
         if uses_legacy_source_fields(data):
@@ -122,8 +169,6 @@ def validate_source_shape(rel: str, data: dict) -> list[str]:
             errors.append(f"{rel}: 旧 source_type / source_id は使えません")
         source_type = data.get("source_type")
         if source_type is not None and source_type != []:
-            from task_properties import single_choice
-
             st = single_choice(source_type)
             if st and st != "routine":
                 errors.append(f"{rel}: 非ルーティーンで source_type に {st} は使えません")

@@ -172,15 +172,18 @@ Backlog上の以下の値を、
 
 外部情報を個人タスク化するときは、作業1件の frontmatter に次を載せる。片方だけのときは空欄にする。
 
-- GitHub: `github_type`（`github_issue` または `github_pr`）、`github_id`、`github_url`、`github_updated_at`
+- GitHub: `github_type`（`github_issue` または `github_pr`）、`github_repo`、`github_id`、`github_url`、`github_updated_at`
 - Backlog: `backlog_id`、`backlog_url`、`backlog_updated_at`
 
-`github_id` と Backlog の `backlog_id` の形は次のとおり。
+GitHub と Backlog の id の形は次のとおり。
 
-| チャンネル | id の形 |
-|---|---|
-| GitHub Issue / PR | `owner/repo#番号`。例: `FutureLinkNetwork/089_ImageServer#12` |
-| Backlog 課題 | 課題キー。例: `MYPL-4221` |
+| チャンネル | フィールド | 形 |
+|---|---|---|
+| GitHub | `github_repo` | リポジトリ名のみ。例: `089_ImageServer` |
+| GitHub | `github_id` | `Issue#番号` または `PR#番号`。例: `Issue#12` |
+| Backlog | `backlog_id` | 課題キー。例: `MYPL-4221` |
+
+取得キャッシュの `sourceId` と Inbox 照合キーは GitHub では `owner/repo#番号` のまま。タスクでは `github_url` の owner と `github_repo`・番号から組み立てる。
 
 ルーティーン生成タスクだけ `source_type: routine` と `source_id` を使う。
 

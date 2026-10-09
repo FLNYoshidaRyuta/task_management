@@ -23,7 +23,7 @@ GitHub と Backlog のキャッシュを個人タスクと照合し、ユーザ�
 
 外部サービスの status、priority、dueDate、estimatedHours を、個人タスクの status、priority、start、end、estimate へコピーしない。
 
-照合は各タスクの `github_type`+`github_id` と `backlog_id` を使う。ファイルへの追記はユーザー指示後の task-manager だけが行う。
+照合は各タスクの GitHub ポインタ（`github_url`・`github_repo`・`github_id` から組み立てた `owner/repo#番号`）と `backlog_id` を使う。ファイルへの追記はユーザー指示後の task-manager だけが行う。
 
 Inbox はタスクファイルを書かない。一致と更新差分は `inbox_hints.py` で機械的に出し、親子・関連・依存の種類と反映内容はエージェントが提案する。採用後だけ `task-manager` が書く。
 

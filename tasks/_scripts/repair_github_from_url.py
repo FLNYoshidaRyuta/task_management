@@ -5,7 +5,7 @@ from pathlib import Path
 
 import yaml
 
-from task_source_links import github_id_from_url
+from task_source_links import as_str, github_pointer_from_url
 
 ITEMS = Path(__file__).resolve().parents[2] / "tasks" / "items"
 FM = re.compile(r"^---\s*\n(.*?)\n---\s*\n(.*)$", re.DOTALL)
@@ -18,13 +18,14 @@ def main() -> None:
         if not m:
             continue
         data = yaml.safe_load(m.group(1)) or {}
-        url = (data.get("github_url") or "").strip()
-        gid = (data.get("github_id") or "").strip()
+        url = as_str(data.get("github_url"))
+        gid = as_str(data.get("github_id"))
         if url and not gid:
-            parsed = github_id_from_url(url)
+            parsed = github_pointer_from_url(url)
             if parsed:
                 data["github_type"] = [parsed[0]]
-                data["github_id"] = parsed[1]
+                data["github_repo"] = parsed[1]
+                data["github_id"] = parsed[2]
         header = yaml.dump(data, allow_unicode=True, sort_keys=False, default_flow_style=False)
         path.write_text(f"---\n{header}---\n{m.group(2)}", encoding="utf-8")
 

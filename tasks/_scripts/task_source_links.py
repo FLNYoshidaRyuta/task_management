@@ -8,6 +8,12 @@ from task_properties import single_choice
 
 LEGACY_SOURCE_TYPES = frozenset({"github_issue", "github_pr", "backlog_issue"})
 
+DISPLAY_PREFIX = {"github_issue": "Issue", "github_pr": "PR"}
+DISPLAY_ID_RE = re.compile(r"^(Issue|PR)#(\d+)$")
+REPO_RE = re.compile(r"^[^/\s#]+$")
+REPO_WITH_OWNER_RE = re.compile(r"^([^/\s#]+)/([^/\s#]+)$")
+LEGACY_GITHUB_ID_RE = re.compile(r"^([^/\s#]+/[^/\s#]+)#(\d+)$")
+
 GITHUB_URL_RE = re.compile(
     r"https://github\.com/([^/\s]+)/([^/\s]+)/(issues|pull)/(\d+)",
     re.IGNORECASE,
@@ -21,6 +27,56 @@ def as_str(value) -> str:
     if isinstance(value, str):
         return value.strip()
     return str(value).strip()
+
+
+def display_github_id(github_type: str, number: str) -> str:
+    return f"{DISPLAY_PREFIX[github_type]}#{number}"
+
+
+def cache_github_id(owner: str, repo: str, number: str) -> str:
+    return f"{owner}/{repo}#{number}"
+
+
+def github_cache_identity_from_pointer(
+    github_type: str,
+    github_url: str,
+    github_repo: str,
+    github_id_display: str,
+) -> tuple[str, str] | None:
+    parsed = parse_display_github_id(github_id_display)
+    if not parsed or parsed[0] != github_type:
+        return None
+
+    matched = GITHUB_URL_RE.search(github_url)
+    if not matched:
+        return None
+
+    owner, url_repo, kind, number = matched.groups()
+    if url_repo != github_repo or number != parsed[1]:
+        return None
+
+    if github_type == "github_pr" and kind.lower() != "pull":
+        return None
+    if github_type == "github_issue" and kind.lower() != "issues":
+        return None
+
+    return github_type, cache_github_id(owner, github_repo, number)
+
+
+def parse_display_github_id(value: str) -> tuple[str, str] | None:
+    matched = DISPLAY_ID_RE.fullmatch(value)
+    if not matched:
+        return None
+    prefix, number = matched.groups()
+    github_type = "github_pr" if prefix == "PR" else "github_issue"
+    return github_type, number
+
+
+def parse_legacy_github_id(value: str) -> tuple[str, str] | None:
+    matched = LEGACY_GITHUB_ID_RE.fullmatch(value)
+    if not matched:
+        return None
+    return matched.group(1), matched.group(2)
 
 
 def is_routine_task(data: dict) -> bool:
@@ -57,12 +113,16 @@ def task_source_identities(data: dict) -> list[tuple[str, str]]:
     seen: set[tuple[str, str]] = set()
 
     github_type = single_choice(data.get("github_type"))
-    github_id = as_str(data.get("github_id"))
-    if github_type and github_id:
-        key = (github_type, github_id)
-        if key not in seen:
-            identities.append(key)
-            seen.add(key)
+    github_repo = as_str(data.get("github_repo"))
+    github_url = as_str(data.get("github_url"))
+    github_id_display = as_str(data.get("github_id"))
+    identity = github_cache_identity_from_pointer(
+        github_type, github_url, github_repo, github_id_display
+    )
+    if identity is not None:
+        if identity not in seen:
+            identities.append(identity)
+            seen.add(identity)
 
     backlog_id = as_str(data.get("backlog_id"))
     if backlog_id:
@@ -114,6 +174,16 @@ def github_id_from_url(url: str) -> tuple[str, str] | None:
     name = f"{owner}/{repo}"
     source_type = "github_pr" if kind.lower() == "pull" else "github_issue"
     return source_type, f"{name}#{number}"
+
+
+def github_pointer_from_url(url: str) -> tuple[str, str, str] | None:
+    """URL から (github_type, github_repo, display github_id) を返す。"""
+    matched = GITHUB_URL_RE.search(url)
+    if not matched:
+        return None
+    owner, repo, kind, number = matched.groups()
+    source_type = "github_pr" if kind.lower() == "pull" else "github_issue"
+    return source_type, repo, display_github_id(source_type, number)
 
 
 def backlog_keys_from_text(text: str) -> list[str]:

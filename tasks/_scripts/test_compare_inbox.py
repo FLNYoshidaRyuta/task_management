@@ -40,15 +40,19 @@ def github_fm(
     updated: str = "",
     url: str = "",
 ) -> str:
-    repo, number = github_id.split("#", 1)
-    github_url = url or f"https://github.com/{repo}/issues/{number}"
+    full_repo, number = github_id.split("#", 1)
+    repo = full_repo.split("/", 1)[-1]
+    prefix = "PR" if github_type == "github_pr" else "Issue"
+    kind = "pull" if github_type == "github_pr" else "issues"
+    github_url = url or f"https://github.com/{full_repo}/{kind}/{number}"
     lines = [
         f"title: {title}",
         "status:",
         "  - todo",
         "github_type:",
         f"  - {github_type}",
-        f"github_id: {github_id}",
+        f"github_repo: {repo}",
+        f"github_id: {prefix}#{number}",
         f"github_url: {github_url}",
     ]
     if updated:
@@ -367,7 +371,8 @@ class CompareInboxTest(unittest.TestCase):
                     "  - todo",
                     "github_type:",
                     "  - github_issue",
-                    "github_id: org/repo#1",
+                    "github_repo: repo",
+                    "github_id: Issue#1",
                     "github_url: https://github.com/org/repo/issues/1",
                     "github_updated_at: 2026-10-07T00:00:00Z",
                     "backlog_id: MYPL-9",
@@ -439,7 +444,8 @@ class CompareInboxTest(unittest.TestCase):
                     "  - todo",
                     "github_type:",
                     "  - github_issue",
-                    "github_id: org/repo#404",
+                    "github_repo: repo",
+                    "github_id: Issue#404",
                     "github_url: https://github.com/org/repo/issues/404",
                     "backlog_id: MYPL-1",
                     "backlog_url: https://example.test/view/MYPL-1",

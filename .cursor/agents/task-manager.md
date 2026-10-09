@@ -61,6 +61,7 @@ depends_on: []
 related: []
 
 github_type: []
+github_repo:
 github_id:
 github_url:
 github_updated_at:
@@ -129,13 +130,17 @@ github_typeは以下のみ。
 
 sources/github/ はGitHubから取得した情報であり、読み取り専用。
 
-GitHub Issue や PR をタスク化するときは `github_type`、`github_id`、`github_url`、`github_updated_at` をキャッシュから入れる。
+GitHub Issue や PR をタスク化するときは `github_type`、`github_repo`、`github_id`、`github_url`、`github_updated_at` をキャッシュから入れる。
 
 Backlog 課題をタスク化するときは `backlog_id`、`backlog_url`、`backlog_updated_at` を入れる。
 
 同じ作業に GitHub と Backlog の両方があるときは1ファイルに両方のポインタを載せる。別ファイルに分けない。
 
-`github_id` は `owner/repo#番号` とする。例: FutureLinkNetwork/089_ImageServer#12
+`github_repo` はリポジトリ名のみとする。例: `089_ImageServer`（`owner/` は付けない）。
+
+`github_id` は `Issue#番号` または `PR#番号` とする。例: Issue#12。`github_type` と接頭辞を一致させる。
+
+キャッシュの `sourceId`（`owner/repo#番号`）から、URL・`github_repo`・表示用 `github_id` を入れる。owner は `github_url` に載せる。
 
 外部 Issue/PR/課題と個人タスクは同一ではない。1つの Issue を複数の個人タスクに分解してよい。
 

@@ -1,5 +1,7 @@
 # ADR 0004: 1タスクに GitHub と Backlog のポインタを持たせる
 
+GitHub の `github_id` の形は [ADR 0007](0007-split-github-id.md) に置き換えられた。
+
 - Status: Accepted
 - Date: 2026-10-09
 
