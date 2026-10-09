@@ -65,7 +65,7 @@ views:
     sort: []
     columnSize:
       file.name: 420
-      note.github_id: 108
+      note.github_id: 102
       note.backlog_id: 100
       note.start: 79
       note.end: 91

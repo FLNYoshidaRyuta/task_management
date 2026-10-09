@@ -8,7 +8,7 @@ estimate:
 priority:
   - Low
 status:
-  - todo
+  - done
 depends_on: []
 related:
   - "[[tasks/items/agent-poc/[技術負債] まいぷれくん agent-poc リファクタ epic（Phase 1-5）|[技術負債] まいぷれくん agent-poc リファクタ epic（Phase 1-5）]]"
