@@ -4,7 +4,7 @@ title: ニュース投稿画面の「この画像をGoogleマップの投稿に�
 project: 改善要望
 start: ""
 end: ""
-focus_date: 2026-10-14
+focus_date: 2026-10-13
 estimate:
 priority:
   - Mid
