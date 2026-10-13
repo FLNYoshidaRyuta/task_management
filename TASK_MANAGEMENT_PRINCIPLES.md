@@ -152,7 +152,7 @@ GitHub、Backlog、Google Chatなどは、個人タスク管理とは別の情�
   ↓
 人間が必要性を判断
   ↓
-個人タスク化
+個人タスク化 ／ タスク化しない（inbox-skipped.json）
 ```
 
 外部サービス側の状態と、個人タスク側の状態は分離して管理する。
@@ -225,6 +225,7 @@ sources/
 | `tasks/items/**/*.md` | 個人タスクの正本 |
 | `tasks/routines/**/*.md` | 繰り返し作業の定義。個人タスクの正本ではない |
 | `sources/**` | 外部サービスの取得キャッシュ |
+| `tasks/_config/inbox-skipped.json` | タスク化しない外部候補の記録。`skip_inbox.py` が書く |
 | GitHub / Backlog / Google Chat | 外部情報の原本 |
 
 ---

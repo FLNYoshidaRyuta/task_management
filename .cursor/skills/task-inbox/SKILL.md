@@ -19,7 +19,7 @@ GitHub と Backlog のキャッシュを個人タスクと照合し、ユーザ�
 
 タスク化するかはユーザーが決める。優先度、期限、見積もり、完了、project も決めない。
 
-`.env` は読まない。`sources/**` は編集しない。
+`.env` は読まない。`sources/**` は編集しない。`tasks/_config/inbox-skipped.json` は手で編集しない。書くのは `skip_inbox.py` だけ。
 
 外部サービスの status、priority、dueDate、estimatedHours を、個人タスクの status、priority、start、end、estimate へコピーしない。
 
@@ -65,6 +65,8 @@ py .\tasks\_scripts\compare_inbox.py --sources github,backlog --format markdown
 - **更新あり**: 番号 `U1`, `U2`, …（紐づきありかつキャッシュの `source_updated_at` がタスクの当該チャンネルより新しい）
 - **キャッシュに無い未完了タスク**: 番号 `M1`, `M2`, …（欠落したチャンネルの id 単位）
 
+末尾に、タスク化しないとして保持し今回の提案から外した件数が1件以上あるときだけ、件数の1行が出る。
+
 各項目に含まれる source_type、source_id、title、url、外部状態、更新日時、紐づくタスク path はスクリプト出力を正とする。エージェントが手で並べ替えや再採番をしない。
 
 タイトルだけでは内容が分からないときだけ、キャッシュの本文を短く要約する。キャッシュに無い事実は足さない。
@@ -90,6 +92,22 @@ py .\tasks\_scripts\compare_inbox.py --sources github,backlog --format markdown
 タイトルを変える指定が無いときは、キャッシュの title を使う。priority、start、end、estimate の指定が無いときは空欄として渡す。
 
 ユーザーが新規候補も更新（`U`）も `M` の status 変更も選ばなかったときは、ここで終わる。
+
+#### 4b. タスク化しない
+
+ユーザーが新規候補の番号または追記候補の `A` 番号について、タスク化しないと明示したときだけ、Markdown の番号を `source_type:source_id` に変換してから次を実行する。`U` と `M` は対象にしない。
+
+```powershell
+py .\tasks\_scripts\skip_inbox.py --sources github,backlog `
+  --add backlog_issue:MYPL-4238 `
+  --add github_issue:owner/repo#12
+```
+
+記録から戻す指示があるときだけ `--remove` を使う。保持一覧を求められたときだけ次を実行し、出力を提示する。
+
+```powershell
+py .\tasks\_scripts\skip_inbox.py --list
+```
 
 ### 5. Propose
 

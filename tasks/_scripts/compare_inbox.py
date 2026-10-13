@@ -317,6 +317,8 @@ def cache_newer(cache_updated_at: str, tasks: list[dict]) -> bool | None:
 
 
 def compare(vault: Path, sources: list[str]) -> dict:
+    from skip_inbox import load_skipped_keys
+
     items: list[dict] = []
     for source in sources:
         for relative in SOURCE_FILES[source]:
@@ -325,6 +327,7 @@ def compare(vault: Path, sources: list[str]) -> dict:
     candidates = merge_candidates(items)
     cache_keys = {(item["source_type"], item["source_id"]) for item in candidates}
     tasks = load_tasks(vault)
+    skipped_keys = load_skipped_keys(vault)
     result = []
 
     for candidate in candidates:
@@ -334,10 +337,12 @@ def compare(vault: Path, sources: list[str]) -> dict:
             attach_to = find_attach_target(candidate, tasks)
 
         public = {key: value for key, value in candidate.items() if not key.startswith("_")}
+        identity = (candidate["source_type"], candidate["source_id"])
         entry = {
             **public,
             "linked_tasks": linked,
             "cache_newer": cache_newer(candidate["source_updated_at"], linked),
+            "skipped": (not linked) and identity in skipped_keys,
         }
         if attach_to:
             entry["attach_to"] = attach_to
@@ -359,11 +364,22 @@ def format_markdown(result: dict) -> str:
     new_items = [
         c
         for c in candidates
-        if not c.get("linked_tasks") and not c.get("attach_to")
+        if not c.get("linked_tasks")
+        and not c.get("attach_to")
+        and not c.get("skipped")
     ]
     attach_items = [
-        c for c in candidates if not c.get("linked_tasks") and c.get("attach_to")
+        c
+        for c in candidates
+        if not c.get("linked_tasks")
+        and c.get("attach_to")
+        and not c.get("skipped")
     ]
+    skipped_hidden = sum(
+        1
+        for c in candidates
+        if c.get("skipped") and not c.get("linked_tasks")
+    )
     updated_items = [
         c
         for c in candidates
@@ -420,6 +436,12 @@ def format_markdown(result: dict) -> str:
                 if t.get("source_url"):
                     lines.append(f"     - url: {t.get('source_url')}")
     lines.append("")
+
+    if skipped_hidden > 0:
+        lines.append(
+            f"タスク化しないとして保持し、今回の提案から外した件数: {skipped_hidden}"
+        )
+        lines.append("")
 
     return "\n".join(lines)
 

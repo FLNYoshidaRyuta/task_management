@@ -53,6 +53,7 @@ Obsidian の予約プロパティ `id` は使わない。
 - `tasks/関連図.md`
 - `tasks/タスクビュー.base`
 - `tasks/_config/task-id.json`
+- `tasks/_config/inbox-skipped.json`
 - `.env`
 
 `.env` は秘密情報を含むため、
@@ -188,6 +189,8 @@ GitHub と Backlog の id の形は次のとおり。
 ルーティーン生成タスクだけ `source_type: routine` と `source_id` を使う。
 
 Inbox 照合は各チャンネルの id で行う。同一作業を別タスクに分けない。追記候補は `compare_inbox.py` の `attach_to` を正とする。
+
+タスク化しないと判断した GitHub Issue・PR と Backlog 課題は `tasks/_config/inbox-skipped.json` に残す。書くのは `tasks/_scripts/skip_inbox.py` だけ。`compare_inbox.py` は新規候補と追記候補から外す。個人タスクへ紐づいたあとは更新ありの提案を優先する。再提案するのはユーザーが `--remove` で記録を外したときだけ。
 
 外部サービスに書かれていない事実を推測して追加しない。
 

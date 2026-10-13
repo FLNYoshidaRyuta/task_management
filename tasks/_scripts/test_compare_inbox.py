@@ -458,6 +458,102 @@ class CompareInboxTest(unittest.TestCase):
         self.assertEqual(len(missing), 1)
         self.assertEqual(missing[0]["source_id"], "org/repo#404")
 
+    def test_skipped_hides_new_and_attach(self):
+        write_json(
+            self.vault / "sources/backlog/assigned-issues.json",
+            [
+                {
+                    "sourceType": "backlog_issue",
+                    "sourceId": "MYPL-SKIP",
+                    "sourceUrl": "https://example.test/view/MYPL-SKIP",
+                    "sourceUpdatedAt": "2026-10-08T00:00:00Z",
+                    "summary": "スキップ対象",
+                    "status": {"name": "未対応"},
+                }
+            ],
+        )
+        write_json(self.vault / "sources/github/assigned-issues.json", [])
+        write_json(self.vault / "sources/github/my-prs.json", [])
+        write_json(self.vault / "sources/github/review-requests.json", [])
+        skipped_path = self.vault / "tasks/_config/inbox-skipped.json"
+        skipped_path.parent.mkdir(parents=True, exist_ok=True)
+        skipped_path.write_text(
+            json.dumps(
+                {
+                    "items": [
+                        {
+                            "source_type": "backlog_issue",
+                            "source_id": "MYPL-SKIP",
+                            "title": "スキップ対象",
+                            "source_url": "https://example.test/view/MYPL-SKIP",
+                            "skipped_at": "2026-10-08T12:00:00Z",
+                        }
+                    ]
+                },
+                ensure_ascii=False,
+            ),
+            encoding="utf-8",
+        )
+
+        result = compare_inbox.compare(self.vault, ["backlog"])
+        item = result["candidates"][0]
+        self.assertTrue(item["skipped"])
+        md = compare_inbox.format_markdown(result)
+        self.assertNotIn("MYPL-SKIP", md.split("## 更新あり")[0])
+        self.assertIn("今回の提案から外した件数: 1", md)
+
+    def test_skipped_does_not_hide_linked_updates(self):
+        write_json(
+            self.vault / "sources/backlog/assigned-issues.json",
+            [
+                {
+                    "sourceType": "backlog_issue",
+                    "sourceId": "MYPL-LINK",
+                    "sourceUrl": "https://example.test/view/MYPL-LINK",
+                    "sourceUpdatedAt": "2026-10-09T00:00:00Z",
+                    "summary": "紐づきあり",
+                    "status": {"name": "処理中"},
+                }
+            ],
+        )
+        write_task(
+            self.vault / "tasks/items/業務タスク/紐づきあり.md",
+            backlog_fm("紐づきあり", "MYPL-LINK", updated="2026-10-06T00:00:00Z"),
+        )
+        skipped_path = self.vault / "tasks/_config/inbox-skipped.json"
+        skipped_path.parent.mkdir(parents=True, exist_ok=True)
+        skipped_path.write_text(
+            json.dumps(
+                {
+                    "items": [
+                        {
+                            "source_type": "backlog_issue",
+                            "source_id": "MYPL-LINK",
+                            "title": "紐づきあり",
+                            "source_url": "https://example.test/view/MYPL-LINK",
+                            "skipped_at": "2026-10-08T12:00:00Z",
+                        }
+                    ]
+                },
+                ensure_ascii=False,
+            ),
+            encoding="utf-8",
+        )
+
+        result = compare_inbox.compare(self.vault, ["backlog"])
+        item = result["candidates"][0]
+        self.assertFalse(item["skipped"])
+        md = compare_inbox.format_markdown(result)
+        self.assertIn("U1. **backlog_issue** | `MYPL-LINK`", md)
+
+    def test_broken_skipped_json_raises(self):
+        write_json(self.vault / "sources/backlog/assigned-issues.json", [])
+        path = self.vault / "tasks/_config/inbox-skipped.json"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("{broken", encoding="utf-8")
+        with self.assertRaises(json.JSONDecodeError):
+            compare_inbox.compare(self.vault, ["backlog"])
+
     def test_format_markdown_empty_sections(self):
         write_json(self.vault / "sources/github/assigned-issues.json", [])
         write_json(self.vault / "sources/github/my-prs.json", [])
