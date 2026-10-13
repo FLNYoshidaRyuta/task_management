@@ -1,3 +1,32 @@
 {
-  "items": []
+  "items": [
+    {
+      "source_type": "github_issue",
+      "source_id": "FutureLinkNetwork/agent-dev#462",
+      "title": "吉田の疑問積み上げIssue",
+      "source_url": "https://github.com/FutureLinkNetwork/agent-dev/issues/462",
+      "skipped_at": "2026-10-13T13:17:28Z"
+    },
+    {
+      "source_type": "github_pr",
+      "source_id": "FLNYoshidaRyuta/work-management#23",
+      "title": "feat: AI整理と定期実行、保守Skillを追加する",
+      "source_url": "https://github.com/FLNYoshidaRyuta/work-management/pull/23",
+      "skipped_at": "2026-10-13T13:17:28Z"
+    },
+    {
+      "source_type": "github_pr",
+      "source_id": "FutureLinkNetwork/codex_test_mypl3_pro#95",
+      "title": "Feature/instagram news openstatus edit3",
+      "source_url": "https://github.com/FutureLinkNetwork/codex_test_mypl3_pro/pull/95",
+      "skipped_at": "2026-10-13T13:17:28Z"
+    },
+    {
+      "source_type": "github_pr",
+      "source_id": "FutureLinkNetwork/codex_test_mypl3_pro#27",
+      "title": "Instagram編集画面でニュース公開設定を変更可能にする",
+      "source_url": "https://github.com/FutureLinkNetwork/codex_test_mypl3_pro/pull/27",
+      "skipped_at": "2026-10-13T13:17:28Z"
+    }
+  ]
 }
