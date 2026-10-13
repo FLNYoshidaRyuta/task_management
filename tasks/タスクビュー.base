@@ -67,7 +67,7 @@ views:
       - parent
     sort: []
     columnSize:
-      file.name: 420
+      file.name: 447
       note.github_repo: 180
       note.github_id: 102
       note.backlog_id: 100
