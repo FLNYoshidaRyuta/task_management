@@ -6,7 +6,7 @@ status:
   - in_progress
 start: ""
 end: ""
-focus_date: 2026-10-13
+focus_date: 2026-10-14
 priority:
   - High
 estimate:

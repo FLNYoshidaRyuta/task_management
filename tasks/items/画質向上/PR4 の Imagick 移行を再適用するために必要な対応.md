@@ -4,12 +4,12 @@ title: PR4 の Imagick 移行を再適用するために必要な対応
 project: 画質向上
 start: ""
 end: ""
-focus_date: 2026-10-13
+focus_date: 2026-10-15
 estimate:
 priority:
   - High
 status:
-  - todo
+  - in_progress
 depends_on: []
 github_type:
   - github_issue
