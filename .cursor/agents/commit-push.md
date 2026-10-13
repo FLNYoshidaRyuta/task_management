@@ -1,6 +1,6 @@
 ---
 name: commit-push
-description: 作業ツリーの差分を読み、論理単位でコミット範囲とメッセージを決めて commit し、現在のブランチを push する。ユーザーが /commit-push、またはコミットしてプッシュする実行を明示したときだけ使う。差分があるだけでは起動しない。
+description: 作業ツリーの差分を読み、論理単位でコミット範囲とメッセージを決めて commit し、現在のブランチを push する。commit-push コマンドから呼ばれたときだけ使う。
 model: composer-2.5[]
 ---
 
