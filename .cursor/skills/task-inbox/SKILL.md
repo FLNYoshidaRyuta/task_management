@@ -33,12 +33,12 @@ Inbox はタスクファイルを書かない。一致と更新差分は `inbox_
 
 次を実行する。
 
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File tasks/_scripts/fetch-github.ps1
-powershell -NoProfile -ExecutionPolicy Bypass -File tasks/_scripts/fetch-backlog.ps1
+```bash
+python3 tasks/_scripts/fetch_github.py
+python3 tasks/_scripts/fetch_backlog.py
 ```
 
-Inbox の通常取得では `-RefreshStatuses` を付けない。Backlog の課題は `tasks/_config/backlog-projects.json` と `tasks/_config/backlog-statuses.json` で `include` が `true` のプロジェクトと状態だけが対象になる。`include` が `false` のものは取得キャッシュに出ない。取得結果に無い課題を個人タスクでどうするかは、ユーザーが指示するまで決めない。
+Inbox の通常取得では `--refresh-statuses` を付けない。Backlog の課題は `tasks/_config/backlog-projects.json` と `tasks/_config/backlog-statuses.json` で `include` が `true` のプロジェクトと状態だけが対象になる。`include` が `false` のものは取得キャッシュに出ない。取得結果に無い課題を個人タスクでどうするかは、ユーザーが指示するまで決めない。
 
 失敗したソースは照合に使わない。成功したソースだけを次へ渡す。
 
@@ -46,8 +46,8 @@ Inbox の通常取得では `-RefreshStatuses` を付けない。Backlog の課�
 
 成功したソースだけを指定して、人向け Markdown を標準出力する。
 
-```powershell
-py .\tasks\_scripts\compare_inbox.py --sources github,backlog --format markdown
+```bash
+python3 tasks/_scripts/compare_inbox.py --sources github,backlog --format markdown
 ```
 
 片方だけ成功したときは、`--sources github` または `--sources backlog` にする。
@@ -97,16 +97,16 @@ py .\tasks\_scripts\compare_inbox.py --sources github,backlog --format markdown
 
 ユーザーが新規候補の番号または追記候補の `A` 番号について、タスク化しないと明示したときだけ、Markdown の番号を `source_type:source_id` に変換してから次を実行する。`U` と `M` は対象にしない。
 
-```powershell
-py .\tasks\_scripts\skip_inbox.py --sources github,backlog `
-  --add backlog_issue:MYPL-4238 `
+```bash
+python3 tasks/_scripts/skip_inbox.py --sources github,backlog \
+  --add backlog_issue:MYPL-4238 \
   --add github_issue:owner/repo#12
 ```
 
 記録から戻す指示があるときだけ `--remove` を使う。保持一覧を求められたときだけ次を実行し、出力を提示する。
 
-```powershell
-py .\tasks\_scripts\skip_inbox.py --list
+```bash
+python3 tasks/_scripts/skip_inbox.py --list
 ```
 
 ### 5. Propose
@@ -115,17 +115,17 @@ py .\tasks\_scripts\skip_inbox.py --list
 
 更新（`U`）があるときは、先に会話コメントを取る。
 
-```powershell
-py .\tasks\_scripts\fetch_comments.py --sources github,backlog `
-  --update github_issue:FutureLinkNetwork/agent-dev#467 `
+```bash
+python3 tasks/_scripts/fetch_comments.py --sources github,backlog \
+  --update github_issue:FutureLinkNetwork/agent-dev#467 \
   --update backlog_issue:MYPL-4221
 ```
 
 続けて一致と更新差分を出す。
 
-```powershell
-py .\tasks\_scripts\inbox_hints.py --sources github,backlog `
-  --new backlog_issue:MYPL-4238 `
+```bash
+python3 tasks/_scripts/inbox_hints.py --sources github,backlog \
+  --new backlog_issue:MYPL-4238 \
   --update backlog_issue:MYPL-4221
 ```
 

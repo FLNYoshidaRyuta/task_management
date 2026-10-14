@@ -227,12 +227,12 @@ GitHubの番号は `PR4` や `Issue12` のように書く。
 
 タスクを変更した後は、必ず次の順で実行する。
 
-py .\tasks\_scripts\generate_routines.py
+python3 tasks/_scripts/generate_routines.py
 
-py .\tasks\_scripts\assign_task_ids.py
+python3 tasks/_scripts/assign_task_ids.py
 
-py .\tasks\_scripts\validate_task_properties.py
+python3 tasks/_scripts/validate_task_properties.py
 
-py .\tasks\_scripts\generate_views.py
+python3 tasks/_scripts/generate_views.py
 
 変更したファイルと変更内容を報告する。

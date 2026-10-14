@@ -82,7 +82,7 @@ GitHubの取得情報は `sources/github/` にある。
 
 GitHubの最新情報を取得するときは、
 
-`tasks/_scripts/fetch-github.ps1`
+`python3 tasks/_scripts/fetch_github.py`
 
 を実行する。
 
@@ -109,7 +109,7 @@ Backlogの取得情報は `sources/backlog/` にある。
 
 Backlogの最新情報を取得するときは、
 
-`tasks/_scripts/fetch-backlog.ps1`
+`python3 tasks/_scripts/fetch_backlog.py`
 
 を実行する。
 
@@ -122,7 +122,7 @@ Backlogの最新情報を取得するときは、
 
 設定ファイルの更新だけ行うときは、
 
-`tasks/_scripts/fetch-backlog.ps1 -RefreshStatuses`
+`python3 tasks/_scripts/fetch_backlog.py --refresh-statuses`
 
 を実行する。課題一覧は取らない。参加プロジェクトをマージし、`include` が `true` のプロジェクトの状態だけを状態ファイルに残す。既存行の `include` は維持する。
 

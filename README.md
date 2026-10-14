@@ -4,12 +4,12 @@
 
 ## セットアップ
 
-```powershell
-py -m pip install -r .\requirements.txt
+```bash
+python3 -m pip install -r requirements.txt
 ```
 
 ## テスト
 
-```powershell
-py -m unittest discover -s .\tasks\_scripts -p "test_*.py"
+```bash
+python3 -m unittest discover -s tasks/_scripts -p "test_*.py"
 ```

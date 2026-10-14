@@ -900,7 +900,7 @@ def _ensure_jpholiday(routines: list[Routine], errors: list[str]):
     needs_jp = any(r.business_day_adjustment != "none" for r in routines)
 
     if needs_jp and jpholiday is None:
-        errors.append("jpholiday がインストールされていません。py -m pip install -r requirements.txt を実行してください")
+        errors.append("jpholiday がインストールされていません。python3 -m pip install -r requirements.txt を実行してください")
 
 
 def generate(tasks_dir: Path, today: date, dry_run: bool = False) -> GenerateResult:
