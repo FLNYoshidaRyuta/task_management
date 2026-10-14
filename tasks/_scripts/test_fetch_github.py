@@ -24,14 +24,18 @@ class FetchGithubTest(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.vault = Path(self.temp.name)
-        self.saved = os.environ.get("GH_TOKEN")
+        self.saved = {
+            key: os.environ.get(key) for key in ("GH_TOKEN", "GITHUB_FETCH_TOKEN")
+        }
         os.environ.pop("GH_TOKEN", None)
+        os.environ.pop("GITHUB_FETCH_TOKEN", None)
 
     def tearDown(self):
-        if self.saved is None:
-            os.environ.pop("GH_TOKEN", None)
-        else:
-            os.environ["GH_TOKEN"] = self.saved
+        for key, value in self.saved.items():
+            if value is None:
+                os.environ.pop(key, None)
+            else:
+                os.environ[key] = value
         self.temp.cleanup()
 
     def test_fetch_writes_three_caches_for_the_authenticated_user(self):
@@ -86,7 +90,7 @@ class FetchGithubTest(unittest.TestCase):
         with self.assertRaises(RuntimeError) as raised:
             fetch_github.fetch(self.vault, runner)
 
-        self.assertIn("GH_TOKEN", str(raised.exception))
+        self.assertIn("GITHUB_FETCH_TOKEN", str(raised.exception))
         self.assertFalse((self.vault / "sources/github/assigned-issues.json").exists())
 
     def test_search_failure_keeps_earlier_cache(self):
@@ -116,11 +120,14 @@ class FetchGithubTest(unittest.TestCase):
         self.assertFalse((self.vault / "sources/github/my-prs.json").exists())
 
     def test_fetch_loads_dotenv_token_before_gh(self):
-        (self.vault / ".env").write_text("GH_TOKEN=from-file\n", encoding="utf-8")
+        (self.vault / ".env").write_text(
+            "GITHUB_FETCH_TOKEN=from-file\nGH_TOKEN=do-not-load\n",
+            encoding="utf-8",
+        )
         seen: list[str] = []
 
         def runner(args):
-            seen.append(os.environ.get("GH_TOKEN", ""))
+            seen.append(os.environ.get("GITHUB_FETCH_TOKEN", ""))
             if args[:2] == ("api", "user"):
                 return completed("octocat\n")
             return completed("[]")
@@ -128,14 +135,19 @@ class FetchGithubTest(unittest.TestCase):
         fetch_github.fetch(self.vault, runner)
 
         self.assertEqual(seen[0], "from-file")
+        self.assertNotIn("GH_TOKEN", os.environ)
 
     def test_runtime_token_wins_over_dotenv(self):
-        os.environ["GH_TOKEN"] = "runtime-secret"
-        (self.vault / ".env").write_text("GH_TOKEN=from-file\n", encoding="utf-8")
+        os.environ["GITHUB_FETCH_TOKEN"] = "runtime-secret"
+        (self.vault / ".env").write_text(
+            "GITHUB_FETCH_TOKEN=from-file\n",
+            encoding="utf-8",
+        )
 
         def runner(args):
             if args[:2] == ("api", "user"):
-                self.assertEqual(os.environ["GH_TOKEN"], "runtime-secret")
+                self.assertEqual(os.environ["GITHUB_FETCH_TOKEN"], "runtime-secret")
+                self.assertNotIn("GH_TOKEN", os.environ)
                 return completed("octocat\n")
             return completed("[]")
 

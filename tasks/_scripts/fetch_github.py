@@ -10,7 +10,7 @@ from collections.abc import Callable, Sequence
 from pathlib import Path
 
 from normalize_github import normalize
-from runtime_env import gh_env, load_env_file
+from runtime_env import GITHUB_FETCH_TOKEN, gh_env, load_env_file
 
 GITHUB_DIR = Path("sources/github")
 SEARCHES = (
@@ -77,13 +77,13 @@ def read_github_login(runner: GhRunner | None = None) -> str:
     if completed.returncode != 0:
         message = completed.stderr.strip() or completed.stdout.strip()
         raise RuntimeError(
-            "Failed to fetch GitHub user. Set GH_TOKEN to the account whose issues should be fetched."
+            f"Failed to fetch GitHub user. Set {GITHUB_FETCH_TOKEN} to the account whose issues should be fetched."
             + (f"\n{message}" if message else "")
         )
     login = completed.stdout.strip()
     if not login:
         raise RuntimeError(
-            "Failed to fetch GitHub user. Set GH_TOKEN to the account whose issues should be fetched."
+            f"Failed to fetch GitHub user. Set {GITHUB_FETCH_TOKEN} to the account whose issues should be fetched."
         )
     return login
 

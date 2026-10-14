@@ -171,9 +171,14 @@ class FetchCommentsTest(unittest.TestCase):
         github_data = json.loads(github_path.read_text(encoding="utf-8"))
         self.assertEqual(github_data[0]["sourceId"], "org/repo#1")
 
-    def test_github_comments_pass_gh_token_to_gh(self):
-        saved = os.environ.get("GH_TOKEN")
-        os.environ["GH_TOKEN"] = " runtime-token "
+    def test_github_comments_pass_fetch_token_only_to_gh(self):
+        saved = {
+            key: os.environ.get(key)
+            for key in ("GH_TOKEN", "GITHUB_TOKEN", "GITHUB_FETCH_TOKEN")
+        }
+        os.environ["GH_TOKEN"] = "app-token"
+        os.environ["GITHUB_TOKEN"] = "app-token-2"
+        os.environ["GITHUB_FETCH_TOKEN"] = " user-token "
         captured = {}
 
         def fake_run(command, **kwargs):
@@ -192,16 +197,20 @@ class FetchCommentsTest(unittest.TestCase):
             comments = fetch_comments.fetch_github_comments_api(
                 "github_issue", "o/r#1"
             )
+            self.assertEqual(os.environ["GH_TOKEN"], "app-token")
+            self.assertEqual(os.environ["GITHUB_TOKEN"], "app-token-2")
         finally:
             fetch_comments.subprocess.run = original
-            if saved is None:
-                os.environ.pop("GH_TOKEN", None)
-            else:
-                os.environ["GH_TOKEN"] = saved
+            for key, value in saved.items():
+                if value is None:
+                    os.environ.pop(key, None)
+                else:
+                    os.environ[key] = value
 
         self.assertEqual(comments, [])
         self.assertEqual(captured["command"][0], "gh")
-        self.assertEqual(captured["env"]["GH_TOKEN"], "runtime-token")
+        self.assertEqual(captured["env"]["GH_TOKEN"], "user-token")
+        self.assertNotIn("GITHUB_TOKEN", captured["env"])
 
 
 if __name__ == "__main__":

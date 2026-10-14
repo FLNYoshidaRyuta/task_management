@@ -5,6 +5,10 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
+# gh がプロセス全体で読む名前は使わない。取得とコメント取得の子プロセスにだけ渡す。
+GITHUB_FETCH_TOKEN = "GITHUB_FETCH_TOKEN"
+_GH_PROCESS_TOKEN_NAMES = frozenset({"GH_TOKEN", "GITHUB_TOKEN"})
+
 
 def load_env_file(env_path: Path) -> None:
     """未設定のキーだけ .env から入れる。空の値は未設定として扱う。"""
@@ -23,7 +27,7 @@ def load_env_file(env_path: Path) -> None:
             value.startswith("'") and value.endswith("'")
         ):
             value = value[1:-1]
-        if not name:
+        if not name or name in _GH_PROCESS_TOKEN_NAMES:
             continue
         if os.environ.get(name, "").strip():
             continue
@@ -31,11 +35,11 @@ def load_env_file(env_path: Path) -> None:
 
 
 def gh_env() -> dict[str, str]:
-    """gh に渡す環境。GH_TOKEN があるときだけ gh がそれを使う。"""
+    """取得用トークンだけを、gh 子プロセスの GH_TOKEN として渡す。"""
     env = dict(os.environ)
-    token = env.get("GH_TOKEN", "").strip()
+    token = env.get(GITHUB_FETCH_TOKEN, "").strip()
+    env.pop("GH_TOKEN", None)
+    env.pop("GITHUB_TOKEN", None)
     if token:
         env["GH_TOKEN"] = token
-    else:
-        env.pop("GH_TOKEN", None)
     return env
