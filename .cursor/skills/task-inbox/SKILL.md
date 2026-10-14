@@ -29,9 +29,14 @@ Inbox はタスクファイルを書かない。一致と更新差分は `inbox_
 
 ## Procedure
 
+PowerShell では `py -3`、bash では `python3` を使う。引数は同じにする。今のシェルのブロックだけを実行する。
+
 ### 1. Fetch
 
-次を実行する。
+```powershell
+py -3 tasks/_scripts/fetch_github.py
+py -3 tasks/_scripts/fetch_backlog.py
+```
 
 ```bash
 python3 tasks/_scripts/fetch_github.py
@@ -45,6 +50,10 @@ Inbox の通常取得では `--refresh-statuses` を付けない。Backlog の�
 ### 2. Compare
 
 成功したソースだけを指定して、人向け Markdown を標準出力する。
+
+```powershell
+py -3 tasks/_scripts/compare_inbox.py --sources github,backlog --format markdown
+```
 
 ```bash
 python3 tasks/_scripts/compare_inbox.py --sources github,backlog --format markdown
@@ -97,13 +106,19 @@ python3 tasks/_scripts/compare_inbox.py --sources github,backlog --format markdo
 
 ユーザーが新規候補の番号または追記候補の `A` 番号について、タスク化しないと明示したときだけ、Markdown の番号を `source_type:source_id` に変換してから次を実行する。`U` と `M` は対象にしない。
 
+```powershell
+py -3 tasks/_scripts/skip_inbox.py --sources github,backlog --add backlog_issue:MYPL-4238 --add github_issue:owner/repo#12
+```
+
 ```bash
-python3 tasks/_scripts/skip_inbox.py --sources github,backlog \
-  --add backlog_issue:MYPL-4238 \
-  --add github_issue:owner/repo#12
+python3 tasks/_scripts/skip_inbox.py --sources github,backlog --add backlog_issue:MYPL-4238 --add github_issue:owner/repo#12
 ```
 
 記録から戻す指示があるときだけ `--remove` を使う。保持一覧を求められたときだけ次を実行し、出力を提示する。
+
+```powershell
+py -3 tasks/_scripts/skip_inbox.py --list
+```
 
 ```bash
 python3 tasks/_scripts/skip_inbox.py --list
@@ -115,18 +130,22 @@ python3 tasks/_scripts/skip_inbox.py --list
 
 更新（`U`）があるときは、先に会話コメントを取る。
 
+```powershell
+py -3 tasks/_scripts/fetch_comments.py --sources github,backlog --update github_issue:FutureLinkNetwork/agent-dev#467 --update backlog_issue:MYPL-4221
+```
+
 ```bash
-python3 tasks/_scripts/fetch_comments.py --sources github,backlog \
-  --update github_issue:FutureLinkNetwork/agent-dev#467 \
-  --update backlog_issue:MYPL-4221
+python3 tasks/_scripts/fetch_comments.py --sources github,backlog --update github_issue:FutureLinkNetwork/agent-dev#467 --update backlog_issue:MYPL-4221
 ```
 
 続けて一致と更新差分を出す。
 
+```powershell
+py -3 tasks/_scripts/inbox_hints.py --sources github,backlog --new backlog_issue:MYPL-4238 --update backlog_issue:MYPL-4221
+```
+
 ```bash
-python3 tasks/_scripts/inbox_hints.py --sources github,backlog \
-  --new backlog_issue:MYPL-4238 \
-  --update backlog_issue:MYPL-4221
+python3 tasks/_scripts/inbox_hints.py --sources github,backlog --new backlog_issue:MYPL-4238 --update backlog_issue:MYPL-4221
 ```
 
 新規だけのときは `fetch_comments.py` を呼ばず、`inbox_hints.py` は `--new` だけ。更新だけのときは `--update` だけ。

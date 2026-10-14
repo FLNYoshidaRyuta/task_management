@@ -504,7 +504,11 @@ def is_non_business_day(day: date) -> bool:
         return True
 
     if jpholiday is None:
-        raise RuntimeError("jpholiday がインストールされていません。requirements.txt をインストールしてください")
+        raise RuntimeError(
+            "jpholiday がインストールされていません。"
+            "PowerShell では py -3 -m pip install -r requirements.txt、"
+            "bash では python3 -m pip install -r requirements.txt を実行してください"
+        )
 
     return jpholiday.is_holiday(day)
 
@@ -900,7 +904,11 @@ def _ensure_jpholiday(routines: list[Routine], errors: list[str]):
     needs_jp = any(r.business_day_adjustment != "none" for r in routines)
 
     if needs_jp and jpholiday is None:
-        errors.append("jpholiday がインストールされていません。python3 -m pip install -r requirements.txt を実行してください")
+        errors.append(
+            "jpholiday がインストールされていません。"
+            "PowerShell では py -3 -m pip install -r requirements.txt、"
+            "bash では python3 -m pip install -r requirements.txt を実行してください"
+        )
 
 
 def generate(tasks_dir: Path, today: date, dry_run: bool = False) -> GenerateResult:
