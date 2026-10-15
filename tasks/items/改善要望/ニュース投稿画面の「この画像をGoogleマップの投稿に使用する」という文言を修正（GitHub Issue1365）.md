@@ -8,7 +8,8 @@ focus_date: 2026-10-14
 estimate:
 priority:
   - Mid
-status: []
+status:
+  - todo
 depends_on: []
 related: []
 github_type:
@@ -26,8 +27,6 @@ backlog_updated_at: 2026-10-14T07:28:09Z
 ニュース投稿画面の「この画像をGoogleマップの投稿に使用する」という文言には違和感がある。選択できる内容は GBP の「写真」に格納するか否かであり、GBP と Google マップの用語が混在して誤解が生じないよう文言を調整したい。
 
 Backlog（MYPL-4222）では、表示が実体とそろっていないため修正が必要とされている。関連 GitHub Issue: https://github.com/FutureLinkNetwork/mypl_pro/issues/1365
-
-[REDACTED]/view/MYPL-4222
 
 ## やったこと
 
