@@ -180,6 +180,12 @@ Inbox 照合は各チャンネルの id で行う。同一作業を別タスク�
 
 タスク化しないと判断した GitHub Issue・PR と Backlog 課題は `tasks/_config/inbox-skipped.json` に残す。書くのは `tasks/_scripts/skip_inbox.py` だけ。`compare_inbox.py` は新規候補と追記候補から外す。個人タスクへ紐づいたあとは更新ありの提案を優先する。再提案するのはユーザーが `--remove` で記録を外したときだけ。
 
+対話の Inbox は `.cursor/skills/task-inbox/SKILL.md` を使う。ファイルは変えない。
+
+無人の定期実行で下書き PR を作る手順は `.cursor/skills/task-inbox-unattended/SKILL.md` だけが持つ。新規と更新は別 PR にする。同じ種別の open PR を増やさない判定は `tasks/_scripts/inbox_pr_guard.py` だけが行う。open が無ければ新しい PR、fingerprint が同じなら何もしない、違えばそのブランチを更新する。ラベルは `inbox-new` と `inbox-update`。
+
+無人実行では、新規タスクの project をエージェントが既存のタスクツリーを読んで1件ずつ決める。リポジトリや Backlog プロジェクトとの固定対応表は使わない。優先度、期限、見積もり、完了、タスク化しない判断は人間が行う。採否は下書き PR のマージで行う。
+
 外部サービスに書かれていない事実を推測して追加しない。
 
 # 関連タスク
