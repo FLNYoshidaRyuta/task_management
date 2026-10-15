@@ -9,7 +9,6 @@ estimate:
 priority:
   - Mid
 status:
-  - in_progress
 depends_on: []
 related: []
 github_type:

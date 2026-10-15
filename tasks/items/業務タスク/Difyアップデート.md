@@ -3,7 +3,6 @@ task_id: 74
 title: Difyアップデート
 project: 業務タスク
 status:
-  - in_progress
 start: ""
 end: 2026-10-15
 focus_date: 2026-10-14
