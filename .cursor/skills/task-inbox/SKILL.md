@@ -5,6 +5,7 @@ description: >-
   確認後は inbox_hints で一致・更新差分を出し、関係と反映内容を提案する。
   ユーザーが Inbox、未タスクの Issue や課題、外部情報の取り込み、
   新しい仕事候補の確認を頼んだときに使う。タスクファイルは変更しない。
+  定期実行や無人の下書き PR 作成には使わない。
 ---
 
 # Task Inbox
@@ -14,6 +15,8 @@ description: >-
 GitHub と Backlog のキャッシュを個人タスクと照合し、ユーザーがタスク化するものを選べる状態にする。
 
 ## Rules
+
+定期実行で下書き PR を作るときは、このスキルを使わない。`.cursor/skills/task-inbox-unattended/SKILL.md` を使う。
 
 `tasks/items/**` と `tasks/_タスク.md` は変更しない。変更してよいのは task-manager だけ。
 
