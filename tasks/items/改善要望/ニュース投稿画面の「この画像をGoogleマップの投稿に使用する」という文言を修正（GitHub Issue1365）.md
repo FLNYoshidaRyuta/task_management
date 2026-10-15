@@ -8,7 +8,7 @@ focus_date: 2026-10-14
 estimate:
 priority:
   - Mid
-status:
+status: []
 depends_on: []
 related: []
 github_type:
