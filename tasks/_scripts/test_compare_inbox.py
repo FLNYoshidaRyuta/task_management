@@ -107,23 +107,75 @@ class CompareInboxTest(unittest.TestCase):
         self.assertEqual(linked[0]["path"], "tasks/items/改善要望/更新された課題.md")
         self.assertTrue(by_id["MYPL-2"]["cache_newer"])
 
-    def test_merge_same_github_pr_and_link_legacy_task(self):
-        pull = {
+    def test_own_prs_are_not_candidates(self):
+        own = {
             "sourceType": "github_pr",
             "sourceId": "owner/repo#4",
             "sourceUrl": "https://github.com/owner/repo/pull/4",
-            "sourceUpdatedAt": "2026-10-01T00:00:00Z",
-            "title": "古いタイトル",
+            "sourceUpdatedAt": "2026-10-03T00:00:00Z",
+            "title": "自分のPR",
             "state": "open",
         }
         review = {
-            **pull,
+            "sourceType": "github_pr",
+            "sourceId": "owner/repo#5",
+            "sourceUrl": "https://github.com/owner/repo/pull/5",
             "sourceUpdatedAt": "2026-10-02T00:00:00Z",
-            "title": "新しいタイトル",
+            "title": "レビュー依頼",
+            "state": "open",
         }
         write_json(self.vault / "sources/github/assigned-issues.json", [])
-        write_json(self.vault / "sources/github/my-prs.json", [pull])
+        write_json(self.vault / "sources/github/my-prs.json", [own])
         write_json(self.vault / "sources/github/review-requests.json", [review])
+        write_task(
+            self.vault / "tasks/items/OEM/自分のPR.md",
+            github_fm(
+                "自分のPR",
+                "owner/repo#4",
+                github_type="github_pr",
+                updated="2026-10-01T00:00:00Z",
+            ),
+        )
+
+        result = compare_inbox.compare(self.vault, ["github"])
+        by_id = {
+            (item["source_type"], item["source_id"]): item
+            for item in result["candidates"]
+        }
+
+        self.assertNotIn(("github_pr", "owner/repo#4"), by_id)
+        review_item = by_id[("github_pr", "owner/repo#5")]
+        self.assertEqual(review_item["title"], "レビュー依頼")
+        self.assertEqual(review_item["linked_tasks"], [])
+        self.assertEqual(result["missing_from_cache"], [])
+
+    def test_review_request_keeps_its_own_body_when_also_authored(self):
+        authored = {
+            "sourceType": "github_pr",
+            "sourceId": "owner/repo#4",
+            "sourceUrl": "https://github.com/owner/repo/pull/4",
+            "sourceUpdatedAt": "2026-10-03T00:00:00Z",
+            "title": "作者側の新しいタイトル",
+            "state": "open",
+        }
+        review = {
+            **authored,
+            "sourceUpdatedAt": "2026-10-02T00:00:00Z",
+            "title": "レビュー依頼のタイトル",
+        }
+        write_json(self.vault / "sources/github/assigned-issues.json", [])
+        write_json(self.vault / "sources/github/my-prs.json", [authored])
+        write_json(self.vault / "sources/github/review-requests.json", [review])
+
+        result = compare_inbox.compare(self.vault, ["github"])
+        item = result["candidates"][0]
+        self.assertEqual(item["source_id"], "owner/repo#4")
+        self.assertEqual(item["title"], "レビュー依頼のタイトル")
+        self.assertEqual(item["source_updated_at"], "2026-10-02T00:00:00Z")
+
+    def test_link_github_issue(self):
+        write_json(self.vault / "sources/github/my-prs.json", [])
+        write_json(self.vault / "sources/github/review-requests.json", [])
         write_task(
             self.vault / "tasks/items/画質向上/旧キー.md",
             github_fm("旧キー", "owner/repo#12"),
@@ -147,11 +199,6 @@ class CompareInboxTest(unittest.TestCase):
             (item["source_type"], item["source_id"]): item
             for item in result["candidates"]
         }
-
-        pull_item = by_id[("github_pr", "owner/repo#4")]
-        self.assertEqual(pull_item["title"], "新しいタイトル")
-        self.assertEqual(pull_item["source_updated_at"], "2026-10-02T00:00:00Z")
-        self.assertEqual(pull_item["linked_tasks"], [])
 
         issue = by_id[("github_issue", "owner/repo#12")]
         self.assertEqual(issue["linked_tasks"][0]["path"], "tasks/items/画質向上/旧キー.md")
@@ -223,12 +270,22 @@ class CompareInboxTest(unittest.TestCase):
             ),
         )
 
+        write_task(
+            self.vault / "tasks/items/OEM/閉じた自分のPR.md",
+            github_fm(
+                "閉じた自分のPR",
+                "owner/repo#8",
+                github_type="github_pr",
+            ),
+        )
+
         result = compare_inbox.compare(self.vault, ["github"])
         missing = result["missing_from_cache"]
+        missing_ids = {item["source_id"] for item in missing}
 
-        self.assertEqual(len(missing), 1)
-        self.assertEqual(missing[0]["source_id"], "owner/repo#99")
-        self.assertEqual(missing[0]["tasks"][0]["path"], "tasks/items/画質向上/欠落.md")
+        self.assertEqual(missing_ids, {"owner/repo#99", "owner/repo#8"})
+        issue = next(item for item in missing if item["source_id"] == "owner/repo#99")
+        self.assertEqual(issue["tasks"][0]["path"], "tasks/items/画質向上/欠落.md")
 
     def test_missing_from_cache_excludes_done_and_canceled(self):
         write_json(self.vault / "sources/github/assigned-issues.json", [])

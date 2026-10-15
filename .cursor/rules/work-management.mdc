@@ -99,6 +99,10 @@ GitHubの情報を個人タスクとして管理する場合は、
 `assigned-issues` は `github_issue`。
 `my-prs` と `review-requests` は `github_pr`。
 
+Inbox の照合候補は `assigned-issues` と `review-requests` だけである。
+`my-prs` は取得キャッシュに残すが、新規・更新・追記の候補にしない。
+開いている自分の PR に紐づく未完了タスクは、キャッシュ欠落には出さない。
+
 # Backlog
 
 Backlogの取得情報は `sources/backlog/` にある。

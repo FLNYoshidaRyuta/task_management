@@ -23,9 +23,11 @@ from task_source_links import (
 
 GITHUB_FILES = (
     "sources/github/assigned-issues.json",
-    "sources/github/my-prs.json",
     "sources/github/review-requests.json",
 )
+# 作者が自分の PR。新規・更新・追記の候補にはしない。
+# 開いている間は、紐づくタスクをキャッシュ欠落として出さない。
+GITHUB_OWN_PR_FILE = "sources/github/my-prs.json"
 BACKLOG_FILES = ("sources/backlog/assigned-issues.json",)
 SOURCE_FILES = {
     "github": GITHUB_FILES,
@@ -316,6 +318,20 @@ def cache_newer(cache_updated_at: str, tasks: list[dict]) -> bool | None:
     return cache_time > min(known)
 
 
+def own_pr_identities(vault: Path, sources: list[str]) -> set[tuple[str, str]]:
+    """自分が作者の PR。候補にはせず、欠落判定の在籍だけに使う。"""
+    if "github" not in sources:
+        return set()
+
+    keys: set[tuple[str, str]] = set()
+    for item in load_json_list(vault / GITHUB_OWN_PR_FILE):
+        candidate = candidate_from_item(item)
+        if candidate is None or candidate["source_type"] != "github_pr":
+            continue
+        keys.add((candidate["source_type"], candidate["source_id"]))
+    return keys
+
+
 def compare(vault: Path, sources: list[str]) -> dict:
     from skip_inbox import load_skipped_keys
 
@@ -326,6 +342,7 @@ def compare(vault: Path, sources: list[str]) -> dict:
 
     candidates = merge_candidates(items)
     cache_keys = {(item["source_type"], item["source_id"]) for item in candidates}
+    cache_keys.update(own_pr_identities(vault, sources))
     tasks = load_tasks(vault)
     skipped_keys = load_skipped_keys(vault)
     result = []
