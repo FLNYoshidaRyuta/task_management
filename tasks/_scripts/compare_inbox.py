@@ -356,35 +356,47 @@ def compare(vault: Path, sources: list[str]) -> dict:
     }
 
 
-def format_markdown(result: dict) -> str:
-    lines: list[str] = []
+def split_inbox(result: dict) -> dict:
+    """新規、追記、更新、キャッシュ欠落を Markdown と同じ条件で分ける。"""
     candidates = result.get("candidates", [])
     missing = result.get("missing_from_cache", [])
+    return {
+        "new": [
+            c
+            for c in candidates
+            if not c.get("linked_tasks")
+            and not c.get("attach_to")
+            and not c.get("skipped")
+        ],
+        "attach": [
+            c
+            for c in candidates
+            if not c.get("linked_tasks")
+            and c.get("attach_to")
+            and not c.get("skipped")
+        ],
+        "updated": [
+            c
+            for c in candidates
+            if c.get("linked_tasks") and c.get("cache_newer") is True
+        ],
+        "missing_from_cache": missing,
+        "skipped_hidden": sum(
+            1
+            for c in candidates
+            if c.get("skipped") and not c.get("linked_tasks")
+        ),
+    }
 
-    new_items = [
-        c
-        for c in candidates
-        if not c.get("linked_tasks")
-        and not c.get("attach_to")
-        and not c.get("skipped")
-    ]
-    attach_items = [
-        c
-        for c in candidates
-        if not c.get("linked_tasks")
-        and c.get("attach_to")
-        and not c.get("skipped")
-    ]
-    skipped_hidden = sum(
-        1
-        for c in candidates
-        if c.get("skipped") and not c.get("linked_tasks")
-    )
-    updated_items = [
-        c
-        for c in candidates
-        if c.get("linked_tasks") and c.get("cache_newer") is True
-    ]
+
+def format_markdown(result: dict) -> str:
+    lines: list[str] = []
+    buckets = split_inbox(result)
+    new_items = buckets["new"]
+    attach_items = buckets["attach"]
+    updated_items = buckets["updated"]
+    missing = buckets["missing_from_cache"]
+    skipped_hidden = buckets["skipped_hidden"]
 
     lines.append("## 新規候補")
     if not new_items:
