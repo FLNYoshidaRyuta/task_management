@@ -17,7 +17,7 @@ github_id: ""
 github_url: ""
 github_updated_at: ""
 backlog_id: MYPL-4248
-backlog_url: https://fln2000.backlog.com/view/MYPL-4248  # pragma: allowlist secret
+backlog_url: "https://fln2000.backlog.com/view/MYPL-4248"  # pragma: allowlist secret
 backlog_updated_at: 2026-10-14T12:40:59Z
 ---
 ## 概要
