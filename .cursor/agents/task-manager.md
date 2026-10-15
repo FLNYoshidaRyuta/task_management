@@ -225,14 +225,20 @@ GitHubの番号は `PR4` や `Issue12` のように書く。
 
 ## 操作後
 
-タスクを変更した後は、必ず次の順で実行する。
+タスクを変更した後は、今のシェルのブロックを上から順に実行する。PowerShell では `py -3`、bash では `python3` を使う。
 
-py .\tasks\_scripts\generate_routines.py
+```powershell
+py -3 tasks/_scripts/generate_routines.py
+py -3 tasks/_scripts/assign_task_ids.py
+py -3 tasks/_scripts/validate_task_properties.py
+py -3 tasks/_scripts/generate_views.py
+```
 
-py .\tasks\_scripts\assign_task_ids.py
-
-py .\tasks\_scripts\validate_task_properties.py
-
-py .\tasks\_scripts\generate_views.py
+```bash
+python3 tasks/_scripts/generate_routines.py
+python3 tasks/_scripts/assign_task_ids.py
+python3 tasks/_scripts/validate_task_properties.py
+python3 tasks/_scripts/generate_views.py
+```
 
 変更したファイルと変更内容を報告する。

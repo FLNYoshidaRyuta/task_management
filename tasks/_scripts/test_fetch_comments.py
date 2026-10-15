@@ -1,4 +1,6 @@
 import json
+import os
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -168,6 +170,47 @@ class FetchCommentsTest(unittest.TestCase):
         self.assertEqual(backlog_data[0]["sourceId"], "MYPL-4221")
         github_data = json.loads(github_path.read_text(encoding="utf-8"))
         self.assertEqual(github_data[0]["sourceId"], "org/repo#1")
+
+    def test_github_comments_pass_fetch_token_only_to_gh(self):
+        saved = {
+            key: os.environ.get(key)
+            for key in ("GH_TOKEN", "GITHUB_TOKEN", "GITHUB_FETCH_TOKEN")
+        }
+        os.environ["GH_TOKEN"] = "app-token"
+        os.environ["GITHUB_TOKEN"] = "app-token-2"
+        os.environ["GITHUB_FETCH_TOKEN"] = " user-token "
+        captured = {}
+
+        def fake_run(command, **kwargs):
+            captured["command"] = command
+            captured["env"] = kwargs.get("env")
+            return subprocess.CompletedProcess(
+                args=command,
+                returncode=0,
+                stdout="[]",
+                stderr="",
+            )
+
+        original = fetch_comments.subprocess.run
+        fetch_comments.subprocess.run = fake_run
+        try:
+            comments = fetch_comments.fetch_github_comments_api(
+                "github_issue", "o/r#1"
+            )
+            self.assertEqual(os.environ["GH_TOKEN"], "app-token")
+            self.assertEqual(os.environ["GITHUB_TOKEN"], "app-token-2")
+        finally:
+            fetch_comments.subprocess.run = original
+            for key, value in saved.items():
+                if value is None:
+                    os.environ.pop(key, None)
+                else:
+                    os.environ[key] = value
+
+        self.assertEqual(comments, [])
+        self.assertEqual(captured["command"][0], "gh")
+        self.assertEqual(captured["env"]["GH_TOKEN"], "user-token")
+        self.assertNotIn("GITHUB_TOKEN", captured["env"])
 
 
 if __name__ == "__main__":

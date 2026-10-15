@@ -80,11 +80,7 @@ Obsidian の予約プロパティ `id` は使わない。
 
 GitHubの取得情報は `sources/github/` にある。
 
-GitHubの最新情報を取得するときは、
-
-`tasks/_scripts/fetch-github.ps1`
-
-を実行する。
+GitHubの最新情報を取得するときは、PowerShell では `py -3 tasks/_scripts/fetch_github.py`、bash では `python3 tasks/_scripts/fetch_github.py` を実行する。
 
 GitHub Issue / PR と個人タスクは同一ではない。
 
@@ -107,11 +103,7 @@ GitHubの情報を個人タスクとして管理する場合は、
 
 Backlogの取得情報は `sources/backlog/` にある。
 
-Backlogの最新情報を取得するときは、
-
-`tasks/_scripts/fetch-backlog.ps1`
-
-を実行する。
+Backlogの最新情報を取得するときは、PowerShell では `py -3 tasks/_scripts/fetch_backlog.py`、bash では `python3 tasks/_scripts/fetch_backlog.py` を実行する。
 
 取得するプロジェクトと状態は、次の設定ファイルで決める。
 
@@ -120,11 +112,7 @@ Backlogの最新情報を取得するときは、
 
 通常の取得は、この2ファイルだけを読む。`include` が `true` の `projectId` と `statusId` だけを課題一覧 API に渡す。プロジェクト一覧 API には `all=true` を付けない。参加プロジェクトだけを返す。
 
-設定ファイルの更新だけ行うときは、
-
-`tasks/_scripts/fetch-backlog.ps1 -RefreshStatuses`
-
-を実行する。課題一覧は取らない。参加プロジェクトをマージし、`include` が `true` のプロジェクトの状態だけを状態ファイルに残す。既存行の `include` は維持する。
+設定ファイルの更新だけ行うときは、PowerShell では `py -3 tasks/_scripts/fetch_backlog.py --refresh-statuses`、bash では `python3 tasks/_scripts/fetch_backlog.py --refresh-statuses` を実行する。課題一覧は取らない。参加プロジェクトをマージし、`include` が `true` のプロジェクトの状態だけを状態ファイルに残す。既存行の `include` は維持する。
 
 設定に無いプロジェクトや状態の課題は、取得キャッシュに出ない。前回の取得にあって今回無い課題の扱いは、ユーザーが指示するまで個人タスクを自動では変えない。
 

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import subprocess
 import sys
@@ -14,6 +15,7 @@ from pathlib import Path
 from typing import Callable
 
 from compare_inbox import as_text, parse_time
+from runtime_env import gh_env, load_env_file
 
 IDENTITY_RE = re.compile(r"^[^:]+:.+$")
 GITHUB_SOURCE_TYPES = frozenset({"github_issue", "github_pr"})
@@ -37,28 +39,6 @@ def parse_identity(spec: str) -> tuple[str, str]:
     if not source_type or not source_id:
         raise ValueError(f"invalid identity: {spec}")
     return source_type, source_id
-
-
-def load_env_file(env_path: Path) -> None:
-    if not env_path.is_file():
-        return
-    for line in env_path.read_text(encoding="utf-8").splitlines():
-        text = line.strip()
-        if not text or text.startswith("#"):
-            continue
-        if "=" not in text:
-            continue
-        name, value = text.split("=", 1)
-        name = name.strip()
-        value = value.strip()
-        if (value.startswith('"') and value.endswith('"')) or (
-            value.startswith("'") and value.endswith("'")
-        ):
-            value = value[1:-1]
-        if name:
-            import os
-
-            os.environ[name] = value
 
 
 def parse_github_source_id(source_id: str) -> tuple[str, str]:
@@ -172,6 +152,7 @@ def fetch_github_comments_api(source_type: str, source_id: str) -> list[dict]:
         text=True,
         encoding="utf-8",
         check=False,
+        env=gh_env(),
     )
     if completed.returncode != 0:
         message = completed.stderr.strip() or completed.stdout.strip()
@@ -233,8 +214,6 @@ def fetch_updates(
     backlog_base_url = ""
     backlog_api_key = ""
     if "backlog" in sources:
-        import os
-
         backlog_base_url = os.environ.get("BACKLOG_BASE_URL", "").strip()
         backlog_api_key = os.environ.get("BACKLOG_API_KEY", "").strip()
         if backlog_fetch is None:
