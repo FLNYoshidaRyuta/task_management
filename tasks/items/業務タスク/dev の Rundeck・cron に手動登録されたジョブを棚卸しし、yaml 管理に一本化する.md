@@ -6,7 +6,7 @@ status:
   - done
 start: ""
 end: ""
-focus_date: 2026-10-15
+focus_date: ""
 priority:
   - High
 estimate:
