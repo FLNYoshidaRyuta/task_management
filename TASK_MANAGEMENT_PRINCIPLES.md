@@ -168,11 +168,12 @@ GitHub、Backlog、Google Chatなどは、個人タスク管理とは別の情�
 ```text
 sources/
 ├─ github/
-├─ backlog/
-└─ google-chat/
+└─ backlog/
 ```
 
 `sources/**` は読み取り用のキャッシュであり、個人タスクの正本ではない。
+
+Google Chat はこの原則の例外である。自動取得せず、`sources/` にメッセージ本文を残さない。ユーザーがメッセージ URL を渡したときだけ `tasks/_scripts/read_google_chat.py` が Google Chat API から読み、標準出力へ出す。認証用の `.google-chat-token.json` は資格情報であり、取得キャッシュではない。Inbox の定期照合には使わない。詳細は [docs/adr/0009-google-chat-on-demand-read.md](docs/adr/0009-google-chat-on-demand-read.md)。
 
 ---
 
@@ -224,8 +225,9 @@ sources/
 | Obsidian | 人間向けの閲覧・操作UI |
 | `tasks/items/**/*.md` | 個人タスクの正本 |
 | `tasks/routines/**/*.md` | 繰り返し作業の定義。個人タスクの正本ではない |
-| `sources/**` | 外部サービスの取得キャッシュ |
+| `sources/**` | 外部サービスの取得キャッシュ（Google Chat のメッセージ本文は含めない） |
 | `tasks/_config/inbox-skipped.json` | タスク化しない外部候補の記録。`skip_inbox.py` が書く |
+| `read_google_chat.py` | Google Chat を指定 URL からオンデマンドで読む（キャッシュしない） |
 | GitHub / Backlog / Google Chat | 外部情報の原本 |
 
 ---
