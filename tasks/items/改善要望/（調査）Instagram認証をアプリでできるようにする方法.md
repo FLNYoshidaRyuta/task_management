@@ -2,28 +2,31 @@
 task_id: 54
 title: （調査）Instagram認証をアプリでできるようにする方法
 project: 改善要望
-start: ""
-end: ""
-estimate:
+start: ''
+end: ''
+estimate: null
 priority:
-  - Low
+- Low
 status:
-  - todo
+- todo
 depends_on: []
 related: []
 github_type: []
-github_id: ""
-github_url: ""
-github_updated_at: ""
-backlog_id: ""
-backlog_url: ""
-backlog_updated_at: ""
+github_id: ''
+github_url: ''
+github_updated_at: ''
+backlog_id: ''
+backlog_url: ''
+backlog_updated_at: ''
 ---
-
 ## 概要
 
 Instagram認証をネイティブアプリ上で行えるようにするための方法を調査する。
 
 ## やったこと
 
+Instagram認証をネイティブアプリ上で行えるようにするための方法を調査する。
+
 ## 残りのやること
+
+Instagram認証をネイティブアプリ上で行えるようにするための方法を調査する。

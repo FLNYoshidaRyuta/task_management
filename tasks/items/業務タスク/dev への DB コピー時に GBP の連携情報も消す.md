@@ -3,24 +3,24 @@ task_id: 70
 title: dev への DB コピー時に GBP の連携情報も消す
 project: 業務タスク
 status:
-  - in_progress
-start: ""
-end: ""
-focus_date: ""
+- in_progress
+start: ''
+end: ''
+focus_date: ''
 priority:
-  - High
-estimate:
+- High
+estimate: null
 depends_on: []
 related: []
 github_type:
-  - github_issue
+- github_issue
 github_repo: mypl-rds-masking
 github_id: Issue#7
 github_url: https://github.com/FutureLinkNetwork/mypl-rds-masking/issues/7
-github_updated_at: 2026-10-16T01:33:50Z
+github_updated_at: 2026-10-16 01:33:50+00:00
 backlog_id: MYPL-4235
 backlog_url: https://fln2000.backlog.com/view/MYPL-4235
-backlog_updated_at: 2026-10-07T12:50:26Z
+backlog_updated_at: 2026-10-07 12:50:26+00:00
 ---
 ## 概要
 
@@ -31,6 +31,10 @@ backlog_updated_at: 2026-10-07T12:50:26Z
 - 2026-10-16 コメント: 店舗特有エラーの調査・テストのため biz から GBP 接続できる方がよい。可能なら GBP 連携先の削除・マスキングはしない方針。代案は biz 用 GBP 連携アカウントを用意しまいぷれ BASE にのみ招待（各店舗 GBP 権限なし）。店舗特有エラーは店舗のテスト許可と GBP ユーザー招待でテスト
 
 ## やったこと
+
+- 方針確定後: マスキング SQL への GBP 連携テーブル追加、またはマスキングしない方針・biz 用アカウント案の実装・確認
+- 対象テーブル・カラムの確認
+- 完了条件: コピー後 dev で GBP 連携店舗 0件（検証店舗は Pro 許可リスト）— 方針変更時はコメントの代案に沿った安全策
 
 ## 残りのやること
 

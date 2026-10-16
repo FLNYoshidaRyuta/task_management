@@ -2,25 +2,25 @@
 task_id: 11
 title: ニュース投稿画面の「この画像をGoogleマップの投稿に使用する」という文言を修正（GitHub Issue1365）
 project: 改善要望
-start: ""
-end: ""
-focus_date: ""
-estimate:
+start: ''
+end: ''
+focus_date: ''
+estimate: null
 priority:
-  - Mid
+- Mid
 status:
-  - todo
+- todo
 depends_on: []
 related: []
 github_type:
-  - github_issue
+- github_issue
 github_repo: mypl_pro
 github_id: Issue#1365
 github_url: https://github.com/FutureLinkNetwork/mypl_pro/issues/1365
-github_updated_at: 2026-10-14T07:27:59Z
+github_updated_at: 2026-10-14 07:27:59+00:00
 backlog_id: MYPL-4222
-backlog_url: "[REDACTED]/view/MYPL-4222"
-backlog_updated_at: 2026-10-14T07:28:09Z
+backlog_url: https://fln2000.backlog.com/view/MYPL-4222
+backlog_updated_at: 2026-10-14 07:28:09+00:00
 ---
 ## 概要
 

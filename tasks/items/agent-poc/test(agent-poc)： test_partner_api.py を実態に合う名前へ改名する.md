@@ -2,28 +2,39 @@
 task_id: 36
 title: test(agent-poc)： test_partner_api.py を実態に合う名前へ改名する
 project: agent-poc
-start: ""
-end: ""
-estimate:
+start: ''
+end: ''
+estimate: null
 priority:
-  - Low
+- Low
 status:
-  - done
+- done
 depends_on: []
 related:
-  - "[[tasks/items/agent-poc/[技術負債] まいぷれくん agent-poc リファクタ epic（Phase 1-5）|[技術負債] まいぷれくん agent-poc リファクタ epic（Phase 1-5）]]"
+- '[[tasks/items/agent-poc/[技術負債] まいぷれくん agent-poc リファクタ epic（Phase 1-5）|[技術負債] まいぷれくん
+  agent-poc リファクタ epic（Phase 1-5）]]'
 github_type:
-  - github_issue
+- github_issue
 github_repo: agent-dev
 github_id: Issue#443
 github_url: https://github.com/FutureLinkNetwork/agent-dev/issues/443
-github_updated_at: 2026-09-16T15:24:34Z
-backlog_id: ""
-backlog_url: ""
-backlog_updated_at: ""
+github_updated_at: 2026-09-16 15:24:34+00:00
+backlog_id: ''
+backlog_url: ''
+backlog_updated_at: ''
 ---
 ## 概要
 
+test(agent-poc)： test_partner_api.py を実態に合う名前へ改名する
+
 ## やったこと
 
+- `/api/shop-agent/chat-stream`: 116箇所
+- `/internal/agent/chat`: 34箇所
+- partner 由来のテスト・fixture: 0
+
 ## 残りのやること
+
+- `/api/shop-agent/chat-stream`: 116箇所
+- `/internal/agent/chat`: 34箇所
+- partner 由来のテスト・fixture: 0
