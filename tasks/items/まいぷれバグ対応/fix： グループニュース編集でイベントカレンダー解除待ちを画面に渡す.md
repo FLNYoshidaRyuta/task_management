@@ -3,7 +3,7 @@ task_id: 93
 title: "グループニュース編集でイベントカレンダー解除待ちを画面に渡す"
 project: まいぷれバグ対応
 status:
-  - todo
+  - canceled
 start: ""
 end: ""
 focus_date: ""
