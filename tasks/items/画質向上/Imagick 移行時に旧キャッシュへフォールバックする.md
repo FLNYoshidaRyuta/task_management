@@ -3,7 +3,7 @@ task_id: 76
 title: Imagick 移行時に旧キャッシュへフォールバックする
 project: 画質向上
 status:
-  - todo
+  - done
 start: ""
 end: ""
 focus_date: ""

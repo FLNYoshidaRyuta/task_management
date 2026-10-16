@@ -3,7 +3,7 @@ task_id: 69
 title: dev の Rundeck・cron に手動登録されたジョブを棚卸しし、yaml 管理に一本化する
 project: 業務タスク
 status:
-  - in_progress
+  - done
 start: ""
 end: ""
 focus_date: 2026-10-15
