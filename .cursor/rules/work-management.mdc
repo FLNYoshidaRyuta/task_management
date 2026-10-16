@@ -17,6 +17,8 @@ alwaysApply: true
 `sources/**` は外部サービスから取得したキャッシュであり、
 タスク管理上の正本ではない。
 
+Google Chat は上記の定期取得に含めない。ユーザーがメッセージ URL を渡したときだけ、`.cursor/skills/google-chat-read/SKILL.md` と `tasks/_scripts/read_google_chat.py` でオンデマンドに読む。本文は `sources/` に残さない。Inbox の `fetch_github.py` / `fetch_backlog.py` 手順に足さない。
+
 会話コメントは一覧取得に含めない。Inbox で更新（U）を選んだチャンネルだけ、
 `tasks/_scripts/fetch_comments.py` が次へ書く。
 
