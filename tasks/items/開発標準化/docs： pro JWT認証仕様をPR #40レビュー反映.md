@@ -1,6 +1,6 @@
 ---
 task_id: 96
-title: "docs: pro JWT認証仕様をPR #40レビュー反映"
+title: "docs： pro JWT認証仕様をPR #40レビュー反映"
 project: 開発標準化
 status:
   - todo
