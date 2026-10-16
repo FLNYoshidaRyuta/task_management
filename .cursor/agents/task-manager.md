@@ -144,6 +144,14 @@ Backlog 課題をタスク化するときは `backlog_id`、`backlog_url`、`bac
 
 外部 Issue/PR/課題と個人タスクは同一ではない。1つの Issue を複数の個人タスクに分解してよい。
 
+## Google Chat
+
+Google Chat は `sources/` に取得しない。`google_chat_*` の frontmatter は使わない。
+
+ユーザーが `.cursor/skills/google-chat-read/SKILL.md` の手順で採用した本文とメッセージ URL だけを、既存の「概要」「やったこと」「残りのやること」へ書く。指定された見出しだけを更新する。
+
+GitHub / Backlog のポインタや、ユーザーが指定していない属性は変えない。
+
 ## 関連タスク
 
 `related` は個人タスク同士の「一緒に見る」関係である。`depends_on` は作業順序であり、混同しない。
