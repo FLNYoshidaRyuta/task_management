@@ -3,7 +3,7 @@ task_id: 78
 title: docs(agent-poc)： .env.example をローカル開発向けに日本語化・整理する（Issue469）
 project: agent-poc
 status:
-  - todo
+  - in_progress
 start: ""
 end: ""
 focus_date: ""
