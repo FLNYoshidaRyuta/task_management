@@ -3,7 +3,7 @@ task_id: 70
 title: dev への DB コピー時に GBP の連携情報も消す
 project: 業務タスク
 status:
-- in_progress
+- done
 start: ''
 end: ''
 focus_date: ''
