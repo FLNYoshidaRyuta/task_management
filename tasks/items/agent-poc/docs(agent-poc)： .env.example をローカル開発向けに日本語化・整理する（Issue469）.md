@@ -17,7 +17,7 @@ github_type:
 github_repo: agent-dev
 github_id: PR#470
 github_url: https://github.com/FutureLinkNetwork/agent-dev/pull/470
-github_updated_at: 2026-10-19T01:13:20Z
+github_updated_at: 2026-10-19T06:00:22Z
 backlog_id: ""
 backlog_url: ""
 backlog_updated_at: ""
@@ -28,6 +28,8 @@ Closes #469。`cp .env.example .env` のあと `OPENAI_API_KEY` と `GEMINI_API_
 
 【必須】シークレット、【ローカル標準】そのまま使える値、【任意】必要時のみコメント解除の 3 区分。`UNIFIED_POST_REASONING_EFFORT=low` を有効化（本番推奨構成 ADR-20260729 に合わせる）。`MATERIAL_VISION_IMAGE_SOURCE` と `AGENT_TEXT_ROLLOUT` の説明を実装に合わせて修正。既存 `.env` への影響なし（キー・値の機械比較で同一確認）。
 
+PR 説明では、コメントアウトのままにした項目（`AGENT_HEARING_JUDGE_MODEL_CONFIRM`、ルート別 provider 上書き群、`AGENT_REASONING_EFFORT`、`CUSTOM_MEDIA_*` など）の理由を表で整理している。2026-10-19 のスレッドでは、本番の非秘匿 env の実態（ルート別 Gemini 設定など）と、ローカル `.env.example` を本番に近づける追加対応の依頼が出ている。
+
 ## やったこと
 
 - 英語コメントの日本語化、区分整理、コメントアウト項目の理由表（`AGENT_HEARING_JUDGE_MODEL_CONFIRM`、ルート別 provider 上書き群、`AGENT_REASONING_EFFORT`、`CUSTOM_MEDIA_*` など）。
@@ -37,16 +39,16 @@ Closes #469。`cp .env.example .env` のあと `OPENAI_API_KEY` と `GEMINI_API_
   - `AGENT_HEARING_JUDGE_MODEL_CONFIRM`: 2026-09-11 に確認型店舗のヒアリング判定だけ gpt-5.1 に切り替え可能にした例外設定。コードだけでは変わらず ECS で設定。dev のみ設定、本番未設定。ローカルは未設定が正しい。
   - `AGENT_PROVIDER` 系: 2026-09-03 の提供元切替（OpenAI/Gemini）。ルート別上書きと `AGENT_TEXT_ROLLOUT`。未設定なら OpenAI＋`AGENT_MODEL`。
   - `CUSTOM_MEDIA_*`: 2026-09-02 から有効な独自媒体の文字数対策。既定値で動作。env はデプロイせず数値調整用。`.env.example` の値は既定と同じなのでコメントアウト。
-- レビューコメント（yushi-kato、2026-10-19）で本番設定を訂正・整理。
-  - `AGENT_HEARING_JUDGE_MODEL_CONFIRM`: 本番未設定。ヒアリング判定は `AGENT_MODEL`（gpt-5.6-luna）。
-  - `CUSTOM_MEDIA_*`: 本番未設定。コード既定値で動作。
-  - `AGENT_<ROUTE>_*` / `AGENT_TEXT_ROLLOUT`: 本番に設定あり。投稿下書き・修正、チャット、口コミ返信、メール・DM 返信は gemini-3.8-flash。判定系は gpt-5.6-luna。
-  - `.env.example`（ローカル）は「基本未設定・上書きテスト時のみ」という整理。本番の値とは別物として見る前提。
-- レビューコメント（yushi-kato、2026-10-19）: dev にだけ `AGENT_HEARING_JUDGE_MODEL_CONFIRM` がある理由は検証中。#473（確認型ヒアリング口調見直しと gpt-6-luna 対応）を dev で検証。値は gpt-6-luna。10/21 リリース予定。本番コードは gpt-6-luna 未対応のため env を先に入れられない。リリース見送りなら dev から env を外す。
-- コメント（FLNYoshidaRyuta、2026-10-19）: dev 検証中の状況は理解した。
+- レビューコメント（yushi-kato、2026-10-19）で本番設定の訂正。
+  - `AGENT_HEARING_JUDGE_MODEL_CONFIRM`: 本番未設定。ヒアリング判定はすべて `AGENT_MODEL`（gpt-5.6-luna）。
+  - `CUSTOM_MEDIA_*`: 本番未設定。コード既定値（1.30 / 140 / 0.10 / 20秒）が効いている。
+  - `AGENT_<ROUTE>_*` / `AGENT_TEXT_ROLLOUT`: 本番で設定あり。投稿の下書き作成・修正、チャット、口コミ返信、メール・DM 返信は gemini-3.8-flash。判定系は gpt-5.6-luna。
+  - dev の `AGENT_HEARING_JUDGE_MODEL_CONFIRM` は #473 検証中。10/21 リリース予定後に本番にも入れる。見送りなら dev から外す。
+- レビューコメント（FLNYoshidaRyuta、2026-10-19）: ローカルは本番に近い設定を期待。シークレット以外で本番に値があるキーは、本番の値を `.env.example` に載せる対応を依頼。
+- レビューコメント（fln-khirano、2026-10-19）: 本番の非秘匿 env 一覧を PR に追記（environment 平文と ECS TD/SSM 参照の変数名・値または空欄）。
 
 ## 残りのやること
 
-- PR レビュー・マージ。
-- 本番と同じ非シークレット値を `.env.example` に反映する対応（PR/Issue スレッド上の依頼）。
-- #473 のリリースと dev env の扱いは ECS 側の話。リリース見送り時の dev から env を外すなど、必要ならフォロー。
+- 本番に値がありシークレットでないキーを、本番の値として `.env.example` に反映する（FLNYoshidaRyuta 依頼。fln-khirano 追記の一覧を参照）。
+- PR のレビュー・マージ。
+- `AGENT_HEARING_JUDGE_MODEL_CONFIRM` の dev 設定は #473 検証・10/21 リリース後の本番反映、またはリリース見送り時の dev からの削除をフォロー。
