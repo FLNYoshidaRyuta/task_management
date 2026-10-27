@@ -20,7 +20,7 @@ github_url: https://github.com/FutureLinkNetwork/mypl-rds-masking/issues/7
 github_updated_at: 2026-10-16 01:33:50+00:00
 backlog_id: MYPL-4235
 backlog_url: https://fln2000.backlog.com/view/MYPL-4235
-backlog_updated_at: 2026-10-07 12:50:26+00:00
+backlog_updated_at: '2026-10-27T05:54:14Z'
 ---
 ## 概要
 
