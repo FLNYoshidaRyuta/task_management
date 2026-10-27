@@ -1,4 +1,5 @@
 .env
+.google-chat-token.json
 sources/
 sources/github/
 sources/backlog/
