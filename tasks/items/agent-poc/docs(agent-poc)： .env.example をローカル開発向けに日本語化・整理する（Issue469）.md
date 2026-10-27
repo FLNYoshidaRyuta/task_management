@@ -3,7 +3,7 @@ task_id: 78
 title: docs(agent-poc)： .env.example をローカル開発向けに日本語化・整理する（Issue469）
 project: agent-poc
 status:
-  - in_progress
+  - done
 start: ""
 end: ""
 focus_date: ""
@@ -42,9 +42,7 @@ PR 説明には、#473 の後続（確認型ヒアリング判定モデルの説
 - fln-khirano（2026-10-19）: 本番の非秘匿 env 一覧（ECS TD:68）を PR コメントに追記。
 - yushi-kato（2026-10-19）: 平野さんから本番 TD rev 68 の値で `.env.example` を修正（11cf0b4）。秘匿と接続先以外は本番値。
 - FLNYoshidaRyuta（2026-10-19T08:30:43Z）: 内容承認。
+- PR #470 をマージ済み。
 
 ## 残りのやること
 
-- PR のマージ。
-- PR 説明の未検証項目: docker compose での実起動と実 API の呼び出し。
-- `AGENT_HEARING_JUDGE_MODEL_CONFIRM`: #473 の本番配備後に本番へ同 env を入れる。本番反映に合わせ `.env.example` も同値で有効化する追従が必要（本番は現状未設定）。#473 を見送る場合は dev から当該 env を外す。
