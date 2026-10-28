@@ -137,6 +137,10 @@ class FetchBacklogTest(unittest.TestCase):
         self.assertEqual(issue["status"]["name"], "処理中")
         self.assertEqual(calls[0][0], "/api/v2/users/myself")
         self.assertNotIn("all=true", str(calls))
+        viewer = json.loads(
+            (self.vault / "sources/backlog/viewer.json").read_text(encoding="utf-8")
+        )
+        self.assertEqual(viewer["id"], 7)
 
     def test_empty_include_does_not_modify_cache(self):
         self.write_config(
