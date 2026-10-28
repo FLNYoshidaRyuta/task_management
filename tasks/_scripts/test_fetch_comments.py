@@ -58,12 +58,13 @@ class FetchCommentsTest(unittest.TestCase):
                 "content": "調査中です",
                 "created": "2026-10-09T04:15:43Z",
                 "updated": "2026-10-09T04:15:43Z",
-                "createdUser": {"name": "吉田"},
+                "createdUser": {"id": 42, "name": "吉田"},
             },
             "https://example.backlog.com",
             "MYPL-4221",
         )
         self.assertEqual(item["author"], "吉田")
+        self.assertEqual(item["authorId"], "42")
         self.assertEqual(item["body"], "調査中です")
         self.assertIn("MYPL-4221#comment-99", item["url"])
 

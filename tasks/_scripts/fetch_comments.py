@@ -14,6 +14,7 @@ import urllib.request
 from pathlib import Path
 from typing import Callable
 
+import compare_inbox
 from compare_inbox import as_text, parse_time
 from runtime_env import gh_env, load_env_file
 
@@ -77,9 +78,13 @@ def normalize_github_comment(item: dict) -> dict:
 def normalize_backlog_comment(item: dict, base_url: str, issue_key: str) -> dict:
     created_user = item.get("createdUser")
     author = ""
+    author_id = ""
     if isinstance(created_user, dict):
         name = created_user.get("name")
         author = name if isinstance(name, str) else ""
+        uid = created_user.get("id")
+        if uid is not None:
+            author_id = str(uid)
     comment_id = item.get("id")
     url = ""
     if comment_id is not None:
@@ -88,6 +93,7 @@ def normalize_backlog_comment(item: dict, base_url: str, issue_key: str) -> dict
     return {
         "id": str(comment_id if comment_id is not None else ""),
         "author": author,
+        "authorId": author_id,
         "createdAt": as_text(item.get("created")),
         "updatedAt": as_text(item.get("updated")),
         "url": url,
@@ -256,6 +262,15 @@ def fetch_updates(
         save_comment_cache(path, merged)
 
 
+def inbox_update_keys(vault: Path, sources: list[str]) -> list[tuple[str, str]]:
+    result = compare_inbox.compare(vault, sources)
+    buckets = compare_inbox.split_inbox(result)
+    keys: list[tuple[str, str]] = []
+    for item in buckets["updated"]:
+        keys.append((item["source_type"], item["source_id"]))
+    return keys
+
+
 def configure_stdout_utf8() -> None:
     reconfigure = getattr(sys.stdout, "reconfigure", None)
     if callable(reconfigure):
@@ -273,18 +288,31 @@ def main() -> None:
         metavar="TYPE:ID",
         help="update target (repeatable)",
     )
+    parser.add_argument(
+        "--inbox-updates",
+        action="store_true",
+        help="fetch comments for all cache_newer update candidates",
+    )
     args = parser.parse_args()
 
     vault = args.vault or Path(__file__).resolve().parents[2]
     sources = [item.strip() for item in args.sources.split(",") if item.strip()]
     if not sources:
         raise SystemExit("sources is empty")
-    if not args.update:
-        raise SystemExit("at least one --update is required")
 
     try:
-        update_keys = [parse_identity(item) for item in args.update]
-        fetch_updates(vault, sources, update_keys)
+        if args.inbox_updates:
+            update_keys = inbox_update_keys(vault, sources)
+            if not update_keys:
+                configure_stdout_utf8()
+                sys.stdout.write("No cache_newer candidates; comment cache unchanged.\n")
+                return
+            fetch_updates(vault, sources, update_keys)
+        else:
+            if not args.update:
+                raise SystemExit("at least one --update or --inbox-updates is required")
+            update_keys = [parse_identity(item) for item in args.update]
+            fetch_updates(vault, sources, update_keys)
     except (ValueError, RuntimeError, json.JSONDecodeError) as exc:
         raise SystemExit(str(exc)) from exc
 

@@ -17,6 +17,7 @@ from runtime_env import load_env_file
 PROJECTS_FILE = Path("tasks/_config/backlog-projects.json")
 STATUSES_FILE = Path("tasks/_config/backlog-statuses.json")
 OUTPUT_FILE = Path("sources/backlog/assigned-issues.json")
+VIEWER_FILE = Path("sources/backlog/viewer.json")
 PAGE_COUNT = 100
 CLOSED_STATUS_NAMES = frozenset({"完了", "却下"})
 
@@ -225,6 +226,14 @@ def fetch_assigned(vault: Path, get_json: JsonGetter, base_url: str) -> None:
     if not isinstance(me, dict) or me.get("id") is None:
         raise RuntimeError("unexpected backlog user response")
     print(f"User: {me.get('name')} (ID: {me.get('id')})")
+    write_json(
+        vault / VIEWER_FILE,
+        {
+            "id": me.get("id"),
+            "userId": me.get("userId"),
+            "name": me.get("name"),
+        },
+    )
 
     try:
         projects_config = read_json_config(vault / PROJECTS_FILE)

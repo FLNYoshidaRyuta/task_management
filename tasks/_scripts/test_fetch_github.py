@@ -61,11 +61,48 @@ class FetchGithubTest(unittest.TestCase):
                         ]
                     )
                 )
+            if args[:2] == ("pr", "view"):
+                return completed(
+                    json.dumps(
+                        {
+                            "closingIssuesReferences": [
+                                {
+                                    "number": 12,
+                                    "repository": {
+                                        "name": "r",
+                                        "owner": {"login": "o"},
+                                    },
+                                }
+                            ],
+                            "isDraft": False,
+                            "state": "OPEN",
+                        }
+                    )
+                )
+            if "--author=@me" in args:
+                return completed(
+                    json.dumps(
+                        [
+                            {
+                                "number": 5,
+                                "title": "PR",
+                                "state": "open",
+                                "updatedAt": "2026-10-02T00:00:00Z",
+                                "url": "https://github.com/o/r/pull/5",
+                                "repository": {"nameWithOwner": "o/r"},
+                            }
+                        ]
+                    )
+                )
             return completed("[]")
 
         fetch_github.fetch(self.vault, runner)
 
         self.assertEqual(calls[0][:3], ("api", "user", "--jq"))
+        viewer = json.loads(
+            (self.vault / "sources/github/viewer.json").read_text(encoding="utf-8")
+        )
+        self.assertEqual(viewer["login"], "octocat")
         assigned = json.loads(
             (self.vault / "sources/github/assigned-issues.json").read_text(encoding="utf-8")
         )
@@ -78,10 +115,10 @@ class FetchGithubTest(unittest.TestCase):
         reviews = json.loads(
             (self.vault / "sources/github/review-requests.json").read_text(encoding="utf-8")
         )
-        self.assertEqual(my_prs, [])
+        self.assertEqual(my_prs[0]["closingIssues"], ["o/r#12"])
         self.assertEqual(reviews, [])
-        self.assertIn("--author=@me", calls[2])
-        self.assertIn("--review-requested=@me", calls[3])
+        self.assertTrue(any("--author=@me" in call for call in calls))
+        self.assertTrue(any("--review-requested=@me" in call for call in calls))
 
     def test_missing_user_does_not_write_cache(self):
         def runner(args):
@@ -106,6 +143,22 @@ class FetchGithubTest(unittest.TestCase):
                                 "title": "一件",
                                 "updatedAt": "2026-10-01T00:00:00Z",
                                 "url": "https://github.com/o/r/issues/1",
+                                "repository": {"nameWithOwner": "o/r"},
+                            }
+                        ]
+                    )
+                )
+            if args[:2] == ("pr", "view"):
+                return completed("{}", returncode=1, stderr="rate limit")
+            if "--author=@me" in args:
+                return completed(
+                    json.dumps(
+                        [
+                            {
+                                "number": 2,
+                                "title": "pr",
+                                "updatedAt": "2026-10-01T00:00:00Z",
+                                "url": "https://github.com/o/r/pull/2",
                                 "repository": {"nameWithOwner": "o/r"},
                             }
                         ]

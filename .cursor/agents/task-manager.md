@@ -124,6 +124,8 @@ github_typeは以下のみ。
 - タスクをdoneまたはcanceledにするか
 - GitHub上のIssueが完了したか
 
+無人 Inbox の下書き PR では、指示に含まれる `status` の `todo` と `in_progress` だけを書いてよい。`done` と `canceled` は従来どおり明示が無い限り書かない。
+
 不明な属性は空欄にする。
 
 ## GitHub

@@ -104,6 +104,8 @@ source_type: []
 
 エージェントは判断者ではなく、判断結果を正しく反映する実行者として扱う。
 
+無人 Inbox が `todo` を `in_progress` にする例外だけ、[docs/adr/0009-unattended-start-from-own-activity.md](docs/adr/0009-unattended-start-from-own-activity.md) に従う。
+
 ---
 
 ### 6. 計算できるものはスクリプトに任せる

@@ -18,6 +18,7 @@ from collections.abc import Callable, Sequence
 from pathlib import Path
 
 import compare_inbox
+import inbox_progress
 
 LABELS = {
     "new": "inbox-new",
@@ -36,11 +37,13 @@ class GuardError(Exception):
     """増殖防止を確定できないときに上げる。"""
 
 
-def candidate_identity(item: dict) -> str:
-    source_type = str(item.get("source_type") or "").strip()
-    source_id = str(item.get("source_id") or "").strip()
-    updated = str(item.get("source_updated_at") or "").strip()
-    return f"{source_type}:{source_id}@{updated}"
+def candidate_identity(
+    item: dict,
+    *,
+    in_progress: bool = False,
+    progress_only: bool = False,
+) -> str:
+    return inbox_progress.guard_identity(item, progress_only, in_progress)
 
 
 def render_marker(kind: str, identities: list[str]) -> str:
@@ -91,7 +94,13 @@ def pr_ref(pr: dict) -> dict:
     }
 
 
-def decide(kind: str, candidates: list[dict], prs: list[dict]) -> dict:
+def decide(
+    kind: str,
+    candidates: list[dict],
+    prs: list[dict],
+    *,
+    status_changes: list[dict] | None = None,
+) -> dict:
     if kind not in LABELS:
         raise GuardError(f"unknown kind: {kind}")
     label = LABELS[kind]
@@ -99,7 +108,21 @@ def decide(kind: str, candidates: list[dict], prs: list[dict]) -> dict:
         numbers = ", ".join(str(pr.get("number")) for pr in prs)
         raise GuardError(f"{label} の open PR が複数あります: {numbers}")
 
-    identities = sorted(candidate_identity(item) for item in candidates)
+    changes = status_changes or []
+    identities = sorted(
+        candidate_identity(
+            item,
+            in_progress=(
+                kind == "new" and item.get("status") == "in_progress"
+            )
+            or (
+                kind == "update"
+                and inbox_progress.candidate_needs_in_progress(item, changes)
+            ),
+            progress_only=bool(item.get("progress_only")),
+        )
+        for item in candidates
+    )
     marker = render_marker(kind, identities)
     current = pr_ref(prs[0]) if prs else None
     base = {
@@ -109,6 +132,8 @@ def decide(kind: str, candidates: list[dict], prs: list[dict]) -> dict:
         "body_marker": marker,
         "candidates": [public_candidate(item) for item in candidates],
     }
+    if kind == "update":
+        base["status_changes"] = changes
     if not identities:
         return {"action": "skip", "reason": "no_candidates", **base}
     if current is None:
@@ -122,11 +147,40 @@ def decide(kind: str, candidates: list[dict], prs: list[dict]) -> dict:
     return {"action": "update", "reason": "fingerprint_changed", **base}
 
 
-def build_plan(compare_result: dict, open_prs: dict[str, list[dict]]) -> dict:
+def build_plan(
+    compare_result: dict,
+    open_prs: dict[str, list[dict]],
+    vault: Path | None = None,
+    sources: list[str] | None = None,
+) -> dict:
     buckets = compare_inbox.split_inbox(compare_result)
+    new_candidates = buckets["new"]
+    updated_candidates = buckets["updated"]
+    status_changes: list[dict] = []
+
+    if vault is not None and sources:
+        analysis = inbox_progress.analyze(vault, sources, compare_result)
+        missing = analysis["missing_comment_keys"]
+        if missing:
+            joined = ", ".join(sorted(missing))
+            raise GuardError(
+                "comment cache missing for cache_newer candidates: "
+                f"{joined}. Run fetch_comments.py --inbox-updates first."
+            )
+        new_candidates = inbox_progress.enrich_new_candidates(
+            buckets["new"], analysis["new_status"]
+        )
+        updated_candidates = analysis["updated_candidates"]
+        status_changes = analysis["status_changes"]
+
     return {
-        "new": decide("new", buckets["new"], open_prs.get("new") or []),
-        "update": decide("update", buckets["updated"], open_prs.get("update") or []),
+        "new": decide("new", new_candidates, open_prs.get("new") or []),
+        "update": decide(
+            "update",
+            updated_candidates,
+            open_prs.get("update") or [],
+            status_changes=status_changes,
+        ),
         "attach": [public_candidate(item) for item in buckets["attach"]],
         "missing_from_cache": buckets["missing_from_cache"],
     }
@@ -245,7 +299,7 @@ def plan_with_gh(
     open_prs = {
         kind: list_open_prs(repo, label, vault, runner) for kind, label in LABELS.items()
     }
-    return build_plan(compare_result, open_prs)
+    return build_plan(compare_result, open_prs, vault=vault, sources=sources)
 
 
 def main(argv: list[str] | None = None, runner: GhRunner | None = None) -> int:

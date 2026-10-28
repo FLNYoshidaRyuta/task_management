@@ -234,14 +234,29 @@ class InboxPrGuardTest(unittest.TestCase):
             raise AssertionError(args)
 
         with tempfile.TemporaryDirectory() as temp:
-            path = Path(temp) / "compare.json"
+            vault = Path(temp)
+            backlog_comments = vault / "sources/backlog/comments.json"
+            backlog_comments.parent.mkdir(parents=True)
+            backlog_comments.write_text(
+                json.dumps(
+                    [
+                        {
+                            "sourceType": "backlog_issue",
+                            "sourceId": "MYPL-3",
+                            "comments": [],
+                        }
+                    ]
+                ),
+                encoding="utf-8",
+            )
+            path = vault / "compare.json"
             path.write_text(json.dumps(compare_result()), encoding="utf-8")
             stdout = sys.stdout
             try:
                 buffer = tempfile.TemporaryFile(mode="w+", encoding="utf-8")
                 sys.stdout = buffer
                 code = inbox_pr_guard.main(
-                    ["--compare-json", str(path), "--vault", temp],
+                    ["--compare-json", str(path), "--vault", str(vault), "--sources", "github,backlog"],
                     runner=runner,
                 )
                 buffer.seek(0)
