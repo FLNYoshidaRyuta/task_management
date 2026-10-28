@@ -102,6 +102,7 @@ GitHubの情報を個人タスクとして管理する場合は、
 Inbox の照合候補は `assigned-issues` と `review-requests` だけである。
 `my-prs` は取得キャッシュに残すが、新規・更新・追記の候補にしない。
 開いている自分の PR に紐づく未完了タスクは、キャッシュ欠落には出さない。
+無人 Inbox では `my-prs` の `closingIssues` を、紐づく GitHub Issue の着手信号に使う（ADR 0009）。Backlog の PR は信号にしない。
 
 # Backlog
 

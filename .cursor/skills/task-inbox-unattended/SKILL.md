@@ -23,7 +23,7 @@ GitHub と Backlog の最新キャッシュを個人タスクと照合し、人�
 
 `.env` は読まない。`sources/**` は編集もコミットもしない。`tasks/_config/inbox-skipped.json` は変更しない。
 
-優先度、期限、見積もり、完了、外部 Issue や課題の close、タスク化しない判断はしない。`status`、`priority`、`start`、`end`、`estimate`、`focus_date` を外部の値から埋めない。追記候補のポインタ追加、キャッシュに無い未完了タスクの status 変更、`related` と `depends_on` の追加もしない。
+優先度、期限、見積もり、完了、外部 Issue や課題の close、タスク化しない判断はしない。`priority`、`start`、`end`、`estimate`、`focus_date` を外部の値から埋めない。`status` は `inbox_pr_guard.py` の JSON に載った `status`（新規）と `status_changes`（更新）だけを `task-manager` に渡す。自分で着手を判断しない。追記候補のポインタ追加、キャッシュに無い未完了タスクの status 変更、`related` と `depends_on` の追加もしない。
 
 新規タスクの project は、この手順のエージェントが既存のタスクツリーを読んで1件ずつ決める。リポジトリ名や Backlog プロジェクトとの対応表は使わない。決めた project を `task-manager` に渡し、`task-manager` は別の project に変えない。
 
@@ -49,7 +49,21 @@ python3 tasks/_scripts/fetch_backlog.py
 
 `--refresh-statuses` は付けない。
 
-### 2. Guard
+### 2. Comment prefetch
+
+成功したソースだけを指定する。
+
+```powershell
+py -3 tasks/_scripts/fetch_comments.py --sources github,backlog --inbox-updates
+```
+
+```bash
+python3 tasks/_scripts/fetch_comments.py --sources github,backlog --inbox-updates
+```
+
+`cache_newer` の候補が無いときは何もしない。失敗したら、ファイルも PR も作らず止まる。
+
+### 3. Guard
 
 成功したソースだけを指定する。
 
@@ -73,7 +87,7 @@ python3 tasks/_scripts/inbox_pr_guard.py --sources github,backlog
 
 `attach` と `missing_from_cache` はファイルを変える理由にしない。
 
-### 3. Branch
+### 4. Branch
 
 `create` のブランチ名は `inbox-new-YYYYMMDDHHMM` または `inbox-update-YYYYMMDDHHMM` とする。時刻は UTC の分までとする。
 
@@ -81,7 +95,7 @@ python3 tasks/_scripts/inbox_pr_guard.py --sources github,backlog
 
 新規ブランチと更新ブランチは、互いをベースにしない。両方とも `origin/main` を起点にする。
 
-### 4. Project
+### 5. Project
 
 `new.action` が `create` または `update` のときだけ、`new.candidates` の各候補について project を決める。
 
@@ -89,7 +103,7 @@ python3 tasks/_scripts/inbox_pr_guard.py --sources github,backlog
 
 1候補につきタスクファイルは1件にする。既存タスクの子にはしない。選んだ project と、そう読んだ根拠を PR 本文に書く。
 
-### 5. Materialize
+### 6. Materialize
 
 `task-manager` に渡す。
 
@@ -98,25 +112,23 @@ python3 tasks/_scripts/inbox_pr_guard.py --sources github,backlog
 - 決めた project
 - キャッシュの title
 - キャッシュの GitHub または Backlog のポインタ
-- `status` は `todo`
+- `status` は、その候補の JSON の `status` だけ（`todo` または `in_progress`）
 - `priority` は空、`start`、`end`、`estimate`、`focus_date` は空欄
 - 本文は「概要」「やったこと」「残りのやること」の3節。概要には説明欄に書いてある事実だけを書く。事実が無い節は見出しだけにして空にする
 
 新規候補のコメントは取得しない。
 
-`update.action` が `create` または `update` のときは、先にその候補だけコメントを取得する。`--update` の値は `source_type:source_id` である。
+`update.action` が `create` または `update` のときは、`cache_newer` の候補について `inbox_hints.py` を実行する。`--update` の値は `source_type:source_id` である。`progress_only` の候補は `inbox_hints.py` に渡さない。
 
 ```powershell
-py -3 tasks/_scripts/fetch_comments.py --sources github,backlog --update github_issue:owner/repo#12 --update backlog_issue:MYPL-1
 py -3 tasks/_scripts/inbox_hints.py --sources github,backlog --update github_issue:owner/repo#12 --update backlog_issue:MYPL-1
 ```
 
 ```bash
-python3 tasks/_scripts/fetch_comments.py --sources github,backlog --update github_issue:owner/repo#12 --update backlog_issue:MYPL-1
 python3 tasks/_scripts/inbox_hints.py --sources github,backlog --update github_issue:owner/repo#12 --update backlog_issue:MYPL-1
 ```
 
-`inbox_hints.py` の `## 更新差分` に書いてある事実だけを使い、対象タスクの本文を3節で更新する。当該チャンネルの `github_updated_at` または `backlog_updated_at` をキャッシュの時刻に合わせる。他チャンネルの既存事実は残す。外部の state に合わせて個人タスクの `status` は変えない。`comments: 未取得` のときは `fetch_comments.py` のあとで `inbox_hints.py` を再実行する。
+`inbox_hints.py` の `## 更新差分` に書いてある事実だけを使い、`cache_newer` の対象タスクの本文を3節で更新する。当該チャンネルの `github_updated_at` または `backlog_updated_at` をキャッシュの時刻に合わせる。他チャンネルの既存事実は残す。`update.status_changes` にある path だけ `status` を `in_progress` にする。`progress_only` の候補は本文と `*_updated_at` を変えない。外部の state には合わせない。
 
 更新ブランチでは新しいタスクファイルを作らない。新規ブランチでは既存タスクの本文を書き換えない。
 
@@ -138,7 +150,7 @@ python3 tasks/_scripts/validate_task_properties.py
 python3 tasks/_scripts/generate_views.py
 ```
 
-### 6. Pull request
+### 7. Pull request
 
 差分が無い種別は、commit も push もしない。
 
