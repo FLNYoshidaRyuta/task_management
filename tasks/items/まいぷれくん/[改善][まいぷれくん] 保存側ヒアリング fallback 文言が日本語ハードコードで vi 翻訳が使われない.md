@@ -8,7 +8,7 @@ estimate: null
 priority:
 - bug
 status:
-- todo
+- in_progress
 depends_on: []
 related:
 - '[[tasks/items/まいぷれくん/海外版(vi)対応エピック： locale は受理されるが LLM・UI に意味として届いていない(P1-P6)|海外版(vi)対応エピック：
