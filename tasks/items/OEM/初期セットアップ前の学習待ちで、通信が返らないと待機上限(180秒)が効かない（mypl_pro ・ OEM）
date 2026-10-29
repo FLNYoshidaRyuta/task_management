@@ -1,6 +1,6 @@
 ---
 task_id: 111
-title: 初期セットアップ前の学習待ちで、通信が返らないと待機上限(180秒)が効かない（mypl_pro / OEM）
+title: 初期セットアップ前の学習待ちで、通信が返らないと待機上限(180秒)が効かない（mypl_pro ・ OEM）
 project: OEM
 status:
 - todo
