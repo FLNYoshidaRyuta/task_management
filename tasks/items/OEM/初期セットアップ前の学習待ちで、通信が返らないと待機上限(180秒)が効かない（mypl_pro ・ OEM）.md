@@ -20,11 +20,13 @@ backlog_id: MYPL-4302
 backlog_url: https://fln2000.backlog.com/view/MYPL-4302  # pragma: allowlist secret
 backlog_updated_at: 2026-10-28T06:26:27Z
 ---
+
 ## 概要
 
 初期セットアップ前のウェブ情報学習を待つ画面で、通信が返らないと「学習中」のまま止まり、「もう一度試す」「学習せずに始める」が出ない。mypl_pro と OEM の両方で直す。詳細は GitHub Issue。
 
-GitHub Issue:
+
+## GitHub Issue
 - https://github.com/FutureLinkNetwork/mypl_pro/issues/1480
 - https://github.com/FutureLinkNetwork/business-console-pro/issues/697
 
