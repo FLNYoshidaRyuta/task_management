@@ -3,7 +3,7 @@ task_id: 94
 title: 【調査依頼】ショップ原稿生成AI：ファクトチェック修正後の再生成(「もう１回」)で、原稿が全面的に作り直される挙動の確認
 project: ショップ原稿生成AI
 status:
-- in_progress
+- done
 start: ''
 end: ''
 focus_date: ''
