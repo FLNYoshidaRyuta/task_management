@@ -16,7 +16,7 @@ github_url: ''
 github_updated_at: ''
 backlog_id: MYPL-4158
 backlog_url: "[REDACTED]/view/MYPL-4158"
-backlog_updated_at: '2026-11-02T00:36:15Z'
+backlog_updated_at: '2026-11-11T09:01:15Z'
 ---
 ## 概要
 
@@ -36,12 +36,15 @@ Facebookアプリの設定項目を調査し、一般のFacebookユーザーが�
 - 2026-10-20 吉田竜大コメント: アプリ開発者のFacebookアカウントでログイン試行すると、ログインレビュー申請を促す認証画面が表示された。以下のアクセス許可に、Facebookでは使用が許可されていないものがある旨（`public_profile` 等の使用許可がFacebookで許可されていない）。[レビュー申請](https://developers.facebook.com/apps/258691954284386/app-review/submissions/)へのリンクが表示される
 - 2026-10-29 吉田竜大コメント: 現在の仕様では一般ユーザーがアプリを利用するには対象となるアクセス許可の **Advanced Access** の取得が必要。`public_profile`・`email` のアクセス許可は **Standard Access** のまま。Advanced Access を取得するためには、有効なプライバシーポリシーURLおよびデータ削除情報の両方を入力してからリクエストする必要がある。プライバシーポリシーURLは有効なものが設定されている。データ削除情報は無効なものが設定されているため、設定し直しが必要
 - 2026-11-02 吉田竜大コメント: データ削除情報は個人情報削除申し立て連絡先があることを根拠にプライバシーポリシーページ（ https://mypl.net/privacy ）を設定した。email アドバンスアクセスを申請し、一度は取得できたが、データアクセスの更新を指示されスタンダードアクセスに戻った。email アドバンスアクセス取得処理の翌日、データアクセスの更新指示通知があったため対応し、現在審査待ち。
+- 2026-11-10 吉田竜大コメント: データアクセス更新後、アドバンスアクセスに変更し一般ユーザーでも認証できた。認証後 URL が `https://funabashi.mypl.net//#_=_` となっているため要修正
+- 2026-11-11 吉田竜大コメント: mypl_laravel3 PR #2100 で Facebook・Google ログイン後の遷移先 URL の二重スラッシュを修正（AuthController.php）。`#_=_` は Facebook 側仕様で今回は対象外
 
 ## 残りのやること
 
 - Meta for Developers のダッシュボードで一般ユーザーがログインできない原因を調査し、**まずダッシュボードで現状を調査して原因を確定させる**（上記【未実証】の候補の切り分け）
-- 必要な設定・申請を Meta for Developers で実施する（`public_profile`・`email` の Advanced Access、ログインレビュー申請など）。2026-11-02 時点ではデータアクセス更新対応後の審査待ち
-- 完了条件: `https://funabashi.mypl.work/` からFacebookログインを試み、アプリにロール登録されていない一般のFacebookアカウントでログインが成功すること
+- 必要な設定・申請を Meta for Developers で実施する（`public_profile`・`email` の Advanced Access、ログインレビュー申請など）
+- 2026-11-10 時点で一般ユーザーでの認証は可能になっている。ログイン後遷移先 URL の二重スラッシュ修正は mypl_laravel3 PR #2100 で対応済み（`#_=_` フラグメントは今回対象外）
+- 完了条件: `https://funabashi.mypl.work/` からFacebookログインを試み、アプリにロール登録されていない一般のFacebookアカウントでログインが成功すること（遷移先 URL が想定どおりであることも含む）
 - リダイレクトURIは mypl_auth のURLではなく **Cognitoの idpresponse エンドポイント**（`https://mypl-auth-{環境}.auth.ap-northeast-1.amazoncognito.com/oauth2/idpresponse`）を登録する。既存設定を消さないこと
 - App Review の審査は通常数日〜2週間、ビジネス認証も数日〜数週間かかる
 - [App Review submission guide - Meta for Developers](https://developers.facebook.com/docs/resp-plat-initiatives/individual-processes/app-review/submission-guide)
