@@ -16,11 +16,11 @@ github_url: ''
 github_updated_at: ''
 backlog_id: MYPL-4158
 backlog_url: "[REDACTED]/view/MYPL-4158"
-backlog_updated_at: '2026-11-02T00:36:15Z'
+backlog_updated_at: 2026-11-11T09:01:15Z
 ---
 ## 概要
 
-SSO（Cognito経由のFacebookログイン）の実装自体は完了しているが、現在は**Facebookアプリにロール（管理者・開発者・テスター）登録された人しか認証できない**状態になっている。
+SSO（Cognito経由のFacebookログイン）の実装自体は完了しているが、以前は**Facebookアプリにロール（管理者・開発者・テスター）登録された人しか認証できない**状態になっていた。
 コード側の問題ではなく、Facebook（Meta）側のアプリ設定・申請の問題である。
 
 Facebookアプリの設定項目を調査し、一般のFacebookユーザーがログインできる状態にするために必要な設定・申請を完了させてほしい。
@@ -36,6 +36,8 @@ Facebookアプリの設定項目を調査し、一般のFacebookユーザーが�
 - 2026-10-20 吉田竜大コメント: アプリ開発者のFacebookアカウントでログイン試行すると、ログインレビュー申請を促す認証画面が表示された。以下のアクセス許可に、Facebookでは使用が許可されていないものがある旨（`public_profile` 等の使用許可がFacebookで許可されていない）。[レビュー申請](https://developers.facebook.com/apps/258691954284386/app-review/submissions/)へのリンクが表示される
 - 2026-10-29 吉田竜大コメント: 現在の仕様では一般ユーザーがアプリを利用するには対象となるアクセス許可の **Advanced Access** の取得が必要。`public_profile`・`email` のアクセス許可は **Standard Access** のまま。Advanced Access を取得するためには、有効なプライバシーポリシーURLおよびデータ削除情報の両方を入力してからリクエストする必要がある。プライバシーポリシーURLは有効なものが設定されている。データ削除情報は無効なものが設定されているため、設定し直しが必要
 - 2026-11-02 吉田竜大コメント: データ削除情報は個人情報削除申し立て連絡先があることを根拠にプライバシーポリシーページ（ https://mypl.net/privacy ）を設定した。email アドバンスアクセスを申請し、一度は取得できたが、データアクセスの更新を指示されスタンダードアクセスに戻った。email アドバンスアクセス取得処理の翌日、データアクセスの更新指示通知があったため対応し、現在審査待ち。
+- 2026-11-10: データアクセス更新後、Advanced Access に変更し、一般ユーザーでも認証できるようになった。認証後 URL が `https://funabashi.mypl.net//#_=_` となっている点は要修正だった。
+- 2026-11-11: Facebook・Google ログイン後遷移先 URL のスラッシュ二重化を修正（mypl_laravel3 PR #2100）。Facebook は `$pos` 先頭の `/` と連結で二重化していた。Google は `redirect_url` 末尾の `/` と連結で二重化していた。AuthController で ltrim / 末尾スラッシュ除去に相当する修正。#_=_ は Facebook 仕様のため今回対象外。
 
 ## 残りのやること
 
