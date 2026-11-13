@@ -19,7 +19,7 @@ github_url: https://github.com/FutureLinkNetwork/agent-dev/issues/467
 github_updated_at: 2026-10-09T06:29:03Z
 backlog_id: MYPL-4238
 backlog_url: https://fln2000.backlog.com/view/MYPL-4238
-backlog_updated_at: 2026-10-08T12:21:00Z
+backlog_updated_at: 2026-11-11T11:29:18Z
 ---
 ## 概要
 
@@ -40,6 +40,8 @@ origin/main ef17259 で確認した内容。
 - OpenRouter への退避（`sdk_adapter.py` の `_is_fallbackable_agent_error` / ストリームの退避分岐）は、この例外が出たあと、かつ本文やツールの出力がまだ出ていない場合にしか動かない。動いても残りは Pro の締切 180 秒まで約 59 秒
 - 本番では退避が一度も動いていない: 13:36〜13:45 に `retrying_before_output` / `fallback` のログは 0 件。9/20〜10/8 に広げても `fallback_attempted:true` は 0 件。`AGENT_FALLBACK_PROVIDER` / `OPENROUTER_AGENT_MODEL` が本番で未設定とみられる（設定値そのものは未確認）
 - 例外は generic except で `INTERNAL_ERROR` + `str(exc)` になり、英語のまま画面に出る（#166 / #466 と同じ経路）
+
+2026-11-11 加藤（Backlog）: 続けて対応中。退避先を OpenRouter 経由の Gemini にそろえる修正が agent-dev PR#486（#485）にある。dev の環境変数 `OPENROUTER_AGENT_MODEL` の変更（平野さん）待ちで止まっている。値変更後 dev 確認→吉田レビュー依頼。https://github.com/FutureLinkNetwork/agent-dev/pull/486
 
 ## 残りのやること
 
