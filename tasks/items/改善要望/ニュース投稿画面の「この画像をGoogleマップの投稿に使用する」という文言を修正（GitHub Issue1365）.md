@@ -9,7 +9,7 @@ estimate: null
 priority:
 - Mid
 status:
-- todo
+- in_progress
 depends_on: []
 related: []
 github_type:
@@ -20,7 +20,7 @@ github_url: https://github.com/FutureLinkNetwork/mypl_pro/issues/1365
 github_updated_at: 2026-10-14 07:27:59+00:00
 backlog_id: MYPL-4222
 backlog_url: https://fln2000.backlog.com/view/MYPL-4222
-backlog_updated_at: 2026-10-14 07:28:09+00:00
+backlog_updated_at: 2026-11-12T02:14:01Z
 ---
 ## 概要
 
@@ -31,6 +31,10 @@ Backlog（MYPL-4222）では、表示が実体とそろっていないため修�
 ## やったこと
 
 2026-10-14 の Issue コメントで、画面別に GBP・Google マップ・Google ビジネスプロフィールを指す表現の一覧表が共有された（インサイト、オペレーター API、契約、ショップ基本情報、ニュース一覧、ニュース編集、まいぷれくん、マニュアルなどの画面文言）。ニュース編集の「この画像をGoogleマップの投稿に使用する」も表に含まれている。
+
+- 2026-11-12（吉田）: PR と文言統一に時間がかかるため Issue を起票。PR#1590、Issue#1589 を関連付け。阿部にデザインガイドラインとの文言整合の確認を依頼
+- 2026-11-12（阿部）: ガイドライン整合用の別 Issue を自分にアサイン。PR 内容は問題なし
+- 2026-11-12（吉田）: 次回定例リリースに載せる（Backlog MYPL-4315 コメント参照）
 
 ## 残りのやること
 

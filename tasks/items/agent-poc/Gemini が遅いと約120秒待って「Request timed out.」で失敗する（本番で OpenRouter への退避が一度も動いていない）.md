@@ -19,7 +19,7 @@ github_url: https://github.com/FutureLinkNetwork/agent-dev/issues/467
 github_updated_at: 2026-10-09T06:29:03Z
 backlog_id: MYPL-4238
 backlog_url: https://fln2000.backlog.com/view/MYPL-4238
-backlog_updated_at: 2026-10-08T12:21:00Z
+backlog_updated_at: 2026-11-11T11:29:18Z
 ---
 ## 概要
 
@@ -41,6 +41,8 @@ origin/main ef17259 で確認した内容。
 - 本番では退避が一度も動いていない: 13:36〜13:45 に `retrying_before_output` / `fallback` のログは 0 件。9/20〜10/8 に広げても `fallback_attempted:true` は 0 件。`AGENT_FALLBACK_PROVIDER` / `OPENROUTER_AGENT_MODEL` が本番で未設定とみられる（設定値そのものは未確認）
 - 例外は generic except で `INTERNAL_ERROR` + `str(exc)` になり、英語のまま画面に出る（#166 / #466 と同じ経路）
 
+2026-11-11（加藤）: 対応継続中。OpenRouter 経由 Gemini 退避の修正は agent-dev の PR#486（#485 関連）。dev 環境の `OPENROUTER_AGENT_MODEL` 変更（平野）待ちでブロック。値変更後に dev で確認し、吉田レビュー予定。
+
 ## 残りのやること
 
 - 本番の退避設定（`AGENT_FALLBACK_PROVIDER=openrouter`、`OPENROUTER_API_KEY`、`OPENROUTER_AGENT_MODEL`）を確認する。無効が意図的なら理由を Issue に残す
@@ -49,3 +51,4 @@ origin/main ef17259 で確認した内容。
 - Pro の締切 180 秒から逆算した全体の時間予算を持ち、Gemini 側と退避先の持ち時間を分ける
 - タイムアウト時の利用者向け文言を日本語の固定文言にする（#166 と調整）
 - 遅い provider を模した fake で、退避が締切内に完了する回帰テストを追加する
+- dev の `OPENROUTER_AGENT_MODEL` 反映後、退避動作を dev で検証してからレビューへ回す
