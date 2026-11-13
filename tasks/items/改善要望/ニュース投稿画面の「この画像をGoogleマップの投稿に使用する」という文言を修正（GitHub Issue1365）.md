@@ -9,7 +9,7 @@ estimate: null
 priority:
 - Mid
 status:
-- todo
+- in_progress
 depends_on: []
 related: []
 github_type:
@@ -20,17 +20,25 @@ github_url: https://github.com/FutureLinkNetwork/mypl_pro/issues/1365
 github_updated_at: 2026-10-14 07:27:59+00:00
 backlog_id: MYPL-4222
 backlog_url: https://fln2000.backlog.com/view/MYPL-4222
-backlog_updated_at: 2026-10-14 07:28:09+00:00
+backlog_updated_at: 2026-11-12T02:14:01Z
 ---
 ## 概要
 
 ニュース投稿画面の「この画像をGoogleマップの投稿に使用する」という文言には違和感がある。選択できる内容は GBP の「写真」に格納するか否かであり、GBP と Google マップの用語が混在して誤解が生じないよう文言を調整したい。
 
-Backlog（MYPL-4222）では、表示が実体とそろっていないため修正が必要とされている。関連 GitHub Issue: https://github.com/FutureLinkNetwork/mypl_pro/issues/1365
+Backlog（MYPL-4222）の説明では、実体とそろってないので修正とある。Google Chat: https://chat.google.com/room/AAQAUGnp-D8/QQK66xRbJAo/QQK66xRbJAo?cls=10
+
+関連 GitHub Issue: https://github.com/FutureLinkNetwork/mypl_pro/issues/1365
 
 ## やったこと
 
 2026-10-14 の Issue コメントで、画面別に GBP・Google マップ・Google ビジネスプロフィールを指す表現の一覧表が共有された（インサイト、オペレーター API、契約、ショップ基本情報、ニュース一覧、ニュース編集、まいぷれくん、マニュアルなどの画面文言）。ニュース編集の「この画像をGoogleマップの投稿に使用する」も表に含まれている。
+
+2026-11-12、吉田竜大が Backlog でコメント。文言の統一は対応に時間がかかりそうなため PR と Issue を作成した。https://github.com/FutureLinkNetwork/mypl_pro/pull/1590 、https://github.com/FutureLinkNetwork/mypl_pro/issues/1589 。デザインガイドラインに合わせて文言を「提案」と変えているので念のため阿部拓真に確認依頼。
+
+同日、阿部拓真がコメント。別 issue は阿部をアサイン済みで、どこかで指針を検討する。PR の内容は OK。
+
+2026-11-12 02:14、吉田竜大が次回定期リリースに載せた（MYPL-4315 のコメント参照）。
 
 ## 残りのやること
 
