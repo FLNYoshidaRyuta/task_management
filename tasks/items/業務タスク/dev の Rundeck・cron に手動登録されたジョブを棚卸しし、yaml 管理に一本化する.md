@@ -20,7 +20,7 @@ github_url: https://github.com/FutureLinkNetwork/mypl_spec/issues/85
 github_updated_at: 2026-10-09T00:10:18Z
 backlog_id: MYPL-4236
 backlog_url: https://fln2000.backlog.com/view/MYPL-4236
-backlog_updated_at: 2026-10-08T05:52:59Z
+backlog_updated_at: 2026-11-13T08:23:59Z
 ---
 ## 概要
 
@@ -34,8 +34,8 @@ dev の手動登録ジョブ「DEV PRO / 予約投稿処理」が、パラメー
 ## やったこと
 
 - 10/7 に該当ジョブを停止済み
+- 2026-11-13 の調査で、dev Rundeck の pro プロジェクト側は未使用ジョブを削除済み。sys2 プロジェクトのジョブは稼働中だが、sys2 には yaml 管理の仕組みが無いため対応不要と判断した
 
 ## 残りのやること
 
-- dev の Rundeck の全プロジェクトと、EC2 の crontab・/etc/cron.d を棚卸しする
-- yaml にないジョブは、yaml に移すか削除する
+特になし。上記で棚卸し・整理は完了とし、加藤さんに問題なければクローズ依頼済み
