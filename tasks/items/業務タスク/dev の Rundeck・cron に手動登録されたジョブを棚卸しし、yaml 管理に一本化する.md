@@ -20,7 +20,7 @@ github_url: https://github.com/FutureLinkNetwork/mypl_spec/issues/85
 github_updated_at: 2026-10-09T00:10:18Z
 backlog_id: MYPL-4236
 backlog_url: https://fln2000.backlog.com/view/MYPL-4236
-backlog_updated_at: 2026-10-08T05:52:59Z
+backlog_updated_at: 2026-11-13T08:23:59Z
 ---
 ## 概要
 
@@ -34,6 +34,7 @@ dev の手動登録ジョブ「DEV PRO / 予約投稿処理」が、パラメー
 ## やったこと
 
 - 10/7 に該当ジョブを停止済み
+- 2026-11-13（MYPL-4236 コメント）: pro のジョブは使用していないため削除。sys2 のジョブは動作しており、sys2 全体で yaml 管理を行っていないため対応なし。調査の結果、対応の必要性が無いと判断。問題なければクローズ依頼（参考: https://github.com/FutureLinkNetwork/mypl_spec/issues/85#issuecomment-6208707892）
 
 ## 残りのやること
 
