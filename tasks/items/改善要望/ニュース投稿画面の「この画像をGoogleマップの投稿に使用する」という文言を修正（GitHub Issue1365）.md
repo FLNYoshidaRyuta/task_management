@@ -9,7 +9,7 @@ estimate: null
 priority:
 - Mid
 status:
-- todo
+- in_progress
 depends_on: []
 related: []
 github_type:
@@ -20,7 +20,7 @@ github_url: https://github.com/FutureLinkNetwork/mypl_pro/issues/1365
 github_updated_at: 2026-10-14 07:27:59+00:00
 backlog_id: MYPL-4222
 backlog_url: https://fln2000.backlog.com/view/MYPL-4222
-backlog_updated_at: 2026-10-14 07:28:09+00:00
+backlog_updated_at: 2026-11-12T02:14:01Z
 ---
 ## 概要
 
@@ -32,6 +32,8 @@ Backlog（MYPL-4222）では、表示が実体とそろっていないため修�
 
 2026-10-14 の Issue コメントで、画面別に GBP・Google マップ・Google ビジネスプロフィールを指す表現の一覧表が共有された（インサイト、オペレーター API、契約、ショップ基本情報、ニュース一覧、ニュース編集、まいぷれくん、マニュアルなどの画面文言）。ニュース編集の「この画像をGoogleマップの投稿に使用する」も表に含まれている。
 
+2026-11-12、文言統一に時間がかかる旨を踏まえ吉田が Issue を起票。PR https://github.com/FutureLinkNetwork/mypl_pro/pull/1590、関連 Issue https://github.com/FutureLinkNetwork/mypl_pro/issues/1589。デザインガイドラインでは「提案」と「統一」の使い分けがあり、阿部さんがガイドライン確認用の別 Issue を self-assign。PR 内容は問題なし。次回定期リリースに載せる（Backlog MYPL-4315）。
+
 ## 残りのやること
 
-文言は要調整。基本は GBP というワードを使い、体言止めで例として「この画像を GBP の「写真」に投稿」「この画像を Google マップの「写真」に投稿」などに変更。主語が省略できるなら「Google マップの「写真」に投稿」も可。
+リリース反映後の確認
