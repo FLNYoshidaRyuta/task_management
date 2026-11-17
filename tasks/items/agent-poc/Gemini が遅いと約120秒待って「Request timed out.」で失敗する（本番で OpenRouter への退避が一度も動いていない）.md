@@ -19,7 +19,7 @@ github_url: https://github.com/FutureLinkNetwork/agent-dev/issues/467
 github_updated_at: 2026-10-09T06:29:03Z
 backlog_id: MYPL-4238
 backlog_url: https://fln2000.backlog.com/view/MYPL-4238
-backlog_updated_at: 2026-10-08T12:21:00Z
+backlog_updated_at: 2026-11-11T11:29:18Z
 ---
 ## 概要
 
@@ -33,6 +33,8 @@ backlog_updated_at: 2026-10-08T12:21:00Z
 期待する挙動は、Gemini が遅いときに利用者を 2 分待たせず、Pro の締切（180 秒）より十分前に OpenRouter へ退避して完了すること。退避できない場合も、日本語で次の一手がわかる文言を出すこと。
 
 ## やったこと
+
+- 退避先を OpenRouter 経由の Gemini にそろえる修正が agent-dev PR#486（#485）にできている。dev の環境変数 `OPENROUTER_AGENT_MODEL` の変更（平野さん）を待って止まっている。値が変わったら dev で確認し、吉田さんにレビューを依頼する（https://github.com/FutureLinkNetwork/agent-dev/pull/486）。
 
 origin/main ef17259 で確認した内容。
 
