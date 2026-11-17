@@ -19,9 +19,13 @@ github_url: https://github.com/FutureLinkNetwork/agent-dev/issues/467
 github_updated_at: 2026-10-09T06:29:03Z
 backlog_id: MYPL-4238
 backlog_url: https://fln2000.backlog.com/view/MYPL-4238
-backlog_updated_at: 2026-10-08T12:21:00Z
+backlog_updated_at: 2026-11-11T11:29:18Z
 ---
 ## 概要
+
+10/8 13:36〜13:45 に Gemini の応答が遅くなり、まいぷれくんの生成・修正が約120秒待ったあと失敗して、画面に英語の「Request timed out.」が出た（6店舗8件、うち2セッションは下書きゼロで離脱）。本番では 9/20 以降、OpenRouter への退避が一度も動いておらず、設定が無効とみられる。
+
+- GitHub Issue: https://github.com/FutureLinkNetwork/agent-dev/issues/467
 
 本番 2026-10-08 13:36〜13:45 JST、Gemini（gemini-3.8-flash）の応答が遅くなった間に、生成・修正の実行が約 120 秒待ったあと失敗し、利用者の画面に英語の `Request timed out.` が出た。
 
@@ -41,8 +45,11 @@ origin/main ef17259 で確認した内容。
 - 本番では退避が一度も動いていない: 13:36〜13:45 に `retrying_before_output` / `fallback` のログは 0 件。9/20〜10/8 に広げても `fallback_attempted:true` は 0 件。`AGENT_FALLBACK_PROVIDER` / `OPENROUTER_AGENT_MODEL` が本番で未設定とみられる（設定値そのものは未確認）
 - 例外は generic except で `INTERNAL_ERROR` + `str(exc)` になり、英語のまま画面に出る（#166 / #466 と同じ経路）
 
+2026-11-11 の Backlog コメント: 退避先を OpenRouter 経由の Gemini にそろえる修正が agent-dev PR#486（#485）にできている。dev の環境変数 `OPENROUTER_AGENT_MODEL` の変更（平野さん）を待って止まっている。値が変わったら dev で確認し、吉田さんにレビューを依頼する予定。https://github.com/FutureLinkNetwork/agent-dev/pull/486
+
 ## 残りのやること
 
+- 平野さんによる dev の `OPENROUTER_AGENT_MODEL` 変更待ち。変更後に dev で確認し、吉田さんが PR#486 をレビューする
 - 本番の退避設定（`AGENT_FALLBACK_PROVIDER=openrouter`、`OPENROUTER_API_KEY`、`OPENROUTER_AGENT_MODEL`）を確認する。無効が意図的なら理由を Issue に残す
 - 最初の応答（最初のイベント）までのタイムアウトを短く設ける（目安 20〜30 秒）
 - 退避が有効なとき、同じ Gemini への SDK 自動再試行（`max_retries`）で時間を使わず、すぐ退避する
